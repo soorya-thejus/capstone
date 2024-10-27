@@ -14,6 +14,7 @@ const DealSchema: Schema = new Schema({
   stage: {
     type: String,
     enum: ['new', 'discovery', 'proposal', 'negotiation', 'won', 'lost'],
+    default: 'new',
     required: true,
   },
   deal_value: { type: Number, required: true },
