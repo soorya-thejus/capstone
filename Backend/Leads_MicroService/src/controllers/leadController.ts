@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Lead from '../models/Leads'; // Adjust the path as needed
+import { Lead } from '../models/Leads';
 
 // Create a new lead
 export const createLead = async (req: Request, res: Response) => {
