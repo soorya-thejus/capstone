@@ -16,7 +16,7 @@ export interface IContact extends Document {
 
 const ContactSchema: Schema = new Schema({
   lead_id: { type: Schema.Types.ObjectId, ref: 'Lead', required: true },
-  contact_name: { type: String, required: true },
+  contact_name: { type: String},
   account_ids: [{ type: Schema.Types.ObjectId, ref: 'Account', required: false }],
   deal_ids: [{ type: Schema.Types.ObjectId, ref: 'Deal', required: false }],
   title: { type: String, required: true },
@@ -27,7 +27,7 @@ const ContactSchema: Schema = new Schema({
     enum: ['high', 'medium', 'low'],
     required: true,
   },
-  deal_value: { type: Schema.Types.Decimal128, required: true },
+  deal_value: { type: Schema.Types.Decimal128},
   project_id: { type: Schema.Types.ObjectId, ref: 'Project', required: false },
 }, { timestamps: true, versionKey: false });
 
