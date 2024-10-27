@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createContact, deleteContact, getAllContacts, getContact, updateContact } from "../controllers/contactController";
+import { createContact, deleteContact, getAllContacts, getContact, getContactsByDealId, updateContact} from "../controllers/contactController";
 
 const router = Router();
 
@@ -11,6 +11,11 @@ router.get('/contacts/:id',getContact);
 
 router.put('/contacts/:id',updateContact);
 
-router.get('/contacts/:id',deleteContact);
+router.delete('/contacts/:id',deleteContact);
+
+router.get('/contacts/deals/:dealId', getContactsByDealId);
+
+
+//router.put('/contacts/deals/:id',updateContactDealValue);
 
 export default router;
