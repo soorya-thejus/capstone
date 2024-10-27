@@ -1,16 +1,31 @@
 import { Router } from "express";
-import { createDeal, deleteDeal, getDealById, getDeals, updateDeal } from "../controllers/dealController";
+import { 
+  createDeal, 
+  deleteDeal, 
+  getDealById, 
+  getDeals, 
+  getDealValues, 
+  updateDeal 
+} from "../controllers/dealController";
 
 const router = Router();
 
-router.post('/deals',createDeal);
+// Route for creating a new deal
+router.post('/deals', createDeal);
 
-router.get('/deals',getDeals);
+// Route for getting all deals
+router.get('/deals', getDeals);
 
-router.get('/deals/:id',getDealById);
+// Route for getting a single deal by ID
+router.get('/deals/:id', getDealById);
 
-router.put('/deals/:id',updateDeal);
+// Route for updating a deal by ID
+router.put('/deals/:id', updateDeal);
 
-router.delete('/deals/:id',deleteDeal);
+// Route for deleting a deal by ID
+router.delete('/deals/:id', deleteDeal);
+
+// Route for retrieving deal values based on deal_ids (changed to POST for payload support)
+router.post('/deals/values', getDealValues);
 
 export default router;
