@@ -9,7 +9,7 @@ export const createAccount = async(req:Request, res:Response)=>{
         res.status(201).json(savedAccount);
     }
     catch(error){
-        res.status(400).json({ message: error instanceof Error ? error.message : 'Error creating Deal' });
+        res.status(400).json({ message: error instanceof Error ? error.message : 'Error creating Account' });
     }
 }
 

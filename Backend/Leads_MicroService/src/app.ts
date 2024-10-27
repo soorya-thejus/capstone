@@ -11,6 +11,6 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/leads', leadRoutes); // Mount leads router at /api/leads
+app.use('/api', leadRoutes); // Mount leads router at /api/leads
 
 export default app;
