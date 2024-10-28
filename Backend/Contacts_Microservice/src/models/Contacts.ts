@@ -19,9 +19,9 @@ const ContactSchema: Schema = new Schema({
   contact_name: { type: String},
   account_ids: [{ type: Schema.Types.ObjectId, ref: 'Account', required: false }],
   deal_ids: [{ type: Schema.Types.ObjectId, ref: 'Deal', required: false }],
-  title: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  phone: { type: String, required: true },
+  title: { type: String},
+  email: { type: String, unique: true },
+  phone: { type: String},
   priority: {
     type: String,
     enum: ['high', 'medium', 'low'],
@@ -31,14 +31,24 @@ const ContactSchema: Schema = new Schema({
   project_id: { type: Schema.Types.ObjectId, ref: 'Project', required: false },
 }, { timestamps: true, versionKey: false });
 
+
+
 // Pre-save hook to set `contact_name` and calculate `deal_value`
 ContactSchema.pre<IContact>('save', async function (next: (err?: CallbackError) => void) {
   try {
     // Fetch lead data from Leads_Microservice API
     const leadResponse = await axios.get(`http://localhost:5001/api/leads/${this.lead_id}`);
-    if (leadResponse.data && leadResponse.data.lead_name) {
-      this.contact_name = leadResponse.data.lead_name;
+    if (!leadResponse.data) {
+      throw new Error('Lead ID not found');
     }
+    if (leadResponse.data.lead_name && leadResponse.data.title && leadResponse.data.email && leadResponse.data.phone) {
+        this.contact_name = leadResponse.data.lead_name;
+        this.title = leadResponse.data.title;
+        this.email = leadResponse.data.email;
+        this.phone = leadResponse.data.phone;
+    }
+
+
 
     // Calculate deal_value as the sum of deal_values from the Deal model based on deal_ids
     if (this.deal_ids && this.deal_ids.length > 0) {

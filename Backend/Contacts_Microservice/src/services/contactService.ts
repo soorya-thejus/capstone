@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Contact ,IContact} from "../models/Contacts";
+import axios from "axios";
 
 
 export const createContactService = async (contactData: IContact) : Promise<IContact> => {
@@ -16,7 +17,23 @@ export const getContactByIdService = async (id: string): Promise<IContact|null> 
 };
 
 export const updateContactService = async (id: string, contactData: Partial<IContact>): Promise<IContact|null> => {
-    return await Contact.findByIdAndUpdate(id, contactData, { new: true, runValidators: true });
+    const updatedContact = await Contact.findByIdAndUpdate(id, contactData, { new: true, runValidators: true });
+    if (updatedContact?.deal_ids && updatedContact.deal_ids.length > 0) {
+        // Make a request to Deals_Microservice to fetch deal values
+        const response = await axios.post(`http://localhost:5002/api/deals/values`, {
+          deal_ids: updatedContact.deal_ids,
+        });
+  
+        if (response.data && response.data.deals) {
+          // Sum the deal values and ensure conversion from Decimal128 to Number
+          const totalDealValue = response.data.deals.reduce(
+            (sum: number, deal: { deal_value: string }) => sum + parseFloat(deal.deal_value),
+            0
+          );
+          updatedContact.deal_value = totalDealValue;
+        }
+      }
+    return updatedContact;
 };
 
 export const deleteContactService = async (id: string): Promise<IContact|null> => {
