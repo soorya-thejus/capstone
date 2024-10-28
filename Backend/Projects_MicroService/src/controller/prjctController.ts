@@ -1,11 +1,11 @@
 import { Project } from "../models/Project"
 import { Request,Response } from "express";
+import * as projectService from "../services/projectService";
 
 //Create Client_Project
 export const createProject = async(req:Request,res: Response)=>{
     try{
-        const newProject = new Project(req.body);
-        const savedProject = await newProject.save();
+        const savedProject = await projectService.createProjectService(req.body);
         res.status(201).json(savedProject);
     }
     catch(error){
@@ -16,7 +16,7 @@ export const createProject = async(req:Request,res: Response)=>{
 //Get All Projects
 export const getAllProject = async(req:Request,res: Response)=>{
     try{
-        const projects = await Project.find();
+        const projects = await projectService.getAllProjectsService();
         res.status(200).json(projects);
     }
     catch(error){
@@ -27,7 +27,7 @@ export const getAllProject = async(req:Request,res: Response)=>{
 //Get a Project
 export const getProject = async(req:Request, res: Response)=>{
     try{
-        const project = await Project.findById(req.params.id);
+        const project = await projectService.getProjectService(req.params.id);
         if (!project) res.status(404).json({ message: 'Project not found' });
         res.status(200).json(project);
     }
@@ -40,7 +40,7 @@ export const getProject = async(req:Request, res: Response)=>{
 //Update a Project
 export const updateProject = async(req:Request, res:Response)=>{
     try{
-        const updatedProject = await Project.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true});
+        const updatedProject = await projectService.updateProjectService(req.params.id,req.body);
         if (!updatedProject)  res.status(404).json({ message: 'Project not found' });
         res.status(200).json(updatedProject);
     } catch (error) {
@@ -51,7 +51,7 @@ export const updateProject = async(req:Request, res:Response)=>{
 //Delete a Project
 export const deleteProject = async(req:Request,res:Response)=>{
     try{
-        const deletedProject = await Project.findByIdAndDelete(req.params.id);
+        const deletedProject = await projectService.deleteProjectService(req.params.id);
         if (!deletedProject)  res.status(404).json({ message: 'Project not found' });
         res.status(204).json({message: 'Deleted successfully!'});
     } catch (error) {
