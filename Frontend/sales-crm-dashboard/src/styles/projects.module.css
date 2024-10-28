@@ -1,0 +1,8 @@
+/* src/styles/deals.module.css */
+.projectsContainer {
+    padding-left: 20px;
+}
+
+.projectsContainer h2 {
+    color: #2c3e50;
+}

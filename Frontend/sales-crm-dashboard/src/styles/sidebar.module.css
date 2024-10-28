@@ -1,0 +1,43 @@
+/* Sidebar/styles.module.css */
+.sidebar {
+    background-color: #F8F8F8;
+    color: #1A1C22;
+    width: 200px;
+    height: 100%;
+    padding: 20px;
+    position: fixed;
+    overflow-y: auto;
+}
+/* For smaller screens, sidebar stacks above content */
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        height: auto;
+    }
+    
+}
+.sidebar h2 {
+    color: #1A1C22;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+}
+
+.sidebar ul li a {
+    color: #1A1C22;
+    padding: 10px 15px;
+    border-radius: 5px;
+    display: block;
+    transition: background 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #FF7100;
+    color:white ;
+}
