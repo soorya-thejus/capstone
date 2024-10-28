@@ -49,15 +49,7 @@ ContactSchema.pre<IContact>('save', async function (next: (err?: CallbackError) 
     }
 
 
-  // Ensure unique `deal_ids`
-  if (this.deal_ids.length !== new Set(this.deal_ids.map(String)).size) {
-    return next(new Error('Duplicate deal_ids are not allowed'));
-  }
-
-  // Ensure unique `account_ids`
-  if (this.account_ids.length !== new Set(this.account_ids.map(String)).size) {
-    return next(new Error('Duplicate account_ids are not allowed'));
-  }
+ 
 
 
 
