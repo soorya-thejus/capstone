@@ -3,9 +3,29 @@ import { Contact ,IContact} from "../models/Contacts";
 import axios from "axios";
 
 
-export const createContactService = async (contactData: IContact) : Promise<IContact> => {
-    const newContact = new Contact(contactData);
-    return await newContact.save();
+export const createContactService = async (contactData: Partial<IContact>): Promise<IContact> => {
+  const { lead_id, contact_name, title, email, phone } = contactData;
+
+  if (!lead_id || !contact_name || !title || !email || !phone) {
+      throw new Error('Missing required contact information');
+  }
+
+  // Check if a contact with the given `lead_id` already exists
+  const existingContact = await Contact.findOne({ lead_id });
+  if (existingContact) {
+      throw new Error('Contact with this lead ID already exists');
+  }
+
+  // Create the new contact
+  const newContact = new Contact({
+      lead_id,
+      contact_name,
+      title,
+      email,
+      phone,
+  });
+
+  return await newContact.save();
 };
 
 export const getAllContactsService = async (): Promise<IContact[]> => {

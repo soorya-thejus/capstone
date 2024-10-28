@@ -25,9 +25,9 @@ const ContactSchema: Schema = new Schema({
   priority: {
     type: String,
     enum: ['high', 'medium', 'low'],
-    required: true,
+    default: "low"
   },
-  deal_value: { type: Schema.Types.Decimal128},
+  deal_value: { type: Number},
   project_id: { type: Schema.Types.ObjectId, ref: 'Project', required: false },
 }, { timestamps: true, versionKey: false });
 
@@ -37,16 +37,16 @@ const ContactSchema: Schema = new Schema({
 ContactSchema.pre<IContact>('save', async function (next: (err?: CallbackError) => void) {
   try {
     // Fetch lead data from Leads_Microservice API
-    const leadResponse = await axios.get(`http://localhost:5001/api/leads/${this.lead_id}`);
-    if (!leadResponse.data) {
-      throw new Error('Lead ID not found');
-    }
-    if (leadResponse.data.lead_name && leadResponse.data.title && leadResponse.data.email && leadResponse.data.phone) {
-        this.contact_name = leadResponse.data.lead_name;
-        this.title = leadResponse.data.title;
-        this.email = leadResponse.data.email;
-        this.phone = leadResponse.data.phone;
-    }
+    // const leadResponse = await axios.get(`http://localhost:5001/api/leads/${this.lead_id}`);
+    // if (!leadResponse.data) {
+    //   throw new Error('Lead ID not found');
+    // }
+    // if (leadResponse.data.lead_name && leadResponse.data.title && leadResponse.data.email && leadResponse.data.phone) {
+    //     this.contact_name = leadResponse.data.lead_name;
+    //     this.title = leadResponse.data.title;
+    //     this.email = leadResponse.data.email;
+    //     this.phone = leadResponse.data.phone;
+    // }
 
 
  
