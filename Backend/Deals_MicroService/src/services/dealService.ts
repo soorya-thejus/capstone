@@ -47,8 +47,40 @@ export const updateDealService = async (id: string, dealData: Partial<IDeal>): P
 
 // Delete a Deal
 export const deleteDealService = async (id: string): Promise<IDeal | null> => {
-    return await Deal.findByIdAndDelete(id);  // This will return a Promise<IDeal | null>
-};
+    // Fetch contacts associated with the specified deal_id
+    const contacts = await getContactsByDealId(id);
+  
+    // Remove the deal_id from the deal_ids field for each contact in the Contacts Microservice
+    for (const contact of contacts) {
+      // Make an HTTP request to update the contact in the Contacts Microservice
+      await axios.patch(`http://localhost:5005/api/contacts/${contact._id}/remove-deal`, { deal_id: id });
+  
+      // Recalculate the deal_value for the updated contact
+      const remainingDealIds = contact.deal_ids.filter((dealId: { toString: () => string; }) => dealId.toString() !== id);
+      if (remainingDealIds.length > 0) {
+        // Fetch the deal values for the remaining deals from the Deals Microservice
+        const response = await axios.post('http://localhost:5002/api/deals/values', {
+          deal_ids: remainingDealIds,
+        });
+  
+        if (response.data && response.data.deals) {
+          // Calculate the new total deal value
+          const totalDealValue = response.data.deals.reduce(
+            (sum: number, deal: { deal_value: string }) => sum + parseFloat(deal.deal_value),
+            0
+          );
+          // Update the deal_value in the Contacts Microservice
+          await axios.put(`http://localhost:5005/api/contacts/${contact._id}`, { deal_value: totalDealValue });
+        }
+      } else {
+        // If no remaining deals, set deal_value to 0
+        await axios.put(`http://localhost:5005/api/contacts/${contact._id}`, { deal_value: 0 });
+      }
+    }
+  
+    // Delete the deal
+    return await Deal.findByIdAndDelete(id);
+  };
 
 // Get Deal Values for deal_ids
 export const getDealValuesService = async (deal_ids: string[]): Promise<{ deals: IDeal[], totalDealValue: number }> => {
