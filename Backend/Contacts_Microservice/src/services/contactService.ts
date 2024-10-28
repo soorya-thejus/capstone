@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { Contact ,IContact} from "../models/Contacts";
 import axios from "axios";
 
@@ -16,25 +16,52 @@ export const getContactByIdService = async (id: string): Promise<IContact|null> 
     return await Contact.findById(id);
 };
 
-export const updateContactService = async (id: string, contactData: Partial<IContact>): Promise<IContact|null> => {
-    const updatedContact = await Contact.findByIdAndUpdate(id, contactData, { new: true, runValidators: true });
-    if (updatedContact?.deal_ids && updatedContact.deal_ids.length > 0) {
-        // Make a request to Deals_Microservice to fetch deal values
-        const response = await axios.post(`http://localhost:5002/api/deals/values`, {
-          deal_ids: updatedContact.deal_ids,
-        });
+export const updateContactService = async (id: string, contactData: Partial<IContact>): Promise<IContact | null> => {
+    // Fetch the existing contact to compare `deal_ids`
+    const existingContact = await Contact.findById(id);
+    if (!existingContact) {
+      throw new Error('Contact not found');
+    }
   
-        if (response.data && response.data.deals) {
-          // Sum the deal values and ensure conversion from Decimal128 to Number
-          const totalDealValue = response.data.deals.reduce(
-            (sum: number, deal: { deal_value: string }) => sum + parseFloat(deal.deal_value),
-            0
-          );
-          updatedContact.deal_value = totalDealValue;
-        }
+    // Detect if there is a change in `deal_ids`
+    const updatedDealIds = contactData.deal_ids;
+    const dealIdsChanged = updatedDealIds && !arraysEqual(existingContact.deal_ids, updatedDealIds);
+  
+    // Update the contact
+    const updatedContact = await Contact.findByIdAndUpdate(id, contactData, {
+      new: true,
+      runValidators: true,
+    });
+  
+    if (updatedContact && dealIdsChanged) {
+      // If `deal_ids` have changed, recalculate `deal_value`
+      const response = await axios.post('http://localhost:5002/api/deals/values', {
+        deal_ids: updatedContact.deal_ids,
+      });
+  
+      if (response.data && response.data.deals) {
+        // Calculate the new total deal value
+        const totalDealValue = response.data.deals.reduce(
+          (sum: number, deal: { deal_value: string }) => sum + parseFloat(deal.deal_value),
+          0
+        );
+  
+        // Update the contact's `deal_value`
+        updatedContact.deal_value = totalDealValue;
+        await updatedContact.save(); // Save the updated `deal_value`
       }
+    }
+  
     return updatedContact;
 };
+
+// Helper function to compare two arrays of ObjectIds
+function arraysEqual(arr1: Types.ObjectId[], arr2: Types.ObjectId[]): boolean {
+    if (arr1.length !== arr2.length) return false;
+    const arr1Ids = arr1.map(id => id.toString());
+    const arr2Ids = arr2.map(id => id.toString());
+    return arr1Ids.every(id => arr2Ids.includes(id));
+}
 
 export const deleteContactService = async (id: string): Promise<IContact|null> => {
     return await Contact.findByIdAndDelete(id);
