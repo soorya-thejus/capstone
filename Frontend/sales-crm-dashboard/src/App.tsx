@@ -1,14 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
-import Signup from './pages/Signup';
-import Signin from './pages/Signin';
-import Dashboard from './pages/Dashboard';
-import Leads from './pages/Leads';
-import Projects from './pages/Projects';
-import Deals from './pages/Deals';
-import Contacts from './pages/Contacts';
-import Accounts from './pages/Accounts';
+import Signup from './pages/crm/Signup';
+import Signin from './pages/crm/Signin';
+import Dashboard from './pages/crm/Dashboard';
+import Leads from './pages/crm//Leads';
+import Projects from './pages/crm/Projects';
+import Deals from './pages/crm/Deals';
+import Contacts from './pages/crm/Contacts';
+import Accounts from './pages/crm/Accounts';
 
 const App: React.FC = () => {
   return (

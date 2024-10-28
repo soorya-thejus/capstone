@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import styles from '../styles/topbar.module.css'; // Assuming you have a CSS file for Topbar
+import styles from '../../styles/crm/topbar.module.css'; // Assuming you have a CSS file for Topbar
 
 const Topbar: React.FC = () => {
   return (

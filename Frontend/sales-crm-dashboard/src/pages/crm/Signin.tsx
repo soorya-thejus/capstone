@@ -1,7 +1,7 @@
 // pages/SignIn.tsx
 import React from 'react';
-import Topbar from '../components/Topbar';
-import styles from '../styles/auth.module.css';
+import Topbar from '../../components/crm/Topbar';
+import styles from '../../styles/crm/auth.module.css';
 import { Link } from 'react-router-dom';
 
 

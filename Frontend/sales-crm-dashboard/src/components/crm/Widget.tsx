@@ -1,6 +1,6 @@
 // src/components/Widget.tsx
 import React from 'react';
-import styles from '../styles/widget.module.css'; // Import your widget styles
+import styles from '../../styles/crm/widget.module.css'; // Import your widget styles
 
 const Widget: React.FC<{ title: string }> = ({ title }) => {
   return (

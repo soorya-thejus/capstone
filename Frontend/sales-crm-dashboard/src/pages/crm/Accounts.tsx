@@ -1,7 +1,7 @@
 // src/pages/Contacts.tsx
 import React from 'react';
-import DashboardLayout from '../layouts/DashboardLayout';
-import styles from '../styles/accounts.module.css';
+import DashboardLayout from '../../layouts/crm/DashboardLayout';
+import styles from '../../styles/crm/accounts.module.css';
 
 const Accounts: React.FC = () => {
   return (

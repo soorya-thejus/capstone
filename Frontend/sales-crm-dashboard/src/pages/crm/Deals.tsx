@@ -1,14 +1,15 @@
 // src/pages/Deals.tsx
 import React from 'react';
-import DashboardLayout from '../layouts/DashboardLayout';
-import styles from '../styles/deals.module.css';
+import DealsTable from '../../components/crm/DealsTable';
+import DashboardLayout from '../../layouts/crm/DashboardLayout';
+import styles from '../../styles/crm/deals.module.css';
 
 const Deals: React.FC = () => {
   return (
     <DashboardLayout>
       <div className={styles.dealsContainer}>
         <h2>Manage Your Deals</h2>
-        {/* Add functionality to manage deals here */}
+        <DealsTable />
       </div>
     </DashboardLayout>
   );

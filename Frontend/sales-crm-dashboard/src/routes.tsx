@@ -1,14 +1,14 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
-import Signup from './pages/Signup';
-import Signin from './pages/Signin';
-import RequirementGathering from './pages/RequirementGatherings';
-import Dashboard from './pages/Dashboard';
-import Contacts from './pages/Contacts';
-import Leads from './pages/Leads';
-import Projects from './pages/Projects';
-import Deals from './pages/Deals';
+import Signup from './pages/crm/Signup';
+import Signin from './pages/crm/Signin';
+import RequirementGathering from './pages/crm/RequirementGatherings';
+import Dashboard from './pages/crm/Dashboard';
+import Contacts from './pages/crm/Contacts';
+import Leads from './pages/crm/Leads';
+import Projects from './pages/crm/Projects';
+import Deals from './pages/crm/Deals';
 
 const AppRoutes: React.FC = () => {
   return (

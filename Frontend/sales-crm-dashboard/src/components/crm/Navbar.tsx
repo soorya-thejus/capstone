@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from '../styles/navbar.module.css';
+import styles from '../../styles/crm/navbar.module.css';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

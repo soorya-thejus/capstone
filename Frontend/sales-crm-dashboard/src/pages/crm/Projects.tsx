@@ -1,7 +1,7 @@
 // src/pages/Projects.tsx
 import React from 'react';
-import DashboardLayout from '../layouts/DashboardLayout';
-import styles from '../styles/projects.module.css';
+import DashboardLayout from '../../layouts/crm/DashboardLayout';
+import styles from '../../styles/crm/projects.module.css';
 
 const Projects: React.FC = () => {
   return (

@@ -1,8 +1,8 @@
 // src/pages/Dashboard.tsx
 import React from 'react';
-import DashboardLayout from '../layouts/DashboardLayout';
-import Widget from '../components/Widget';
-import styles from '../styles/dashboard.module.css';
+import DashboardLayout from '../../layouts/crm/DashboardLayout';
+import Widget from '../../components/crm/Widget';
+import styles from '../../styles/crm/dashboard.module.css';
 
 const Dashboard: React.FC = () => {
   return (

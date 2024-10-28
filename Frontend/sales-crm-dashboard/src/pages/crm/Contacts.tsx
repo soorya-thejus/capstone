@@ -1,8 +1,8 @@
 // src/pages/Contacts.tsx
 import React from 'react';
-import ContactsTable from '../components/ContactsTable';
-import DashboardLayout from '../layouts/DashboardLayout';
-import styles from '../styles/contacts.module.css';
+import ContactsTable from '../../components/crm/ContactsTable';
+import DashboardLayout from '../../layouts/crm/DashboardLayout';
+import styles from '../../styles/crm/contacts.module.css';
 
 const Contacts: React.FC = () => {
   return (

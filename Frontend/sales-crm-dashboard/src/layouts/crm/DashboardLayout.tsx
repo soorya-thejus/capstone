@@ -1,7 +1,7 @@
 import React from 'react';
-import Sidebar from '../components/Sidebar';
-import Navbar from '../components/Navbar';
-import styles from '../styles/dashboardlayout.module.css';
+import Sidebar from '../../components/crm/Sidebar';
+import Navbar from '../../components/crm/Navbar';
+import styles from '../../styles/crm/dashboardlayout.module.css';
 
 const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (

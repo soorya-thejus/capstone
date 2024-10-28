@@ -1,7 +1,7 @@
 // src/components/ContactForm.tsx
 import React, { useState, useEffect } from 'react';
-import { Contact } from '../types/Contact';
-import styles from '../styles/contactform.module.css'; // Import the CSS module
+import { Contact } from '../../types/crm/Contact';
+import styles from '../../styles/crm/contactform.module.css'; // Import the CSS module
 interface ContactFormProps {
   contact: Contact;
   onSave: (contact: Contact) => void;

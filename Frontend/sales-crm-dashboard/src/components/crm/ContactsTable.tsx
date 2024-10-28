@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Contact } from '../types/Contact';
+import { Contact } from '../../types/crm/Contact';
 import ContactForm from './ContactForm';
 import Modal from './Modal'; // Import the Modal component
-import styles from '../styles/contactstable.module.css';
+import styles from '../../styles/crm/contactstable.module.css';
 
 const initialContacts: Contact[] = [
   { id: 1, name: "John Doe", account: "Account A", deals: "Deal 1", project: "Project 1", priority: "High", phone: "123-456-7890", email: "john@example.com", dealsValue: 1000 },
