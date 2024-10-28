@@ -8,8 +8,6 @@ const Topbar: React.FC = () => {
       <h1>CRM Dashboard</h1>
       <nav className={styles.navLinks}>
         <Link to="/" className={styles.link}>Home</Link> {/* Added Home link */}
-        <Link to="/signup" className={styles.link}>Get Started</Link>
-        <Link to="/signin" className={styles.link}>Sign In</Link>
       </nav>
     </div>
   );

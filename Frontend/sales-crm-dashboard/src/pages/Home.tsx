@@ -1,18 +1,30 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from '../styles/home.module.css';
-import Topbar from '../components/Topbar'; // Import the Topbar component
+import Topbar from '../components/Topbar';
 
 const Home: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleRetailClick = () => {
+    // Route to the retail service
+    navigate('/retail');
+  };
+
+  const handleSoftwareClick = () => {
+    // Route to CRM signup page
+    navigate('/signup');
+  };
+
   return (
     <div className={styles.homeContainer}>
-      <Topbar /> {/* Include the Topbar component */}
+      <Topbar />
       <main className={styles.mainContent}>
         <h2>Welcome to CRM Dashboard</h2>
         <p>Manage your sales, contacts, and projects from one powerful platform.</p>
         <div className={styles.buttons}>
-          <Link to="/signup" className={styles.button}>Get Started</Link>
-          <Link to="/signin" className={styles.button}>Sign In</Link>
+          <button onClick={handleRetailClick} className={styles.button}>Retail</button>
+          <button onClick={handleSoftwareClick} className={styles.button}>Software</button>
         </div>
       </main>
     </div>
