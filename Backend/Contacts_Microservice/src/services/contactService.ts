@@ -2,28 +2,28 @@ import mongoose from "mongoose";
 import { Contact ,IContact} from "../models/Contacts";
 
 
-export const createContactService = async (contactData: IContact) => {
+export const createContactService = async (contactData: IContact) : Promise<IContact> => {
     const newContact = new Contact(contactData);
     return await newContact.save();
 };
 
-export const getAllContactsService = async () => {
+export const getAllContactsService = async (): Promise<IContact[]> => {
     return await Contact.find();
 };
 
-export const getContactByIdService = async (id: string) => {
+export const getContactByIdService = async (id: string): Promise<IContact|null> => {
     return await Contact.findById(id);
 };
 
-export const updateContactService = async (id: string, contactData: Partial<IContact>) => {
+export const updateContactService = async (id: string, contactData: Partial<IContact>): Promise<IContact|null> => {
     return await Contact.findByIdAndUpdate(id, contactData, { new: true, runValidators: true });
 };
 
-export const deleteContactService = async (id: string) => {
+export const deleteContactService = async (id: string): Promise<IContact|null> => {
     return await Contact.findByIdAndDelete(id);
 };
 
-export const getContactsByDealIdService = async (dealId: string) => {
+export const getContactsByDealIdService = async (dealId: string): Promise<IContact[]> => {
     try {
         // Query the Contact model to find contacts that have the specified deal ID in their deal_ids array
         const contacts = await Contact.find({ deal_ids: dealId });
