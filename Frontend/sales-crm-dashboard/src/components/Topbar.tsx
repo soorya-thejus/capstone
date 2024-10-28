@@ -5,7 +5,7 @@ import styles from '../styles/topbar.module.css'; // Assuming you have a CSS fil
 const Topbar: React.FC = () => {
   return (
     <div className={styles.topbar}>
-      <h1>CRM Dashboard</h1>
+      <h1>Sales ERP</h1>
       <nav className={styles.navLinks}>
         <Link to="/" className={styles.link}>Home</Link> {/* Added Home link */}
       </nav>

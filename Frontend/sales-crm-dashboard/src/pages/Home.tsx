@@ -20,7 +20,7 @@ const Home: React.FC = () => {
     <div className={styles.homeContainer}>
       <Topbar />
       <main className={styles.mainContent}>
-        <h2>Welcome to CRM Dashboard</h2>
+        <h2>Welcome to Sales ERP</h2>
         <p>Manage your sales, contacts, and projects from one powerful platform.</p>
         <div className={styles.buttons}>
           <button onClick={handleRetailClick} className={styles.button}>Retail</button>
