@@ -69,6 +69,19 @@ export const getContactsByDealId = async (req: Request, res: Response) => {
 };
 
 
+export const removeDealId = async (req: Request, res: Response) => {
+    const { id } = req.params; // Contact ID
+    const { deal_id } = req.body; // Deal ID to remove
+  
+    try {
+      // Call the service to remove the deal_id from the contact's deal_ids
+      await contactService.removeDealIdServcie(id, deal_id);
+      res.status(200).json({ message: 'Deal ID removed successfully' });
+    } catch (error) {
+      // Check if the error has a specific message and respond accordingly
+      res.status(500).json({ message: error instanceof Error ? error.message : 'Error removing deal ID' });
+    }
+  };
 
 
 // Update the deal value of a contact by ID

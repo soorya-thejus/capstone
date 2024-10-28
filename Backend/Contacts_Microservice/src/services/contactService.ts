@@ -83,7 +83,15 @@ export const getContactsByDealIdService = async (dealId: string): Promise<IConta
 
 
 
-
+export const removeDealIdServcie = async (contactId: string, dealId: string): Promise<void> => {
+    // Validate that `contactId` and `dealId` are valid ObjectIds
+    if (!Types.ObjectId.isValid(contactId) || !Types.ObjectId.isValid(dealId)) {
+      throw new Error('Invalid contact or deal ID');
+    }
+  
+    // Update the contact to remove the specified deal_id from deal_ids
+    await Contact.findByIdAndUpdate(contactId, { $pull: { deal_ids: dealId } });
+  };
 
 // export const updateContactDealValueService = async (id: string, dealValue: number): Promise<IContact | null> => {
 //     // Validate ID format
