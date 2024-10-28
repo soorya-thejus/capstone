@@ -1,11 +1,11 @@
 import { Account } from "../models/Accounts"
 import { Request, Response } from 'express';
+import * as accountService from "../services/accountService";
 
 //Create a Account
 export const createAccount = async(req:Request, res:Response)=>{
     try{
-        const newAccount = new Account(req.body);
-        const savedAccount = await newAccount.save();
+        const savedAccount = await accountService.createAccountService(req.body);
         res.status(201).json(savedAccount);
     }
     catch(error){
@@ -16,7 +16,7 @@ export const createAccount = async(req:Request, res:Response)=>{
 //Get a Account
 export const getAccount = async(req:Request, res:Response)=>{
     try{
-        const account = await Account.findById(req.params.id);
+        const account = await accountService.getAccountService(req.params.id);
         if (!account) res.status(404).json({ message: 'Account not found' });
         res.status(200).json(account);
     }
@@ -28,7 +28,7 @@ export const getAccount = async(req:Request, res:Response)=>{
 //Get all Accounts
 export const getAllAccount = async(req:Request,res: Response)=>{
     try{
-        const accounts = await Account.find();
+        const accounts = await accountService.getAllAccountsService();
         res.status(200).json(accounts);
     }
     catch(error){
@@ -40,7 +40,7 @@ export const getAllAccount = async(req:Request,res: Response)=>{
 //Update a Account
 export const updateAccount = async(req:Request, res:Response)=>{
     try{
-        const updatedAccount = await Account.findByIdAndUpdate(req.params.id,req.body,{ new: true, runValidators: true });
+        const updatedAccount = await accountService.updateAccountService(req.params.id,req.body);
         if (!updatedAccount)  res.status(404).json({ message: 'Account not found' });
         res.status(200).json(updatedAccount);
     } catch (error) {
@@ -52,7 +52,7 @@ export const updateAccount = async(req:Request, res:Response)=>{
 //Delete a Account
 export const deleteAccount = async(req: Request, res: Response)=>{
     try{
-        const deletedAccnt = await Account.findByIdAndDelete(req.params.id);
+        const deletedAccnt = await accountService.deleteAccountService(req.params.id);
         if (!deletedAccnt)  res.status(404).json({ message: 'Account not found' });
         res.status(204).json({message: 'Deleted successfully!'});
     } catch (error) {
