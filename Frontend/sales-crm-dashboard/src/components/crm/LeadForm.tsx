@@ -27,6 +27,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onSave, onCancel }) => {
   };
 
   return (
+    <div className={styles.popupOverlay}>
     <div className={styles.popup}>
       <form onSubmit={handleSubmit} className={styles.form}>
         <h3>{lead.id === 0 ? "Add Lead" : "Edit Lead"}</h3>
@@ -60,6 +61,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onSave, onCancel }) => {
           <button type="button" onClick={onCancel}>Cancel</button>
         </div>
       </form>
+    </div>
     </div>
   );
 };

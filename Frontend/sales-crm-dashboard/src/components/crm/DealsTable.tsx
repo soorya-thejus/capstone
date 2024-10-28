@@ -5,26 +5,63 @@ import DealForm from './DealForm';
 import styles from '../../styles/crm/dealstable.module.css';
 
 const initialDeals: Deal[] = [
-  { id: 1, name: "Deal 1", stage: "new", dealValue: 5000, expectedCloseDate: "2024-12-01", closeProbability: 50, forecastValue: 2500 },
-  { id: 2, name: "Deal 2", stage: "negotiation", dealValue: 15000, expectedCloseDate: "2024-11-15", closeProbability: 80, forecastValue: 12000 },
+  {
+    id: 1,
+    name: "Deal A",
+    stage: "New",
+    dealValue: 10000,
+    expectedCloseDate: "2024-12-15",
+    closeProbability: 50,
+    forecastValue: 5000,
+  },
+  // Add more initial deals as needed
 ];
 
 const DealsTable: React.FC = () => {
   const [deals, setDeals] = useState<Deal[]>(initialDeals);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
-  const handleEditClick = (deal: Deal) => setSelectedDeal(deal);
-  
-  const handleSaveDeal = (deal: Deal) => {
-    if (deal.id) {
-      setDeals(prev => prev.map(d => d.id === deal.id ? deal : d));
-    } else {
-      setDeals(prev => [...prev, { ...deal, id: prev.length + 1 }]);
-    }
-    setSelectedDeal(null);
+  const handleAddClick = () => {
+    setSelectedDeal({
+      id: 0,
+      name: "",
+      stage: "New",
+      dealValue: 0,
+      expectedCloseDate: "",
+      closeProbability: 0,
+      forecastValue: 0,
+    });
+    setIsFormVisible(true);
   };
 
-  const handleAddClick = () => setSelectedDeal({ id: 0, name: "", stage: "new", dealValue: 0, expectedCloseDate: "", closeProbability: 0, forecastValue: 0 });
+  const handleEditClick = (deal: Deal) => {
+    setSelectedDeal(deal);
+    setIsFormVisible(true);
+  };
+
+  const handleDeleteClick = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this deal?")) {
+      setDeals(deals.filter(deal => deal.id !== id));
+    }
+  };
+
+  const handleSaveDeal = (deal: Deal) => {
+    setDeals(prevDeals => {
+      if (deal.id === 0) {
+        // Add new deal with unique id
+        return [...prevDeals, { ...deal, id: prevDeals.length + 1 }];
+      } else {
+        // Update existing deal
+        return prevDeals.map(d => (d.id === deal.id ? deal : d));
+      }
+    });
+    setIsFormVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsFormVisible(false);
+  };
 
   return (
     <div className={styles.tableContainer}>
@@ -40,6 +77,7 @@ const DealsTable: React.FC = () => {
             <th>Close Probability</th>
             <th>Forecast Value</th>
             <th>Edit</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -47,23 +85,26 @@ const DealsTable: React.FC = () => {
             <tr key={deal.id}>
               <td>{deal.name}</td>
               <td>{deal.stage}</td>
-              <td>${deal.dealValue.toFixed(2)}</td>
+              <td>{deal.dealValue}</td>
               <td>{deal.expectedCloseDate}</td>
-              <td>{deal.closeProbability}%</td>
-              <td>${deal.forecastValue.toFixed(2)}</td>
+              <td>{deal.closeProbability}</td>
+              <td>{deal.forecastValue}</td>
               <td>
                 <button onClick={() => handleEditClick(deal)}>Edit</button>
+              </td>
+              <td>
+                <button onClick={() => handleDeleteClick(deal.id)}>Delete</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {selectedDeal && (
-        <DealForm 
-          deal={selectedDeal} 
-          onSave={handleSaveDeal} 
-          onCancel={() => setSelectedDeal(null)} 
+      {isFormVisible && selectedDeal && (
+        <DealForm
+          deal={selectedDeal}
+          onSave={handleSaveDeal}
+          onCancel={handleCancel}
         />
       )}
     </div>

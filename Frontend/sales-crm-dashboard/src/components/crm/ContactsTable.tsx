@@ -1,3 +1,4 @@
+// src/components/ContactsTable.tsx
 import React, { useState } from 'react';
 import { Contact } from '../../types/crm/Contact';
 import ContactForm from './ContactForm';
@@ -20,16 +21,23 @@ const ContactsTable: React.FC = () => {
     setModalOpen(true); // Open modal on edit click
   };
 
-  const handleSaveContact = (contact: Contact) => {
-    setContacts(prev =>
-      prev.map(c => (c.id === contact.id ? contact : c))
-    );
-    setModalOpen(false); // Close modal after saving
-    setSelectedContact(null);
+  const handleDeleteClick = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this contact?")) {
+      setContacts(contacts.filter(contact => contact.id !== id));
+    }
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false); // Close modal
+  const handleSaveContact = (contact: Contact) => {
+    setContacts(prev =>
+      prev.some(c => c.id === contact.id)
+        ? prev.map(c => (c.id === contact.id ? contact : c))
+        : [...prev, { ...contact, id: Date.now() }] // Assign a new ID if adding a new contact
+    );
+    closeModal(); // Close modal after saving
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
     setSelectedContact(null); // Reset selected contact
   };
 
@@ -39,8 +47,8 @@ const ContactsTable: React.FC = () => {
       <table>
         <thead>
           <tr>
-            <th>Contact</th>
-            <th>Accounts</th>
+            <th>Name</th>
+            <th>Account</th>
             <th>Deals</th>
             <th>Project</th>
             <th>Priority</th>
@@ -48,6 +56,7 @@ const ContactsTable: React.FC = () => {
             <th>Email</th>
             <th>Deals Value</th>
             <th>Edit</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -60,24 +69,27 @@ const ContactsTable: React.FC = () => {
               <td>{contact.priority}</td>
               <td>{contact.phone}</td>
               <td>{contact.email}</td>
-              <td>${contact.dealsValue.toFixed(2)}</td>
+              <td>{contact.dealsValue}</td>
               <td>
                 <button onClick={() => handleEditClick(contact)}>Edit</button>
+              </td>
+              <td>
+                <button onClick={() => handleDeleteClick(contact.id)}>Delete</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Modal for editing contact */}
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        {selectedContact && (
-          <ContactForm 
-            contact={selectedContact} 
-            onSave={handleSaveContact} 
+      {isModalOpen && selectedContact && (
+        <Modal onClose={closeModal}>
+          <ContactForm
+            contact={selectedContact}
+            onSave={handleSaveContact}
+            onCancel={closeModal}
           />
-        )}
-      </Modal>
+        </Modal>
+      )}
     </div>
   );
 };

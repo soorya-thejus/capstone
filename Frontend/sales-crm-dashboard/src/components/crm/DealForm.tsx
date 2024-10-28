@@ -28,9 +28,11 @@ const DealForm: React.FC<DealFormProps> = ({ deal, onSave, onCancel }) => {
 
   return (
     <div className={styles.popupOverlay}>
+    <div className={styles.popupOverlay}>
       <div className={styles.popup}>
-        <h3>{deal.id ? 'Edit Deal' : 'Add Deal'}</h3>
+        
         <form onSubmit={handleSubmit} className={styles.form}>
+        <h3>{deal.id ? 'Edit Deal' : 'Add Deal'}</h3>
           <label>
             Deal Name:
             <input type="text" name="name" value={formData.name} onChange={handleChange} />
@@ -65,6 +67,7 @@ const DealForm: React.FC<DealFormProps> = ({ deal, onSave, onCancel }) => {
           </div>
         </form>
       </div>
+    </div>
     </div>
   );
 };
