@@ -18,5 +18,7 @@ router.put('/leads/:id', updateLead);
 // Route to delete a Lead by ID
 router.delete('/leads/:id', deleteLead);
 
+// router.patch('/leads/:id/status', updateStatus);
+
 export default router;
 

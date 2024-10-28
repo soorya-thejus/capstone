@@ -54,3 +54,17 @@ export const deleteLead = async (req: Request, res: Response) => {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error deleting lead' });
     }
 };
+
+
+
+// export const updateStatus = async (req: Request, res: Response) => {
+//     const { id } = req.params;
+//     const { status } = req.body;
+  
+//     try {
+//       const updatedLead = await leadService.statusUpdateService(id, status);
+//       res.status(200).json({ message: 'Lead status updated successfully', lead: updatedLead });
+//     } catch (error) {
+//       res.status(500).json({ message: error instanceof Error ? error.message : 'Error updating lead status' });
+//     }
+//   };
