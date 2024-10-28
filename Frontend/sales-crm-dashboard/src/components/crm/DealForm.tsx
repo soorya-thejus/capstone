@@ -58,10 +58,7 @@ const DealForm: React.FC<DealFormProps> = ({ deal, onSave, onCancel }) => {
             Close Probability (%):
             <input type="number" name="closeProbability" value={formData.closeProbability} onChange={handleChange} />
           </label>
-          <label>
-            Forecast Value:
-            <input type="number" name="forecastValue" value={formData.forecastValue} onChange={handleChange} />
-          </label>
+          
           <div className={styles.buttonGroup}>
             <button type="submit">Save</button>
             <button type="button" onClick={onCancel}>Cancel</button>

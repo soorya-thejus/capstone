@@ -8,22 +8,22 @@ const Sidebar: React.FC = () => {
       <nav>
         <ul>
           <li>
-            <Link to="/dashboard">Dashboard</Link>
+            <Link to="/crm/dashboard">Dashboard</Link>
           </li>
           <li>
-            <Link to="/deals">Deals</Link>
+            <Link to="/crm/deals">Deals</Link>
           </li>
           <li>
-            <Link to="/leads">Leads</Link>
+            <Link to="/crm/leads">Leads</Link>
           </li>
           <li>
-            <Link to="/contacts">Contacts</Link>
+            <Link to="/crm/contacts">Contacts</Link>
           </li>
           <li>
-            <Link to="/accounts">Accounts</Link>
+            <Link to="/crm/accounts">Accounts</Link>
           </li>
           <li>
-            <Link to="/projects">Projects</Link>
+            <Link to="/crm/projects">Projects</Link>
           </li>
         </ul>
       </nav>
