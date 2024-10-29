@@ -86,7 +86,7 @@ const AccountsTable: React.FC = () => {
                 <button onClick={() => handleEditClick(account)}>Edit</button>
               </td>
               <td>
-                <button onClick={() => handleDeleteClick(account.id)}>Delete</button>
+                <button className={styles.deleteButton} onClick={() => handleDeleteClick(account.id)}>Delete</button>
               </td>
             </tr>
           ))}

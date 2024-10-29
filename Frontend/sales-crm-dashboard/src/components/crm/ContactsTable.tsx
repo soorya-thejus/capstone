@@ -64,7 +64,7 @@ const ContactsTable: React.FC = () => {
                 <button onClick={() => handleEditClick(contact)}>Edit</button>
               </td>
               <td>
-                <button onClick={() => handleDeleteClick(contact.id)}>Delete</button>
+                <button className={styles.deleteButton} onClick={() => handleDeleteClick(contact.id)}>Delete</button>
               </td>
             </tr>
           ))}
