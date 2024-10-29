@@ -20,14 +20,34 @@ export const updateAccountService = async (id: string, accountData: Partial<IAcc
     return await Account.findByIdAndUpdate(id, accountData, { new: true, runValidators: true });
 };
 
-export const deleteAccountService = async (id: string):Promise<IAccount|null> => {
-    const contacts = await getContactsByAccountId(id);
+export const deleteAccountService = async (id: string): Promise<IAccount | null> => {
+    try {
+        // Retrieve contacts associated with the account ID
+        const contacts = await getContactsByAccountId(id);
+        
+        
+        // Log contact count for debugging
+        console.log(`Found ${contacts.length} contacts associated with account ${id}`);
 
-    for (const contact of contacts) {
-        // Make an HTTP request to update the contact in the Contacts Microservice
-        await axios.patch(`http://localhost:5005/api/contacts/${contact._id}/remove-account`, { account_id: id });
+        // Only attempt to update contacts if any are associated with the account
+        if (contacts.length > 0) {
+            for (const contact of contacts) {
+                try {
+                    // Make an HTTP request to update each contact in the Contacts Microservice
+                    await axios.patch(`http://localhost:5005/api/contacts/${contact._id}/remove-account`, { account_id: id });
+                } catch (error) {
+                    console.error(`Error updating contact ${contact._id}:`, error);
+                    throw new Error('Failed to update contact in Contacts microservice');
+                }
+            }
+        }
+
+        // Delete the account from the Accounts microservice
+        return await Account.findByIdAndDelete(id);
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        throw new Error(error instanceof Error ? error.message : 'Error deleting account');
     }
-    return await Account.findByIdAndDelete(id);
 };
 
 
@@ -37,9 +57,9 @@ const CONTACT_MICROSERVICE_URL = 'http://localhost:5005/api/contacts';
 async function getContactsByAccountId(accountId: string) {
     try {
         const response = await axios.get(`${CONTACT_MICROSERVICE_URL}/accounts/${accountId}`);
-        return response.data; // Assuming it returns the contacts related to the account
+        return response.data || []; // Return an empty array if no data is returned
     } catch (error) {
         console.error('Error fetching contacts:', error);
-        throw new Error('Unable to fetch contacts');
+        throw new Error('Unable to fetch contacts for account');
     }
 }
