@@ -120,17 +120,16 @@ export const removeDealIdServcie = async (contactId: string, dealId: string): Pr
 
 
 
-export const getContactsByAccountIdService = async(accountId: string):Promise<IContact[]> =>{
-  try{
-    const contacts = await Contact.find({account_ids: accountId});
-    return contacts;
+  export const getContactsByAccountIdService = async (accountId: string): Promise<IContact[]> => {
+    try {
+      const contacts = await Contact.find({ account_ids: accountId });
+      return contacts || [];  // Return an empty array if no contacts are found
+  } catch (error) {
+      console.error('Error fetching contacts for account:', error);
+      throw new Error('Unable to fetch contacts for this account');
   }
-  catch (error) {
-    console.error('Error fetching contacts for account:', error);
-    throw new Error('Unable to fetch contacts for this account');
-  }
-
-}
+  };
+  
 
 
 export const removeAccountIdServcie = async (contactId: string, accountId: string): Promise<void> => {
@@ -139,7 +138,7 @@ export const removeAccountIdServcie = async (contactId: string, accountId: strin
     throw new Error('Invalid contact or account ID');
   }
 
-  // Update the contact to remove the specified account_id from account_ids
+// Update the contact to remove the specified account_id from account_ids array
   await Contact.findByIdAndUpdate(contactId, { $pull: { account_ids: accountId } });
 };
 

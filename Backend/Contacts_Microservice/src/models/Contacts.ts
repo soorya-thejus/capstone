@@ -31,6 +31,7 @@ const ContactSchema: Schema = new Schema({
   deal_value: { type: Number},
   forecast_value: {type: Number},
   project_id: { type: Schema.Types.ObjectId, ref: 'Project', required: false },
+
 }, { timestamps: true, versionKey: false });
 
 
