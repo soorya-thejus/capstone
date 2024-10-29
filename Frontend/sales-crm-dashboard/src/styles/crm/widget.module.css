@@ -1,0 +1,19 @@
+/* src/styles/widget.module.css */
+
+.widget {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s; /* Smooth scaling on hover */
+}
+
+.widget:hover {
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.widget h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}

@@ -1,0 +1,18 @@
+.dashboardWidgets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+/* Adjust layout for smaller screens */
+@media (max-width: 768px) {
+    .contentArea {
+        margin-left: 0;
+        padding: 10px;
+    }
+
+    .dashboardWidgets {
+        grid-template-columns: 1fr;
+    }
+}
