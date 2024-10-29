@@ -76,10 +76,10 @@ export const getDealValues = async (req: Request, res: Response) => {
         }
 
         // Call the service to get deal values
-        const { deals, totalDealValue } = await dealService.getDealValuesService(deal_ids);
-         res.json({ deals, totalDealValue }); // Respond with the deals and total value
+        const { deals, totalDealValue, totalForecastValue} = await dealService.getDealValuesService(deal_ids);
+         res.json({ deals, totalDealValue, totalForecastValue}); // Respond with the deals and total value
     } catch (error) {
         console.error('Error fetching deal values:', error);
          res.status(500).json({ error: 'Internal Server Error' });
     }
-};
+}; 

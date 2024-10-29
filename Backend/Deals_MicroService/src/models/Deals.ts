@@ -9,7 +9,7 @@ export interface IDeal extends Document {
   close_probability: number;
   forecast_value: number;
 }
-
+ 
 const DealSchema: Schema = new Schema(
   {
     deal_name: { type: String, required: true },
