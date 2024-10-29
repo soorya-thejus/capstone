@@ -4,9 +4,9 @@ import axios from "axios";
 
 
 export const createContactService = async (contactData: Partial<IContact>): Promise<IContact> => {
-  const { lead_id, contact_name, title, email, phone } = contactData;
+  const { lead_id, contact_name, title, email, phone , org_id} = contactData;
 
-  if (!lead_id || !contact_name || !title || !email || !phone) {
+  if (!lead_id || !contact_name || !title || !email || !phone || !org_id) {
       throw new Error('Missing required contact information');
   }
 
@@ -23,6 +23,7 @@ export const createContactService = async (contactData: Partial<IContact>): Prom
       title,
       email,
       phone,
+      org_id,
   });
 
   return await newContact.save();
@@ -185,6 +186,14 @@ export const removeProjectIdService = async (contactId: string, projectId: strin
     throw new Error('Failed to remove project ID from contact');
   }
 };
+
+
+
+//Get Contacts by Org Id
+export const getContactsByOrgIdService = async (org_id: string): Promise<IContact[] | null> => {
+  return await Contact.find({ org_id }); // Query using org_id, not id
+};
+
 
 
 // export const updateContactDealValueService = async (id: string, dealValue: number): Promise<IContact | null> => {

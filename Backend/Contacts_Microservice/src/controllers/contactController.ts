@@ -100,7 +100,7 @@ export const getContactsByAccountId = async(req:Request, res:Response)=>{
     }
     
 }
-
+ 
 
 export const removeAccountId = async(req:Request, res:Response)=>{
     const { id } = req.params; // Contact ID
@@ -147,6 +147,19 @@ export const removeProjectId = async(req:Request, res:Response)=>{
       res.status(500).json({ message: error instanceof Error ? error.message : 'Error removing project ID' });
     }
 }
+
+
+export const getContactsByOrgId = async (req: Request, res: Response) => {
+    const { org_id } = req.params;
+    try {
+        const contacts = await contactService.getContactsByOrgIdService(org_id);
+        res.status(200).json(contacts);
+    } catch (error) {
+        console.error("Error fetching contacts for org_id:", error);
+        res.status(500).json({ message: 'Error fetching contacts for this organization' });
+    }
+};
+
 
 
 // Update the deal value of a contact by ID
