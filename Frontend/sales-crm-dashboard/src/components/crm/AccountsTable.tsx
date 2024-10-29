@@ -1,40 +1,65 @@
-// src/components/AccountsTable.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Account } from '../../types/crm/Account';
 import AccountForm from './AccountForm';
+import * as accountService from '../../services/AccountService';
 import styles from '../../styles/crm/accountstable.module.css';
 
-const initialAccounts: Account[] = [
-  { id: 1, name: "Tech Corp", priority: "High", industry: "Technology", description: "Leading tech solutions provider", numEmployees: 500, hqLocation: "San Francisco, CA" },
-  { id: 2, name: "Finance Solutions", priority: "Medium", industry: "Finance", description: "Financial advisory and consulting", numEmployees: 200, hqLocation: "New York, NY" },
-];
-
 const AccountsTable: React.FC = () => {
-  const [accounts, setAccounts] = useState<Account[]>(initialAccounts);
+  const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [isEditing, setEditing] = useState(false);
 
+  // Fetch all accounts on component mount
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const data = await accountService.getAllAccounts();
+        setAccounts(data);
+      } catch (error) {
+        console.error("Error fetching accounts", error);
+      }
+    };
+    fetchAccounts();
+  }, []);
+
+  // Handle edit click to open the form with selected account data
   const handleEditClick = (account: Account) => {
     setSelectedAccount(account);
     setEditing(true);
   };
 
-  const handleDeleteClick = (id: number) => {
+  // Handle delete click with a confirmation dialog
+  const handleDeleteClick = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this account?")) {
-      setAccounts(accounts.filter(account => account.id !== id));
+      try {
+        await accountService.deleteAccount(id);
+        setAccounts(accounts.filter(account => account.id !== id));
+      } catch (error) {
+        console.error("Error deleting account", error);
+      }
     }
   };
 
-  const handleSaveAccount = (account: Account) => {
-    setAccounts(prev =>
-      prev.some(a => a.id === account.id)
-        ? prev.map(a => (a.id === account.id ? account : a))
-        : [...prev, { ...account, id: Date.now() }]
-    );
-    setEditing(false);
-    setSelectedAccount(null);
+  // Handle saving an account, either updating or creating it
+  const handleSaveAccount = async (account: Account) => {
+    try {
+      if (account.id === 0) {
+        // Create new account
+        const newAccount = await accountService.createAccount(account);
+        setAccounts([...accounts, newAccount]);
+      } else {
+        // Update existing account
+        const updatedAccount = await accountService.updateAccount(account.id, account);
+        setAccounts(accounts.map(a => (a.id === updatedAccount.id ? updatedAccount : a)));
+      }
+      setEditing(false);
+      setSelectedAccount(null);
+    } catch (error) {
+      console.error("Error saving account", error);
+    }
   };
 
+  // Handle cancel action in the form
   const handleCancel = () => {
     setEditing(false);
     setSelectedAccount(null);
@@ -45,7 +70,7 @@ const AccountsTable: React.FC = () => {
       <button
         className={styles.addButton}
         onClick={() => {
-          setSelectedAccount({ id: 0, name: "", priority: "Medium", industry: "", description: "", numEmployees: 0, hqLocation: "" });
+          setSelectedAccount({ id: 0, account_name: "", priority: "medium", industry: "", description: "", number_of_employees: 0 });
           setEditing(true);
         }}
       >
@@ -54,7 +79,7 @@ const AccountsTable: React.FC = () => {
       
       {isEditing && (
         <AccountForm
-          account={selectedAccount || { id: 0, name: "", priority: "Medium", industry: "", description: "", numEmployees: 0, hqLocation: "" }}
+          account={selectedAccount || { id: 0, account_name: "", priority: "medium", industry: "", description: "", number_of_employees: 0 }}
           onSave={handleSaveAccount}
           onCancel={handleCancel}
         />
@@ -68,7 +93,6 @@ const AccountsTable: React.FC = () => {
             <th>Industry</th>
             <th>Description</th>
             <th>Employees</th>
-            <th>HQ Location</th>
             <th>Edit</th>
             <th>Delete</th>
           </tr>
@@ -76,12 +100,11 @@ const AccountsTable: React.FC = () => {
         <tbody>
           {accounts.map(account => (
             <tr key={account.id}>
-              <td>{account.name}</td>
+              <td>{account.account_name}</td>
               <td>{account.priority}</td>
               <td>{account.industry}</td>
               <td>{account.description}</td>
-              <td>{account.numEmployees}</td>
-              <td>{account.hqLocation}</td>
+              <td>{account.number_of_employees}</td>
               <td>
                 <button onClick={() => handleEditClick(account)}>Edit</button>
               </td>

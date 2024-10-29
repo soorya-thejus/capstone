@@ -1,22 +1,26 @@
 // src/components/LeadsTable.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Lead } from '../../types/crm/Lead';
 import LeadForm from './LeadForm';
 import styles from '../../styles/crm/leadstable.module.css';
-
-const initialLeads: Lead[] = [
-  { id: 1, name: "Alice Johnson", status: "New Lead", company: "Company A", title: "Manager", email: "alice@companya.com" },
-  { id: 2, name: "Bob Brown", status: "Contacted", company: "Company B", title: "Director", email: "bob@companyb.com" },
-  // Add more initial leads as needed
-];
+import * as leadService from '../../services/LeadService'; // Import the leadService
 
 const LeadsTable: React.FC = () => {
-  const [leads, setLeads] = useState<Lead[]>(initialLeads);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
 
+  // Fetch leads when the component mounts
+  useEffect(() => {
+    const fetchLeads = async () => {
+      const fetchedLeads = await leadService.getLeads();
+      setLeads(fetchedLeads);
+    };
+    fetchLeads();
+  }, []);
+
   const handleAddClick = () => {
-    setSelectedLead({ id: 0, name: "", status: "New Lead", company: "", title: "", email: "" });
+    setSelectedLead({ lead_name: "", status: "new lead", company: "", title: "", email: "", phone: "" });
     setIsFormVisible(true);
   };
 
@@ -25,21 +29,31 @@ const LeadsTable: React.FC = () => {
     setIsFormVisible(true);
   };
 
-  const handleDeleteClick = (id: number) => {
+  const handleDeleteClick = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this lead?")) {
+      await leadService.deleteLead(id);
       setLeads(leads.filter(lead => lead.id !== id));
     }
   };
 
-  const handleSaveLead = (lead: Lead) => {
+  const handleSaveLead = async (lead: Lead) => {
+    let savedLead: Lead; // Explicitly type savedLead
+    if (lead.id) {
+      // Update existing lead
+      savedLead = await leadService.updateLead(lead.id, lead);
+    } else {
+      // Create new lead
+      savedLead = await leadService.createLead(lead);
+    }
     setLeads(prevLeads => {
-      if (lead.id === 0) {
-        // Add new lead with unique id
-        return [...prevLeads, { ...lead, id: prevLeads.length + 1 }];
-      } else {
-        // Update existing lead
-        return prevLeads.map(l => (l.id === lead.id ? lead : l));
+      if (savedLead) {
+        if (lead.id) {
+          // Update the lead in the state
+          return prevLeads.map(existingLead => (existingLead.id === lead.id ? savedLead : existingLead));
+        }
+        return [...prevLeads, savedLead]; // Add new lead
       }
+      return prevLeads;
     });
     setIsFormVisible(false);
   };
@@ -59,6 +73,7 @@ const LeadsTable: React.FC = () => {
             <th>Company</th>
             <th>Title</th>
             <th>Email</th>
+            <th>Phone</th>
             <th>Edit</th>
             <th>Delete</th>
           </tr>
@@ -66,16 +81,17 @@ const LeadsTable: React.FC = () => {
         <tbody>
           {leads.map(lead => (
             <tr key={lead.id}>
-              <td>{lead.name}</td>
+              <td>{lead.lead_name}</td>
               <td>{lead.status}</td>
               <td>{lead.company}</td>
               <td>{lead.title}</td>
               <td>{lead.email}</td>
+              <td>{lead.phone}</td>
               <td>
                 <button onClick={() => handleEditClick(lead)}>Edit</button>
               </td>
               <td>
-                <button className={styles.deleteButton} onClick={() => handleDeleteClick(lead.id)}>Delete</button>
+                <button className={styles.deleteButton} onClick={() => handleDeleteClick(lead.id!)}>Delete</button>
               </td>
             </tr>
           ))}

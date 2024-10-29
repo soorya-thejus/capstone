@@ -1,34 +1,56 @@
 // src/components/ContactsTable.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Contact } from '../../types/crm/Contact';
 import ContactForm from './ContactForm';
 import styles from '../../styles/crm/contactstable.module.css';
-
-const initialContacts: Contact[] = [
-  { id: 1, name: "John Doe", account: "Account A", deals: "Deal 1", project: "Project 1", priority: "High", phone: "123-456-7890", email: "john@example.com", dealsValue: 1000 },
-  { id: 2, name: "Jane Smith", account: "Account B", deals: "Deal 2", project: "Project 2", priority: "Medium", phone: "987-654-3210", email: "jane@example.com", dealsValue: 2000 },
-];
+import axios from 'axios';
 
 const ContactsTable: React.FC = () => {
-  const [contacts, setContacts] = useState<Contact[]>(initialContacts);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const response = await axios.get('/api/contacts'); // Adjust the URL as per your API
+        setContacts(response.data);
+      } catch (error) {
+        console.error('Error fetching contacts:', error);
+      }
+    };
+
+    fetchContacts();
+  }, []);
 
   const handleEditClick = (contact: Contact) => {
     setEditingContact(contact);
   };
 
-  const handleDeleteClick = (id: number) => {
+  const handleDeleteClick = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this contact?")) {
-      setContacts(contacts.filter(contact => contact.id !== id));
+      try {
+        await axios.delete(`/api/contacts/${id}`); // Adjust the URL as per your API
+        setContacts(contacts.filter(contact => contact.id !== id));
+      } catch (error) {
+        console.error('Error deleting contact:', error);
+      }
     }
   };
 
-  const handleSaveContact = (contact: Contact) => {
-    setContacts(prev =>
-      prev.some(c => c.id === contact.id)
-        ? prev.map(c => (c.id === contact.id ? contact : c))
-        : [...prev, { ...contact, id: Date.now() }]
-    );
+  const handleSaveContact = async (contact: Contact) => {
+    try {
+      if (contact.id) {
+        // Edit existing contact
+        await axios.put(`/api/contacts/${contact.id}`, contact); // Adjust the URL as per your API
+        setContacts(prev => prev.map(c => (c.id === contact.id ? contact : c)));
+      } else {
+        // Add new contact
+        const response = await axios.post('/api/contacts', contact); // Adjust the URL as per your API
+        setContacts(prev => [...prev, { ...response.data, id: Date.now() }]); // Assuming the API returns the new contact
+      }
+    } catch (error) {
+      console.error('Error saving contact:', error);
+    }
     setEditingContact(null); // Close form after saving
   };
 
@@ -52,19 +74,19 @@ const ContactsTable: React.FC = () => {
         <tbody>
           {contacts.map(contact => (
             <tr key={contact.id}>
-              <td>{contact.name}</td>
-              <td>{contact.account}</td>
-              <td>{contact.deals}</td>
-              <td>{contact.project}</td>
+              <td>{contact.contact_name}</td>
+              <td>{contact.account_ids.join(', ')}</td> {/* Adjust based on how you want to display account IDs */}
+              <td>{contact.deal_ids.join(', ')}</td> {/* Adjust based on how you want to display deal IDs */}
+              <td>{contact.project_id.toString()}</td> {/* Adjust to show the project name if necessary */}
               <td>{contact.priority}</td>
               <td>{contact.phone}</td>
               <td>{contact.email}</td>
-              <td>{contact.dealsValue}</td>
+              <td>{contact.deal_value}</td>
               <td>
                 <button onClick={() => handleEditClick(contact)}>Edit</button>
               </td>
               <td>
-                <button className={styles.deleteButton} onClick={() => handleDeleteClick(contact.id)}>Delete</button>
+                <button className={styles.deleteButton} onClick={() => handleDeleteClick(contact.id!)}>Delete</button>
               </td>
             </tr>
           ))}

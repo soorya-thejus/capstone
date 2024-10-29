@@ -33,26 +33,26 @@ const ContactForm: React.FC<ContactFormProps> = ({ contact, onSave, onCancel }) 
           <h3>{contact.id ? 'Edit Contact' : 'Add Contact'}</h3>
           <label>
             Name:
-            <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+            <input type="text" name="contact_name" value={formData.contact_name} onChange={handleChange} required />
           </label>
           <label>
-            Account:
-            <input type="text" name="account" value={formData.account} onChange={handleChange} required />
+            Account IDs (comma-separated):
+            <input type="text" name="account_ids" value={formData.account_ids.join(', ')} onChange={handleChange} required />
           </label>
           <label>
-            Deals:
-            <input type="text" name="deals" value={formData.deals} onChange={handleChange} />
+            Deal IDs (comma-separated):
+            <input type="text" name="deal_ids" value={formData.deal_ids.join(', ')} onChange={handleChange} />
           </label>
           <label>
-            Project:
-            <input type="text" name="project" value={formData.project} onChange={handleChange} />
+            Project ID:
+            <input type="text" name="project_id" value={formData.project_id?.toString()} onChange={handleChange} />
           </label>
           <label>
             Priority:
             <select name="priority" value={formData.priority} onChange={handleChange}>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
             </select>
           </label>
           <label>
@@ -65,7 +65,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ contact, onSave, onCancel }) 
           </label>
           <label>
             Deals Value:
-            <input type="number" name="dealsValue" value={formData.dealsValue} onChange={handleChange} />
+            <input type="number" name="deal_value" value={formData.deal_value} onChange={handleChange} />
           </label>
           
           <div className={styles.buttonGroup}>

@@ -28,40 +28,45 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onSave, onCancel }) => {
 
   return (
     <div className={styles.popupOverlay}>
-    <div className={styles.popup}>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <h3>{lead.id === 0 ? "Add Lead" : "Edit Lead"}</h3>
-        <label>
-          Name:
-          <input type="text" name="name" value={formData.name} onChange={handleChange} />
-        </label>
-        <label>
-          Status:
-          <select name="status" value={formData.status} onChange={handleChange}>
-            <option value="New Lead">New Lead</option>
-            <option value="Attempted to Contact">Attempted to Contact</option>
-            <option value="Contacted">Contacted</option>
-            <option value="Qualified">Qualified</option>
-          </select>
-        </label>
-        <label>
-          Company:
-          <input type="text" name="company" value={formData.company} onChange={handleChange} />
-        </label>
-        <label>
-          Title:
-          <input type="text" name="title" value={formData.title} onChange={handleChange} />
-        </label>
-        <label>
-          Email:
-          <input type="email" name="email" value={formData.email} onChange={handleChange} />
-        </label>
-        <div className={styles.buttons}>
-          <button type="submit">Save</button>
-          <button type="button" onClick={onCancel}>Cancel</button>
-        </div>
-      </form>
-    </div>
+      <div className={styles.popup}>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <h3>{lead.id ? "Edit Lead" : "Add Lead"}</h3>
+          <label>
+            Name:
+            <input type="text" name="lead_name" value={formData.lead_name} onChange={handleChange} required />
+          </label>
+          <label>
+            Status:
+            <select name="status" value={formData.status} onChange={handleChange}>
+              <option value="new lead">New Lead</option>
+              <option value="attempted to contact">Attempted to Contact</option>
+              <option value="contacted">Contacted</option>
+              <option value="qualified">Qualified</option>
+              <option value="unqualified">Unqualified</option>
+            </select>
+          </label>
+          <label>
+            Company:
+            <input type="text" name="company" value={formData.company} onChange={handleChange} required />
+          </label>
+          <label>
+            Title:
+            <input type="text" name="title" value={formData.title} onChange={handleChange} required />
+          </label>
+          <label>
+            Email:
+            <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+          </label>
+          <label>
+            Phone:
+            <input type="text" name="phone" value={formData.phone} onChange={handleChange} required />
+          </label>
+          <div className={styles.buttons}>
+            <button type="submit">Save</button>
+            <button type="button" onClick={onCancel}>Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

@@ -10,10 +10,19 @@ interface AccountFormProps {
 }
 
 const AccountForm: React.FC<AccountFormProps> = ({ account, onSave, onCancel }) => {
-  const [formData, setFormData] = useState<Account>(account);
+  const [formData, setFormData] = useState<Account>({
+    id: 0, 
+    account_name: "", 
+    priority: "medium", 
+    industry: "", 
+    description: "", 
+    number_of_employees: 0
+  });
 
   useEffect(() => {
-    setFormData(account);
+    if (account.id !== 0) {
+      setFormData(account);
+    }
   }, [account]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -33,14 +42,20 @@ const AccountForm: React.FC<AccountFormProps> = ({ account, onSave, onCancel }) 
           <h3>{account.id ? 'Edit Account' : 'Add Account'}</h3>
           <label>
             Account Name:
-            <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+            <input
+              type="text"
+              name="account_name"
+              value={formData.account_name}
+              onChange={handleChange}
+              required
+            />
           </label>
           <label>
             Priority:
             <select name="priority" value={formData.priority} onChange={handleChange}>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
             </select>
           </label>
           <label>
@@ -53,12 +68,14 @@ const AccountForm: React.FC<AccountFormProps> = ({ account, onSave, onCancel }) 
           </label>
           <label>
             Number of Employees:
-            <input type="number" name="numEmployees" value={formData.numEmployees} onChange={handleChange} />
+            <input
+              type="number"
+              name="number_of_employees"
+              value={formData.number_of_employees}
+              onChange={handleChange}
+            />
           </label>
-          <label>
-            Headquarters Location:
-            <input type="text" name="hqLocation" value={formData.hqLocation} onChange={handleChange} />
-          </label>
+          
           <div className={styles.buttonGroup}>
             <button type="submit">Save</button>
             <button type="button" onClick={onCancel}>Cancel</button>
