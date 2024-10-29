@@ -56,6 +56,19 @@ export const deleteLead = async (req: Request, res: Response) => {
 };
 
 
+export const getLeadsByOrgId = async (req: Request, res: Response) => {
+    const { org_id } = req.params;
+    try {
+        const leads = await leadService.getLeadsByOrgIdService(org_id);
+        res.status(200).json(leads);
+    } catch (error) {
+        console.error("Error fetching leads for org_id:", error);
+        res.status(500).json({ message: 'Error fetching leads for this organization' });
+    }
+};
+
+
+
 
 // export const updateStatus = async (req: Request, res: Response) => {
 //     const { id } = req.params;

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createLead, deleteLead, getLeadById, getLeads, updateLead} from '../controllers/leadController';
+import { createLead, deleteLead, getLeadById, getLeads, getLeadsByOrgId, updateLead} from '../controllers/leadController';
 
 const router = Router();
 
@@ -17,6 +17,9 @@ router.put('/leads/:id', updateLead);
 
 // Route to delete a Lead by ID
 router.delete('/leads/:id', deleteLead);
+
+// Route to get Leads by orgId
+router.get('/leads/orgs/:org_id',getLeadsByOrgId);
 
 // router.patch('/leads/:id/status', updateStatus);
 
