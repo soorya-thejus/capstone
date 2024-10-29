@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IProject extends Document {
   project_name: string;
@@ -6,6 +6,7 @@ export interface IProject extends Document {
   start_date: Date;
   end_date: Date;
   status: 'not started' | 'working on it' | 'stuck' | 'done';
+  org_id: Types.ObjectId;
 }
 
 const ProjectSchema: Schema = new Schema({
@@ -22,7 +23,9 @@ const ProjectSchema: Schema = new Schema({
     enum: ['not started', 'working on it', 'stuck', 'done'],
     default: 'not started',
     required: true,
-  }
+  },
+  org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true}
+
 }, { timestamps: true, versionKey: false });
 
 export const Project = mongoose.model<IProject>('Project', ProjectSchema);

@@ -29,6 +29,13 @@ export const deleteProjectService = async (id: string): Promise<IProject|null> =
 };
 
 
+
+//Get Projects by Org Id
+export const getProjectsByOrgIdService = async (org_id: string): Promise<IProject[] | null> => {
+    return await Project.find({ org_id }); // Query using org_id, not id
+};
+
+ 
 const CONTACT_MICROSERVICE_URL = 'http://localhost:5005/api/contacts';
 
 // Function to get contacts by account ID
