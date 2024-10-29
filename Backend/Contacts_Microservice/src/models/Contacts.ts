@@ -4,7 +4,7 @@ import axios from 'axios';
 export interface IContact extends Document {
   lead_id: Types.ObjectId;
   contact_name: string;
-  account_ids: Types.ObjectId[];
+  account_id: Types.ObjectId; 
   deal_ids: Types.ObjectId[];
   title: string;
   email: string;
@@ -19,7 +19,7 @@ export interface IContact extends Document {
 const ContactSchema: Schema = new Schema({
   lead_id: { type: Schema.Types.ObjectId, ref: 'Lead', required: true },
   contact_name: { type: String},
-  account_ids: [{ type: Schema.Types.ObjectId, ref: 'Account', required: false }],
+  account_id: { type: Schema.Types.ObjectId, ref: 'Account', required: false ,default:null},
   deal_ids: [{ type: Schema.Types.ObjectId, ref: 'Deal', required: false }],
   title: { type: String},
   email: { type: String, unique: true },
@@ -31,7 +31,7 @@ const ContactSchema: Schema = new Schema({
   },
   deal_value: { type: Number},
   forecast_value: {type: Number},
-  project_id: { type: Schema.Types.ObjectId, ref: 'Project', required: false },
+  project_id: { type: Schema.Types.ObjectId, ref: 'Project', required: false ,default:null},
   org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true}
 }, { timestamps: true, versionKey: false });
 

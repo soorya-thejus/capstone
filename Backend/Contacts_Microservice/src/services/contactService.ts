@@ -43,6 +43,14 @@ export const updateContactService = async (id: string, contactData: Partial<ICon
     if (!existingContact) {
       throw new Error('Contact not found');
     }
+
+    // If an account_id is provided in contactData, check if it exists
+    // if (contactData.account_id) {
+    //     const isAccountValid = await accountExists(contactData.account_id.toString());
+    //     if (!isAccountValid) {
+    //         throw new Error(`Account ID ${contactData.account_id} does not exist`);
+    //     }
+    // }
   
     // Detect if there is a change in `deal_ids`
     const updatedDealIds = contactData.deal_ids;
@@ -121,26 +129,36 @@ export const removeDealIdServcie = async (contactId: string, dealId: string): Pr
 
 
 
-  export const getContactsByAccountIdService = async (accountId: string): Promise<IContact[]> => {
-    try {
-      const contacts = await Contact.find({ account_ids: accountId });
-      return contacts || [];  // Return an empty array if no contacts are found
-  } catch (error) {
-      console.error('Error fetching contacts for account:', error);
-      throw new Error('Unable to fetch contacts for this account');
-  }
-  };
+  // export const getContactsByAccountIdService = async (accountId: string): Promise<IContact[]|[]> => {
+  //   try {
+  //     const contacts = await Contact.find({ account_id: accountId }); 
+  //     return contacts || [];  // Return an empty array if no contacts are found
+  // } catch (error) {
+  //     console.error('Error fetching contacts for account:', error);
+  //     throw new Error('Unable to fetch contacts for this account');
+  // }
+  // };
   
 
+  export const removeAccountIdService = async (contactId: string): Promise<void> => {
+    // Validate that `contactId` is a valid ObjectId
+    if (!Types.ObjectId.isValid(contactId)) {
+        throw new Error('Invalid contact ID');
+    }
 
-export const removeAccountIdServcie = async (contactId: string, accountId: string): Promise<void> => {
-  // Validate that `contactId` and `accountId` are valid ObjectIds
-  if (!Types.ObjectId.isValid(contactId) || !Types.ObjectId.isValid(accountId)) {
-    throw new Error('Invalid contact or account ID');
-  }
+    const updatedContact = await Contact.findByIdAndUpdate(
+        contactId,
+        { $set: { account_id: null } }, // Set account_id to null
+        { new: true } // Return the updated document
+    );
 
-// Update the contact to remove the specified account_id from account_ids array
-  await Contact.findByIdAndUpdate(contactId, { $pull: { account_ids: accountId } });
+    // Check if the contact was found and updated
+    if (!updatedContact) {
+        console.log('Contact not found.');
+        throw new Error('Contact not found');
+    } else {
+        console.log(`Account ID removed from contact: ${updatedContact.contact_name}`);
+    }
 };
 
 
@@ -207,3 +225,19 @@ export const getContactsByOrgIdService = async (org_id: string): Promise<IContac
 //     return updatedContact; // Returns the updated contact or null if not found
 // };
 
+
+
+// async function accountExists(accountId: string): Promise<boolean> {
+//   try {
+//       const response = await axios.get(`http://localhost:5003/api/accounts/${accountId}`);
+//       return response.status === 200; // If the response is OK, the account exists
+//   } catch (error) {
+//       // If the account is not found (404), return false
+//       if (axios.isAxiosError(error) && error.response?.status === 404) {
+//           return false;
+//       }
+//       // Log unexpected errors
+//       console.error('Error checking account existence:', error);
+//       throw new Error('Could not verify account existence');
+//   }
+// }

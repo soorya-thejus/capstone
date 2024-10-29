@@ -87,28 +87,26 @@ export const removeDealId = async (req: Request, res: Response) => {
 
 
 export const getContactsByAccountId = async(req:Request, res:Response)=>{
-    const {accountId} = req.params;
-    try{
-        const contacts= await contactService.getContactsByAccountIdService(accountId);
-        if (contacts.length === 0) {
-            res.status(404).json({ message: 'No contacts found for this account' });
-        }
+    const { accountId } = req.params;
 
-        res.status(200).json(contacts);
+    // Fetch contacts based on the provided accountId
+    try {
+        const contacts = await Contact.find({ account_id: accountId });
+         res.status(200).json(contacts);
     } catch (error) {
-        res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching contacts' });
+        console.error('Error fetching contacts:', error);
+         res.status(500).json({ message: 'Internal server error' });
     }
     
 }
  
 
 export const removeAccountId = async(req:Request, res:Response)=>{
-    const { id } = req.params; // Contact ID
-    const { account_id } = req.body; // Account ID to remove
+    const contactId  = req.params.id; // Contact ID
   
     try {
       // Call the service to remove the account_id from the contact's account_ids
-      await contactService.removeAccountIdServcie(id, account_id);
+      await contactService.removeAccountIdService(contactId);
       res.status(200).json({ message: 'Account ID removed successfully' });
     } catch (error) {
       // Check if the error has a specific message and respond accordingly
