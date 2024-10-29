@@ -84,6 +84,71 @@ export const removeDealId = async (req: Request, res: Response) => {
   };
 
 
+
+
+export const getContactsByAccountId = async(req:Request, res:Response)=>{
+    const {accountId} = req.params;
+    try{
+        const contacts= await contactService.getContactsByAccountIdService(accountId);
+        if (contacts.length === 0) {
+            res.status(404).json({ message: 'No contacts found for this account' });
+        }
+
+        res.status(200).json(contacts);
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching contacts' });
+    }
+    
+}
+
+
+export const removeAccountId = async(req:Request, res:Response)=>{
+    const { id } = req.params; // Contact ID
+    const { account_id } = req.body; // Account ID to remove
+  
+    try {
+      // Call the service to remove the account_id from the contact's account_ids
+      await contactService.removeAccountIdServcie(id, account_id);
+      res.status(200).json({ message: 'Account ID removed successfully' });
+    } catch (error) {
+      // Check if the error has a specific message and respond accordingly
+      res.status(500).json({ message: error instanceof Error ? error.message : 'Error removing account ID' });
+    }
+}
+
+
+
+export const getContactsByProjectId = async(req:Request, res:Response)=>{
+    const {projectId} = req.params;
+    try{
+        const contacts= await contactService.getContactsByProjectIdService(projectId);
+        if (contacts.length === 0) {
+            res.status(404).json({ message: 'No contacts found for this project' });
+        }
+
+        res.status(200).json(contacts);
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching contacts' });
+    }
+    
+}
+
+
+export const removeProjectId = async(req:Request, res:Response)=>{
+    const { id } = req.params; // Contact ID
+    const { project_id } = req.body; // Project ID to remove
+  
+    try {
+      // Call the service to remove the project_id from the contact's project_ids
+      await contactService.removeProjectIdService(id, project_id);
+      res.status(200).json({ message: 'Project ID removed successfully' });
+    } catch (error) {
+      // Check if the error has a specific message and respond accordingly
+      res.status(500).json({ message: error instanceof Error ? error.message : 'Error removing project ID' });
+    }
+}
+
+
 // Update the deal value of a contact by ID
 // export const updateContactDealValue = async (req: Request, res: Response) => {
 //     const { id } = req.params;
