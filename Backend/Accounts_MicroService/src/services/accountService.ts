@@ -19,12 +19,12 @@ export const getAllAccountsService = async ():Promise<IAccount[]> => {
 export const updateAccountService = async (id: string, accountData: Partial<IAccount>): Promise<IAccount|null> => {
     return await Account.findByIdAndUpdate(id, accountData, { new: true, runValidators: true });
 };
-
+ 
 export const deleteAccountService = async (id: string): Promise<IAccount | null> => {
     try {
         // Retrieve contacts associated with the account ID
         const contacts = await getContactsByAccountId(id);
-        
+        console.log(contacts);
         
         // Log contact count for debugging
         console.log(`Found ${contacts.length} contacts associated with account ${id}`);
@@ -49,6 +49,14 @@ export const deleteAccountService = async (id: string): Promise<IAccount | null>
         throw new Error(error instanceof Error ? error.message : 'Error deleting account');
     }
 };
+
+
+//Get Leads by Org Id
+export const getAccountsByOrgIdService = async (org_id: string): Promise<IAccount[] | null> => {
+    return await Account.find({ org_id }); // Query using org_id, not id
+};
+
+
 
 
 const CONTACT_MICROSERVICE_URL = 'http://localhost:5005/api/contacts';
