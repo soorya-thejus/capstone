@@ -17,7 +17,7 @@ export const createAccount = async(req:Request, res:Response)=>{
 export const getAccount = async(req:Request, res:Response)=>{
     try{
         const account = await accountService.getAccountService(req.params.id);
-        if (!account) res.status(404).json({ message: 'Account not found' });
+        // if (!account) res.status(404).json({ message: 'Account not found' });
         res.status(200).json(account);
     }
     catch(error){
