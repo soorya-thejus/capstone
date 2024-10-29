@@ -2,23 +2,19 @@
 import React, { useState } from 'react';
 import { Contact } from '../../types/crm/Contact';
 import ContactForm from './ContactForm';
-import Modal from './Modal'; // Import the Modal component
 import styles from '../../styles/crm/contactstable.module.css';
 
 const initialContacts: Contact[] = [
   { id: 1, name: "John Doe", account: "Account A", deals: "Deal 1", project: "Project 1", priority: "High", phone: "123-456-7890", email: "john@example.com", dealsValue: 1000 },
   { id: 2, name: "Jane Smith", account: "Account B", deals: "Deal 2", project: "Project 2", priority: "Medium", phone: "987-654-3210", email: "jane@example.com", dealsValue: 2000 },
-  // Add more initial contacts as needed
 ];
 
 const ContactsTable: React.FC = () => {
   const [contacts, setContacts] = useState<Contact[]>(initialContacts);
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
-  const [isModalOpen, setModalOpen] = useState(false); // State to control modal visibility
+  const [editingContact, setEditingContact] = useState<Contact | null>(null);
 
   const handleEditClick = (contact: Contact) => {
-    setSelectedContact(contact);
-    setModalOpen(true); // Open modal on edit click
+    setEditingContact(contact);
   };
 
   const handleDeleteClick = (id: number) => {
@@ -31,19 +27,13 @@ const ContactsTable: React.FC = () => {
     setContacts(prev =>
       prev.some(c => c.id === contact.id)
         ? prev.map(c => (c.id === contact.id ? contact : c))
-        : [...prev, { ...contact, id: Date.now() }] // Assign a new ID if adding a new contact
+        : [...prev, { ...contact, id: Date.now() }]
     );
-    closeModal(); // Close modal after saving
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-    setSelectedContact(null); // Reset selected contact
+    setEditingContact(null); // Close form after saving
   };
 
   return (
     <div className={styles.tableContainer}>
-      <h2>Contacts</h2>
       <table>
         <thead>
           <tr>
@@ -81,14 +71,14 @@ const ContactsTable: React.FC = () => {
         </tbody>
       </table>
 
-      {isModalOpen && selectedContact && (
-        <Modal onClose={closeModal}>
+      {editingContact && (
+        <div className={styles.formContainer}>
           <ContactForm
-            contact={selectedContact}
+            contact={editingContact}
             onSave={handleSaveContact}
-            onCancel={closeModal}
+            onCancel={() => setEditingContact(null)} // Close form on cancel
           />
-        </Modal>
+        </div>
       )}
     </div>
   );

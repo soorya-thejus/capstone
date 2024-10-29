@@ -65,7 +65,6 @@ const DealsTable: React.FC = () => {
 
   return (
     <div className={styles.tableContainer}>
-      <h2>Deals</h2>
       <button onClick={handleAddClick} className={styles.addButton}>Add Deal</button>
       <table>
         <thead>
@@ -93,7 +92,7 @@ const DealsTable: React.FC = () => {
                 <button onClick={() => handleEditClick(deal)}>Edit</button>
               </td>
               <td>
-                <button onClick={() => handleDeleteClick(deal.id)}>Delete</button>
+                <button className={styles.deleteButton} onClick={() => handleDeleteClick(deal.id)}>Delete</button>
               </td>
             </tr>
           ))}

@@ -13,7 +13,7 @@ const Home: React.FC = () => {
 
   const handleSoftwareClick = () => {
     // Route to CRM signup page
-    navigate('/signup');
+    navigate('/crm/signup');
   };
 
   return (

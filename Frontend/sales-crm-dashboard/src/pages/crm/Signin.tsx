@@ -23,7 +23,7 @@ const SignIn: React.FC = () => {
             <input type="password" required />
             <button type="submit">Sign In</button>
           </form>
-          <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
+          <p>Don't have an account? <Link to="/crm/signup">Sign Up</Link></p>
         </div>
       </div>
     </div>
