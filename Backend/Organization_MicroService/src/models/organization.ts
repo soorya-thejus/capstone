@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IOrganization extends Document {
   name: string;
@@ -13,6 +13,7 @@ const OrganizationSchema: Schema = new Schema(
     type: { type: String, required: true },
     address: { type: String, required: true },
     contact_info: { type: String, required: true },
+
   },
   { timestamps: true, versionKey: false }
 );
