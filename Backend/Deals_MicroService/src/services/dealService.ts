@@ -96,6 +96,15 @@ export const getDealValuesService = async (deal_ids: string[]): Promise<{ deals:
 };
 
 
+//Get Deals by Org Id
+export const getDealsByOrgIdService = async (org_id: string): Promise<IDeal[] | null> => {
+    return await Deal.find({ org_id }); // Query using org_id, not id
+};
+
+
+
+
+
 const CONTACT_MICROSERVICE_URL = 'http://localhost:5005/api/contacts'; // Adjust as needed
 
 // Other service functions...

@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IDeal extends Document {
   getUpdate: any;
@@ -8,6 +8,7 @@ export interface IDeal extends Document {
   expected_close_date: Date;
   close_probability: number;
   forecast_value: number;
+  org_id: Types.ObjectId;
 }
  
 const DealSchema: Schema = new Schema(
@@ -28,6 +29,8 @@ const DealSchema: Schema = new Schema(
       max: 100,
     },
     forecast_value: { type: Number },
+    org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true}
+
   },
   { timestamps: true, versionKey: false }
 );
