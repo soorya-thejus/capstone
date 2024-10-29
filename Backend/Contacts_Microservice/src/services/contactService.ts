@@ -54,7 +54,7 @@ export const updateContactService = async (id: string, contactData: Partial<ICon
     });
   
     if (updatedContact && dealIdsChanged) {
-      // If `deal_ids` have changed, recalculate `deal_value`
+      // If `deal_ids` have changed, recalculate `deal_value & forecast_value`
       const response = await axios.post('http://localhost:5002/api/deals/values', {
         deal_ids: updatedContact.deal_ids,
       });
@@ -65,10 +65,17 @@ export const updateContactService = async (id: string, contactData: Partial<ICon
           (sum: number, deal: { deal_value: string }) => sum + parseFloat(deal.deal_value),
           0
         );
+
+        // Calculate the new total forecast value
+        const totalForecastValue = response.data.deals.reduce(
+          (sum: number, deal: { forecast_value: string }) => sum + parseFloat(deal.forecast_value),
+          0
+      );
   
-        // Update the contact's `deal_value`
+        // Update the contact's `deal_value & froecast_value`
         updatedContact.deal_value = totalDealValue;
-        await updatedContact.save(); // Save the updated `deal_value`
+        updatedContact.forecast_value = totalForecastValue
+        await updatedContact.save(); // Save the updated `deal_value & forecast_value`
       }
     }
   
@@ -154,7 +161,7 @@ export const getContactsByProjectIdService = async (projectId: string): Promise<
     throw new Error('Unable to fetch contacts for this project');
   }
 };
-
+ 
 // Service to remove a project ID from a contact's project_ids array
 export const removeProjectIdService = async (contactId: string, projectId: string): Promise<void> => {
   try {

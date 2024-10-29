@@ -133,7 +133,7 @@ export const getContactsByProjectId = async(req:Request, res:Response)=>{
     
 }
 
-
+ 
 export const removeProjectId = async(req:Request, res:Response)=>{
     const { id } = req.params; // Contact ID
     const { project_id } = req.body; // Project ID to remove

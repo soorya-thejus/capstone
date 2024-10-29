@@ -11,6 +11,7 @@ export interface IContact extends Document {
   phone: string;
   priority: 'high' | 'medium' | 'low';
   deal_value: number;
+  forecast_value: number,
   project_id: Types.ObjectId;
 }
 
@@ -28,6 +29,7 @@ const ContactSchema: Schema = new Schema({
     default: "low"
   },
   deal_value: { type: Number},
+  forecast_value: {type: Number},
   project_id: { type: Schema.Types.ObjectId, ref: 'Project', required: false },
 }, { timestamps: true, versionKey: false });
 
@@ -48,7 +50,7 @@ ContactSchema.pre<IContact>('save', async function (next: (err?: CallbackError) 
     //     this.phone = leadResponse.data.phone;
     // }
 
-
+ 
  
 
 
@@ -67,6 +69,12 @@ ContactSchema.pre<IContact>('save', async function (next: (err?: CallbackError) 
           0
         );
         this.deal_value = totalDealValue;
+
+        const totalForecastValue = response.data.deals.reduce(
+          (sum: number, deal: { forecast_value: string }) => sum + parseFloat(deal.forecast_value),
+          0
+        );
+        this.forecast_value = totalForecastValue;
       }
     }
 
