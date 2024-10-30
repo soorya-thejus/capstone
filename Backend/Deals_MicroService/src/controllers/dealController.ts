@@ -31,7 +31,8 @@ export const getDealById = async (req: Request, res: Response) => {
     try {
         // Call the service to get a deal by its ID
         const deal = await dealService.getDealByIdService(req.params.id);
-        if (!deal)  res.status(404).json({ message: 'Deal not found' }); // Handle case where deal is not found
+        if (!deal)  {res.status(404).json({ message: 'Deal not found' });
+        return;}; // Handle case where deal is not found
          res.status(200).json(deal); // Respond with the found deal
     } catch (error) {
         // Handle error if fetching the deal fails
@@ -44,8 +45,9 @@ export const updateDeal = async (req: Request, res: Response) => {
     try {
         // Call the service to update a deal
         const updatedDeal = await dealService.updateDealService(req.params.id, req.body);
-        if (!updatedDeal)  res.status(404).json({ message: 'Deal not found' }); // Handle case where deal is not found
-         res.status(200).json(updatedDeal); // Respond with the updated deal
+        if (!updatedDeal)  {res.status(404).json({ message: 'Deal not found' }); // Handle case where deal is not found
+                return;};
+        res.status(200).json(updatedDeal); // Respond with the updated deal
     } catch (error) {
         // Handle error if updating the deal fails
          res.status(400).json({ message: error instanceof Error ? error.message : 'Error updating deal' });
@@ -57,8 +59,9 @@ export const deleteDeal = async (req: Request, res: Response) => {
     try {
         // Call the service to delete a deal
         const deletedDeal = await dealService.deleteDealService(req.params.id);
-        if (!deletedDeal)  res.status(404).json({ message: 'Deal not found' }); // Handle case where deal is not found
-         res.status(204).json({ message: 'Deleted successfully!' }); // Respond with success message
+        if (!deletedDeal)  {res.status(404).json({ message: 'Deal not found' }); // Handle case where deal is not found
+                    return;};
+        res.status(204).json({ message: 'Deleted successfully!' }); // Respond with success message
     } catch (error) {
         // Handle error if deleting the deal fails
          res.status(400).json({ message: error instanceof Error ? error.message : 'Error deleting deal' });
@@ -71,13 +74,13 @@ export const getDealValues = async (req: Request, res: Response) => {
         const { deal_ids } = req.body;
 
         // Validate input
-        if (!Array.isArray(deal_ids)) {
-             res.status(400).json({ error: 'deal_ids must be an array.' });
-        }
+        // if (!Array.isArray(deal_ids)) {
+        //      res.status(400).json({ error: 'deal_ids must be an array.' });
+        // }
 
         // Call the service to get deal values
         const { deals, totalDealValue, totalForecastValue} = await dealService.getDealValuesService(deal_ids);
-         res.json({ deals, totalDealValue, totalForecastValue}); // Respond with the deals and total value
+        res.json({ deals, totalDealValue, totalForecastValue}); // Respond with the deals and total value
     } catch (error) {
         console.error('Error fetching deal values:', error);
          res.status(500).json({ error: 'Internal Server Error' });
