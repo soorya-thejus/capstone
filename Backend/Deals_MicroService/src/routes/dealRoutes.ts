@@ -4,6 +4,7 @@ import {
   deleteDeal, 
   getDealById, 
   getDeals, 
+  getDealsByOrgId, 
   getDealValues, 
   updateDeal 
 } from "../controllers/dealController";
@@ -27,5 +28,8 @@ router.delete('/deals/:id', deleteDeal);
 
 // Route for retrieving deal values based on deal_ids (changed to POST for payload support)
 router.post('/deals/values', getDealValues);
+
+// Route to get Deals by orgId
+router.get('/deals/orgs/:org_id',getDealsByOrgId);
 
 export default router;

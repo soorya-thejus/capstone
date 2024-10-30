@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IAccount extends Document {
   account_name: string;
@@ -6,6 +6,7 @@ export interface IAccount extends Document {
   industry: string;
   description: string;
   number_of_employees: number;
+  org_id: Types.ObjectId;
 }
 
 const AccountSchema: Schema = new Schema({
@@ -18,6 +19,8 @@ const AccountSchema: Schema = new Schema({
   industry: { type: String, required: true },
   description: { type: String, required: false },  // Text type in MongoDB is equivalent to String in Mongoose
   number_of_employees: { type: Number, required: true },
+  org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true}
+
 }, { timestamps: true, versionKey: false });
 
 export const Account =  mongoose.model<IAccount>('Account', AccountSchema);

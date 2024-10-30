@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { IOrganization, Organization } from '../models/organization';
 
 // Create a new Organization
@@ -25,3 +26,32 @@ export const updateOrganizationService = async (id: string, data: Partial<IOrgan
 export const deleteOrganizationService = async (id: string): Promise<IOrganization | null> => {
     return await Organization.findByIdAndDelete(id);
 };
+
+
+
+//Get Leads By Organization ID
+export const getLeadsByOrgIdService = async (orgId: string) =>{
+    return axios.get(`http://localhost:5001/api/leads/orgs/${orgId}`);
+}
+
+//Get Deals By Organization ID
+export const getDealsByOrgIdService = async (orgId: string) =>{
+    return axios.get(`http://localhost:5002/api/deals/orgs/${orgId}`);
+}
+
+//Get Accounts By Organization ID
+export const getAccountsByOrgIdService = async (orgId: string) =>{
+    return axios.get(`http://localhost:5003/api/accounts/orgs/${orgId}`);
+}
+
+
+//Get Projects By Organization ID
+export const getProjectsByOrgIdService = async (orgId: string) =>{
+    return axios.get(`http://localhost:5004/api/projects/orgs/${orgId}`);
+}
+
+
+//Get Contacts By Organization ID
+export const getContactsByOrgIdService = async (orgId: string) =>{
+    return axios.get(`http://localhost:5005/api/contacts/orgs/${orgId}`);
+}

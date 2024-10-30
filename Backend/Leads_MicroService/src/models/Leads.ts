@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
 // Define the interface for the Lead document
 export interface ILead extends Document {
@@ -8,6 +8,7 @@ export interface ILead extends Document {
   title: string;
   email: string;
   phone: string;
+  org_id: Types.ObjectId;
 }
 
 // Define the Lead schema
@@ -23,6 +24,8 @@ const LeadSchema: Schema = new Schema({
   title: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phone: { type: String, required: true },
+  org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true}
+
 }, {timestamps: true, versionKey: false });
 
 

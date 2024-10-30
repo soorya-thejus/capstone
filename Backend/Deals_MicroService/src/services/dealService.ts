@@ -6,7 +6,21 @@ import axios from "axios";
 // Create a Deal
 export const createDealService = async (dealData: IDeal): Promise<IDeal> => {
     const newDeal = new Deal(dealData);
-    return await newDeal.save();  // This will return a Promise<IDeal>
+  const savedDeal = await newDeal.save();  // This will return a Promise<IDeal>
+
+  // Update the contact's deal_ids in the Contacts microservice
+  if (savedDeal.contact_id) {
+    try {
+      await axios.patch(`http://localhost:5005/api/contacts/${savedDeal.contact_id}/add-deal`, {
+        deal_id: savedDeal._id
+      });
+    } catch (error) {
+      console.error(`Failed to update contact with deal ID ${savedDeal._id}:`, error);
+      throw new Error('Failed to update contact with the new deal ID');
+    }
+  }
+
+  return savedDeal;
 };
 
 // Get all Deals
@@ -31,9 +45,9 @@ export const updateDealService = async (id: string, dealData: Partial<IDeal>): P
         const updatedDeal = await Deal.findByIdAndUpdate(id, dealData, { new: true, runValidators: true });
 
         if (updatedDeal) {
-            // Only call updateContactDealValues if deal_value is present
-            if (updatedDeal.deal_value !== undefined) {
-                await updateContactDealValues(updatedDeal.id, updatedDeal.deal_value);
+            // Only call updateContactDealValues if deal_value & froecast_value is present
+            if (updatedDeal.deal_value !== undefined && updatedDeal.forecast_value !== undefined) {
+                await updateContactDealValues(updatedDeal.id, updatedDeal.deal_value, updatedDeal.forecast_value);
             }
         }
 
@@ -69,12 +83,17 @@ export const deleteDealService = async (id: string): Promise<IDeal | null> => {
             (sum: number, deal: { deal_value: string }) => sum + parseFloat(deal.deal_value),
             0
           );
+
+          const totalForecastValue = response.data.deals.reduce(
+            (sum: number, deal: { forecast_value: string }) => sum + parseFloat(deal.forecast_value),
+            0
+          );
           // Update the deal_value in the Contacts Microservice
-          await axios.put(`http://localhost:5005/api/contacts/${contact._id}`, { deal_value: totalDealValue });
+          await axios.put(`http://localhost:5005/api/contacts/${contact._id}`, { deal_value: totalDealValue, forecast_value: totalForecastValue });
         }
       } else {
         // If no remaining deals, set deal_value to 0
-        await axios.put(`http://localhost:5005/api/contacts/${contact._id}`, { deal_value: 0 });
+        await axios.put(`http://localhost:5005/api/contacts/${contact._id}`, { deal_value: 0, forecast_value: 0 });
       }
     }
   
@@ -83,11 +102,21 @@ export const deleteDealService = async (id: string): Promise<IDeal | null> => {
   };
 
 // Get Deal Values for deal_ids
-export const getDealValuesService = async (deal_ids: string[]): Promise<{ deals: IDeal[], totalDealValue: number }> => {
-    const deals = await Deal.find({ _id: { $in: deal_ids } }).select('deal_value');
+export const getDealValuesService = async (deal_ids: string[]): Promise<{ deals: IDeal[], totalDealValue: number, totalForecastValue: number  }> => {
+    const deals = await Deal.find({ _id: { $in: deal_ids } }).select('deal_value forecast_value'); // Fetch both values
     const totalDealValue = deals.reduce((sum, deal) => sum + Number(deal.deal_value), 0);
-    return { deals, totalDealValue };  // This will return a Promise<{ deals: IDeal[], totalDealValue: number }>
+    const totalForecastValue = deals.reduce((sum, deal) => sum + Number(deal.forecast_value), 0); // Sum of forecast values
+    return { deals, totalDealValue, totalForecastValue };
 };
+
+
+//Get Deals by Org Id
+export const getDealsByOrgIdService = async (org_id: string): Promise<IDeal[] | null> => {
+    return await Deal.find({ org_id }); // Query using org_id, not id
+};
+
+
+
 
 
 const CONTACT_MICROSERVICE_URL = 'http://localhost:5005/api/contacts'; // Adjust as needed
@@ -105,22 +134,25 @@ async function getContactsByDealId(dealId: string) {
     }
 }
 
-// Example function to update contact deal values
-async function updateContactDealValues(dealId: mongoose.Types.ObjectId, newDealValue: number) {
+// Example function to update contact deal values & forecast values
+async function updateContactDealValues(dealId: mongoose.Types.ObjectId, newDealValue: number, newForecastValue: number) {
     // Fetch contacts associated with this deal from the contact microservice
     const contacts = await getContactsByDealId(dealId.toString());
 
-    // Loop through each contact and update the deal_value by making an HTTP request to the contact microservice
+    // Loop through each contact and update the deal_value & forecast_value by making an HTTP request to the contact microservice
     for (const contact of contacts) {
         // Calculate the total deal value for this contact’s deals
         const totalDealValue = await calculateTotalDealValue(contact.deal_ids);
 
+        // Calculate the total forecast value for this contact’s deals
+        const totalForecastValue = await calculateTotalForecastValue(contact.deal_ids);
+
         // Send an update request to the contact microservice
         try {
-            await axios.put(`${CONTACT_MICROSERVICE_URL}/${contact._id}`, { deal_value: totalDealValue });
+            await axios.put(`${CONTACT_MICROSERVICE_URL}/${contact._id}`, { deal_value: totalDealValue , forecast_value: totalForecastValue});
         } catch (error) {
-            console.error(`Error updating deal value for contact ${contact._id}:`, error);
-            throw new Error('Unable to update contact deal value');
+            console.error(`Error updating deal value & forecast value for contact ${contact._id}:`, error);
+            throw new Error('Unable to update contact deal value & forecast value');
         }
     }
 }
@@ -136,6 +168,18 @@ async function calculateTotalDealValue(dealIds: mongoose.Types.ObjectId[]): Prom
     }, 0);
 
     return totalDealValue; // Return the total value
+}
+
+async function calculateTotalForecastValue(dealIds: mongoose.Types.ObjectId[]): Promise<number> {
+    // Fetch all deals corresponding to the dealIds
+    const deals = await Deal.find({ _id: { $in: dealIds } });
+
+    // Calculate the total deal value
+    const totalForecastValue = deals.reduce((total, deal) => {
+        return total + (deal.forecast_value || 0); // Add deal_value or 0 if undefined
+    }, 0);
+
+    return totalForecastValue; // Return the total value
 }
 
 

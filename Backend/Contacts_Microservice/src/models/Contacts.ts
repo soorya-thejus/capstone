@@ -4,20 +4,22 @@ import axios from 'axios';
 export interface IContact extends Document {
   lead_id: Types.ObjectId;
   contact_name: string;
-  account_ids: Types.ObjectId[];
+  account_id: Types.ObjectId; 
   deal_ids: Types.ObjectId[];
   title: string;
   email: string;
   phone: string;
   priority: 'high' | 'medium' | 'low';
   deal_value: number;
+  forecast_value: number,
   project_id: Types.ObjectId;
+  org_id: Types.ObjectId;
 }
 
 const ContactSchema: Schema = new Schema({
   lead_id: { type: Schema.Types.ObjectId, ref: 'Lead', required: true },
   contact_name: { type: String},
-  account_ids: [{ type: Schema.Types.ObjectId, ref: 'Account', required: false }],
+  account_id: { type: Schema.Types.ObjectId, ref: 'Account', required: false ,default:null},
   deal_ids: [{ type: Schema.Types.ObjectId, ref: 'Deal', required: false }],
   title: { type: String},
   email: { type: String, unique: true },
@@ -28,7 +30,9 @@ const ContactSchema: Schema = new Schema({
     default: "low"
   },
   deal_value: { type: Number},
-  project_id: { type: Schema.Types.ObjectId, ref: 'Project', required: false },
+  forecast_value: {type: Number},
+  project_id: { type: Schema.Types.ObjectId, ref: 'Project', required: false ,default:null},
+  org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true}
 }, { timestamps: true, versionKey: false });
 
 
@@ -48,7 +52,7 @@ ContactSchema.pre<IContact>('save', async function (next: (err?: CallbackError) 
     //     this.phone = leadResponse.data.phone;
     // }
 
-
+ 
  
 
 
@@ -67,6 +71,12 @@ ContactSchema.pre<IContact>('save', async function (next: (err?: CallbackError) 
           0
         );
         this.deal_value = totalDealValue;
+
+        const totalForecastValue = response.data.deals.reduce(
+          (sum: number, deal: { forecast_value: string }) => sum + parseFloat(deal.forecast_value),
+          0
+        );
+        this.forecast_value = totalForecastValue;
       }
     }
 

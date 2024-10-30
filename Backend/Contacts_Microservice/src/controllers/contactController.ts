@@ -56,12 +56,7 @@ export const getContactsByDealId = async (req: Request, res: Response) => {
 
     try {
         // Use the service function to fetch contacts by deal ID
-        const contacts = await contactService.getContactsByDealIdService(dealId);
-
-        if (contacts.length === 0) {
-            res.status(404).json({ message: 'No contacts found for this deal' });
-        }
-
+        const contacts = await Contact.find({ deal_ids: dealId });
         res.status(200).json(contacts);
     } catch (error) {
         res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching contacts' });
@@ -87,28 +82,26 @@ export const removeDealId = async (req: Request, res: Response) => {
 
 
 export const getContactsByAccountId = async(req:Request, res:Response)=>{
-    const {accountId} = req.params;
-    try{
-        const contacts= await contactService.getContactsByAccountIdService(accountId);
-        if (contacts.length === 0) {
-            res.status(404).json({ message: 'No contacts found for this account' });
-        }
+    const { accountId } = req.params;
 
-        res.status(200).json(contacts);
+    // Fetch contacts based on the provided accountId
+    try {
+        const contacts = await Contact.find({ account_id: accountId });
+         res.status(200).json(contacts);
     } catch (error) {
-        res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching contacts' });
+        console.error('Error fetching contacts:', error);
+         res.status(500).json({ message: 'Internal server error' });
     }
     
 }
-
+ 
 
 export const removeAccountId = async(req:Request, res:Response)=>{
-    const { id } = req.params; // Contact ID
-    const { account_id } = req.body; // Account ID to remove
+    const contactId  = req.params.id; // Contact ID
   
     try {
       // Call the service to remove the account_id from the contact's account_ids
-      await contactService.removeAccountIdServcie(id, account_id);
+      await contactService.removeAccountIdService(contactId);
       res.status(200).json({ message: 'Account ID removed successfully' });
     } catch (error) {
       // Check if the error has a specific message and respond accordingly
@@ -121,11 +114,7 @@ export const removeAccountId = async(req:Request, res:Response)=>{
 export const getContactsByProjectId = async(req:Request, res:Response)=>{
     const {projectId} = req.params;
     try{
-        const contacts= await contactService.getContactsByProjectIdService(projectId);
-        if (contacts.length === 0) {
-            res.status(404).json({ message: 'No contacts found for this project' });
-        }
-
+        const contacts= await Contact.find({project_id:projectId});
         res.status(200).json(contacts);
     } catch (error) {
         res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching contacts' });
@@ -133,7 +122,7 @@ export const getContactsByProjectId = async(req:Request, res:Response)=>{
     
 }
 
-
+ 
 export const removeProjectId = async(req:Request, res:Response)=>{
     const { id } = req.params; // Contact ID
     const { project_id } = req.body; // Project ID to remove
@@ -147,6 +136,42 @@ export const removeProjectId = async(req:Request, res:Response)=>{
       res.status(500).json({ message: error instanceof Error ? error.message : 'Error removing project ID' });
     }
 }
+
+
+export const getContactsByOrgId = async (req: Request, res: Response) => {
+    const { org_id } = req.params;
+    try {
+        const contacts = await contactService.getContactsByOrgIdService(org_id);
+        res.status(200).json(contacts);
+    } catch (error) {
+        console.error("Error fetching contacts for org_id:", error);
+        res.status(500).json({ message: 'Error fetching contacts for this organization' });
+    }
+};
+
+
+
+
+
+
+
+
+export const addDealToContact = async (req: Request, res: Response): Promise<void> => {
+  const { contactId } = req.params;
+  const { deal_id } = req.body;
+
+  try {
+    // Call the service to add the deal ID to the contact's deal_ids array
+    await contactService.addDealToContactService(contactId, deal_id);
+    
+    // Send success response
+    res.status(200).json({ message: 'Deal added to contact successfully' });
+  } catch (error) {
+    // Log and send error response
+    console.error('Failed to add deal to contact:', error);
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Failed to add deal to contact' });
+  }
+};
 
 
 // Update the deal value of a contact by ID

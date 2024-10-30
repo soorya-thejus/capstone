@@ -1,4 +1,5 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import axios from 'axios';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IDeal extends Document {
   getUpdate: any;
@@ -7,9 +8,14 @@ export interface IDeal extends Document {
   deal_value: number;
   expected_close_date: Date;
   close_probability: number;
-  forecast_value: number;
-}
 
+  contact_id: Types.ObjectId;
+  account_id: Types.ObjectId;//Automatically filled when contact_id is given
+  
+  forecast_value: number;
+  org_id: Types.ObjectId;
+}
+ 
 const DealSchema: Schema = new Schema(
   {
     deal_name: { type: String, required: true },
@@ -27,15 +33,39 @@ const DealSchema: Schema = new Schema(
       min: 0,
       max: 100,
     },
+    
+    contact_id: {type: Schema.Types.ObjectId, ref:'Contact', required:true},
+    account_id: {type: Schema.Types.ObjectId, ref:'Account', required:false},
+    
     forecast_value: { type: Number },
+    org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true}
+
   },
   { timestamps: true, versionKey: false }
 );
 
 // Pre-save hook to calculate forecast_value
-DealSchema.pre<IDeal>('save', function (next) {
-  this.forecast_value = (this.deal_value * this.close_probability) / 100;
-  next();
+DealSchema.pre<IDeal>('save', async function (next) {
+  try {
+    // Calculate forecast_value
+    this.forecast_value = (this.deal_value * this.close_probability) / 100;
+
+    // Fetch the account_id from the Contact microservice based on contact_id
+    if (this.contact_id) {
+      const response = await axios.get(`http://localhost:5005/api/contacts/${this.contact_id}`);
+
+      if (response.data && response.data.account_id) {
+        this.account_id = response.data.account_id;
+      } else {
+        throw new Error(`No account associated with contact ID ${this.contact_id}`);
+      }
+    }
+
+    next();
+  } catch (error) {
+    // Explicitly cast error to Error type before passing to next
+    next(error instanceof Error ? error : new Error('An unexpected error occurred'));
+  }
 });
 
 // Pre-update hook for both findOneAndUpdate and updateOne

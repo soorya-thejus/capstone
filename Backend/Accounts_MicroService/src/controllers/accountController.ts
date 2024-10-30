@@ -17,14 +17,15 @@ export const createAccount = async(req:Request, res:Response)=>{
 export const getAccount = async(req:Request, res:Response)=>{
     try{
         const account = await accountService.getAccountService(req.params.id);
-        if (!account) res.status(404).json({ message: 'Account not found' });
+         if (!account) {res.status(404).json({ message: 'Account not found' });
+                    return;};
         res.status(200).json(account);
     }
     catch(error){
         res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching account' });
     }
 }
-
+ 
 //Get all Accounts
 export const getAllAccount = async(req:Request,res: Response)=>{
     try{
@@ -59,3 +60,16 @@ export const deleteAccount = async(req: Request, res: Response)=>{
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error deleting account' });
     }
 }
+
+
+
+export const getAccountsByOrgId = async (req: Request, res: Response) => {
+    const { org_id } = req.params;
+    try {
+        const accounts = await accountService.getAccountsByOrgIdService(org_id);
+        res.status(200).json(accounts);
+    } catch (error) {
+        console.error("Error fetching accounts for org_id:", error);
+        res.status(500).json({ message: 'Error fetching accounts for this organization' });
+    }
+};

@@ -53,3 +53,63 @@ export const deleteOrganization = async (req: Request, res: Response) => {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error deleting organization' });
     }
 };
+
+
+export const getLeadsByOrgId = async(req:Request, res:Response)=>{
+    const orgId =req.params.orgId;
+
+    try {
+        const response = await organizationService.getLeadsByOrgIdService(orgId);
+        res.status(200).json(response.data);
+    } catch (error: any) {
+        res.status(500).json({ message: 'Error fetching leads', error: error.message });
+    }
+}
+
+
+export const getDealsByOrgId = async(req:Request, res:Response)=>{
+    const orgId =req.params.orgId;
+
+    try {
+        const response = await organizationService.getDealsByOrgIdService(orgId);
+        res.status(200).json(response.data);
+    } catch (error: any) {
+        res.status(500).json({ message: 'Error fetching deals', error: error.message });
+    }
+}
+
+
+export const getAccountsByOrgId = async(req:Request, res:Response)=>{
+    const orgId =req.params.orgId;
+
+    try {
+        const response = await organizationService.getAccountsByOrgIdService(orgId);
+        res.status(200).json(response.data);
+    } catch (error: any) {
+        res.status(500).json({ message: 'Error fetching accounts', error: error.message });
+    }
+}
+
+
+export const getProjectsByOrgId = async(req:Request, res:Response)=>{
+    const orgId =req.params.orgId;
+
+    try {
+        const response = await organizationService.getProjectsByOrgIdService(orgId);
+        res.status(200).json(response.data);
+    } catch (error: any) {
+        res.status(500).json({ message: 'Error fetching projects', error: error.message });
+    }
+}
+
+
+export const getContactsByOrgId = async(req:Request, res:Response)=>{
+    const orgId =req.params.orgId;
+
+    try {
+        const response = await organizationService.getContactsByOrgIdService(orgId);
+        res.status(200).json(response.data);
+    } catch (error: any) {
+        res.status(500).json({ message: 'Error fetching contacts', error: error.message });
+    }
+}
