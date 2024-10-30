@@ -1,84 +1,63 @@
 /* src/styles/dealstable.module.css */
-/* src/styles/crm/accountstable.module.css */
-
 .tableContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Align items to start vertically */
-}
-
-.tableHeader {
-  width: 100%; /* Full width to position buttons */
-  display: flex; /* Use flexbox to position buttons */
-  justify-content: flex-end; /* Aligns children to the right */
-  margin-bottom: 10px; /* Space between header and table */
+  margin: 20px;
 }
 
 .addButton {
-  margin-left: auto; /* Optional: adds space between buttons */
-  padding: 10px 15px; /* Style the button */
-  background-color: #FF7100; /* Example button color */
-  color: white; /* Text color */
-  border: none; /* Remove border */
-  border-radius: 5px; /* Rounded corners */
-  cursor: pointer; /* Pointer cursor on hover */
+  background-color: #000000;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
-  .deleteButton{
-    background-color: #dc3545;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s;
-  }
-  .addButton {
-    background-color: #000000;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .addButton:hover {
-    background-color: #ffffff;
-    color:black;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  th, td {
-    padding: 10px;
-    text-align: left;
-    border: 1px solid #ddd;
-  }
-  
-  th {
-    background-color: #f4f4f4;
-  }
-  
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  button {
-    background-color: #FF7100;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s;
+.addButton:hover {
+  background-color: #ffffff;
+  color:black;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+button {
+  background-color: #FF7100;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
 }
 
 button:hover {
-    background-color: #E06600;
+  background-color: #E06600;
+}
+.deleteButton{
+background-color: #dc3545;
+color: white;
+padding: 8px 12px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-size: 14px;
+transition: background 0.3s;
 }
