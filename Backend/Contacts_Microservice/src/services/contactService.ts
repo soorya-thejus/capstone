@@ -36,7 +36,7 @@ export const getAllContactsService = async (): Promise<IContact[]> => {
 export const getContactByIdService = async (id: string): Promise<IContact|null> => {
     return await Contact.findById(id);
 };
-
+ 
 export const updateContactService = async (id: string, contactData: Partial<IContact>): Promise<IContact | null> => {
     // Fetch the existing contact to compare `deal_ids`
     const existingContact = await Contact.findById(id);
@@ -258,6 +258,36 @@ export const addDealToContactService = async (contactId: string, dealId: string)
   } catch (error) {
     console.error('Failed to fetch deal values or update contact:', error);
     throw new Error('Failed to update contact with deal values');
+  }
+};
+
+
+
+
+
+
+
+
+
+
+export const addProjectToContactService = async (contactId: string, projectId: string): Promise<void> => {
+  if (!Types.ObjectId.isValid(contactId) || !Types.ObjectId.isValid(projectId)) {
+    throw new Error('Invalid contactId or projectId');
+  }
+
+  try {
+    const updatedContact = await Contact.findByIdAndUpdate(
+      contactId,
+      { $addToSet: { project_ids: projectId } },
+      { new: true }
+    );
+
+    if (!updatedContact) {
+      throw new Error(`Contact with ID ${contactId} not found`);
+    }
+  } catch (error) {
+    console.error('Failed to update contact:', error);
+    throw new Error('Failed to update contact with project');
   }
 };
 

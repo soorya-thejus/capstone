@@ -177,6 +177,20 @@ export const addDealToContact = async (req: Request, res: Response): Promise<voi
 };
 
 
+export const addProjectToContact = async (req: Request, res: Response): Promise<void> => {
+    const { contactId } = req.params;
+    const { project_id } = req.body;
+  
+    try {
+      await contactService.addProjectToContactService(contactId, project_id);
+      res.status(200).json({ message: 'Project added to contact successfully' });
+    } catch (error) {
+      console.error('Failed to add project to contact:', error);
+      res.status(500).json({ message: error instanceof Error ? error.message : 'Failed to add project to contact' });
+    }
+  };
+
+
 // Update the deal value of a contact by ID
 // export const updateContactDealValue = async (req: Request, res: Response) => {
 //     const { id } = req.params;

@@ -12,7 +12,7 @@ export interface IContact extends Document {
   priority: 'high' | 'medium' | 'low';
   deal_value: number;
   forecast_value: number,
-  project_id: Types.ObjectId;
+  project_ids: Types.ObjectId[];
   org_id: Types.ObjectId;
 }
 
@@ -31,7 +31,7 @@ const ContactSchema: Schema = new Schema({
   },
   deal_value: { type: Number},
   forecast_value: {type: Number},
-  project_id: { type: Schema.Types.ObjectId, ref: 'Project', required: false ,default:null},
+  project_ids: [{ type: Schema.Types.ObjectId, ref: 'Project', required: false }],
   org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true}
 }, { timestamps: true, versionKey: false });
 
