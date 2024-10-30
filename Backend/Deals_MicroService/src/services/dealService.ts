@@ -19,7 +19,7 @@ export const createDealService = async (dealData: IDeal): Promise<IDeal> => {
       throw new Error('Failed to update contact with the new deal ID');
     }
   }
-
+   
   return savedDeal;
 };
 

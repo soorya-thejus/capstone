@@ -1,10 +1,24 @@
 import axios from "axios";
 import { IProject, Project } from "../models/Project";
 
-export const createProjectService = async (contactData: IProject) : Promise<IProject> => {
-    const newContact = new Project(contactData);
-    return await newContact.save();
-};
+export const createProjectService = async (projectData: IProject): Promise<IProject> => {
+    const newProject = new Project(projectData);
+    const savedProject = await newProject.save();
+  
+    // Update the contact's project_ids in the Contacts microservice
+    if (savedProject.contact_id) {
+      try {
+        await axios.patch(`http://localhost:5005/api/contacts/${savedProject.contact_id}/add-project`, {
+          project_id: savedProject._id
+        });
+      } catch (error) {
+        console.error(`Failed to update contact with project ID ${savedProject._id}:`, error);
+        throw new Error('Failed to update contact with the new project ID');
+      }
+    }
+  
+    return savedProject;
+  };
 
 export const getAllProjectsService = async (): Promise<IProject[]> => {
     return await Project.find();
@@ -13,7 +27,7 @@ export const getAllProjectsService = async (): Promise<IProject[]> => {
 export const getProjectService = async (id: string): Promise<IProject|null> => {
     return await Project.findById(id);
 };
-
+ 
 export const updateProjectService = async (id: string, contactData: Partial<IProject>): Promise<IProject|null> => {
     return await Project.findByIdAndUpdate(id, contactData, { new: true, runValidators: true });
 };

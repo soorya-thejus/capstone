@@ -28,7 +28,8 @@ export const getAllProject = async(req:Request,res: Response)=>{
 export const getProject = async(req:Request, res: Response)=>{
     try{
         const project = await projectService.getProjectService(req.params.id);
-        if (!project) res.status(404).json({ message: 'Project not found' });
+        if (!project) {res.status(404).json({ message: 'Project not found' });
+                return;};
         res.status(200).json(project);
     }
     catch(error){
@@ -41,7 +42,8 @@ export const getProject = async(req:Request, res: Response)=>{
 export const updateProject = async(req:Request, res:Response)=>{
     try{
         const updatedProject = await projectService.updateProjectService(req.params.id,req.body);
-        if (!updatedProject)  res.status(404).json({ message: 'Project not found' });
+        if (!updatedProject) { res.status(404).json({ message: 'Project not found' });
+                return;};
         res.status(200).json(updatedProject);
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error updating project' });
@@ -52,7 +54,8 @@ export const updateProject = async(req:Request, res:Response)=>{
 export const deleteProject = async(req:Request,res:Response)=>{
     try{
         const deletedProject = await projectService.deleteProjectService(req.params.id);
-        if (!deletedProject)  res.status(404).json({ message: 'Project not found' });
+        if (!deletedProject)  {res.status(404).json({ message: 'Project not found' });
+                    return;};
         res.status(204).json({message: 'Deleted successfully!'});
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error deleting project' });

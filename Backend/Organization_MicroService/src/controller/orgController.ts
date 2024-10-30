@@ -25,7 +25,8 @@ export const getAllOrganizations = async (req: Request, res: Response) => {
 export const getOrganization = async (req: Request, res: Response) => {
     try {
         const organization = await organizationService.getOrganizationService(req.params.id);
-        if (!organization)  res.status(404).json({ message: 'Organization not found' });
+        if (!organization)  {res.status(404).json({ message: 'Organization not found' });
+                return;};
         res.status(200).json(organization);
     } catch (error) {
         res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching organization' });
@@ -36,7 +37,8 @@ export const getOrganization = async (req: Request, res: Response) => {
 export const updateOrganization = async (req: Request, res: Response) => {
     try {
         const updatedOrganization = await organizationService.updateOrganizationService(req.params.id, req.body);
-        if (!updatedOrganization)  res.status(404).json({ message: 'Organization not found' });
+        if (!updatedOrganization)  {res.status(404).json({ message: 'Organization not found' });
+                    return;};
         res.status(200).json(updatedOrganization);
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error updating organization' });
@@ -47,7 +49,8 @@ export const updateOrganization = async (req: Request, res: Response) => {
 export const deleteOrganization = async (req: Request, res: Response) => {
     try {
         const deletedOrganization = await organizationService.deleteOrganizationService(req.params.id);
-        if (!deletedOrganization)  res.status(404).json({ message: 'Organization not found' });
+        if (!deletedOrganization) { res.status(404).json({ message: 'Organization not found' });
+                    return;};
         res.status(204).json({ message: 'Deleted successfully!' });
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error deleting organization' });

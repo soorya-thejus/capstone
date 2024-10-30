@@ -26,7 +26,8 @@ export const getLeads = async (req: Request, res: Response) => {
 export const getLeadById = async (req: Request, res: Response) =>  {
     try {   
         const lead = await leadService.getLeadByIdService(req.params.id);
-        if (!lead) res.status(404).json({ message: 'Lead not found' });
+        if (!lead) {res.status(404).json({ message: 'Lead not found' });
+            return;};
         res.status(200).json(lead);
     } catch (error) {
         res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching lead' });
@@ -37,7 +38,8 @@ export const getLeadById = async (req: Request, res: Response) =>  {
 export const updateLead = async (req: Request, res: Response) => {
     try {
         const updatedLead = await leadService.updateLeadService(req.params.id, req.body);
-        if (!updatedLead)  res.status(404).json({ message: 'Lead not found' });
+        if (!updatedLead)  {res.status(404).json({ message: 'Lead not found' });
+            return;};
         res.status(200).json(updatedLead);
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error updating lead' });
@@ -48,7 +50,8 @@ export const updateLead = async (req: Request, res: Response) => {
 export const deleteLead = async (req: Request, res: Response) => {
     try {
         const deletedLead = await leadService.deleteLeadService(req.params.id);
-        if (!deletedLead)  res.status(404).json({ message: 'Lead not found' });
+        if (!deletedLead)  {res.status(404).json({ message: 'Lead not found' });
+            return;};
         res.status(204).send();
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error deleting lead' });
