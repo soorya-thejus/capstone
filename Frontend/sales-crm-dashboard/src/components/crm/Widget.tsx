@@ -50,17 +50,34 @@ const Widget: React.FC<WidgetProps> = ({ title, content, chartData, chartType })
               y: {
                 stacked: true, // Enable stacking
                 min: 0, // Minimum value on Y-axis
+                ticks: {
+                  callback: (value) => {
+                    // Check if value is a number before comparing
+                    if (typeof value === 'number' && value >= 0) {
+                      return value;
+                    }
+                    return null; // Return null for non-numeric values
+                  },
+                },
               },
               x: {
                 stacked: true, // Enable stacking
               },
             },
           }}
+          style={{ height: '300px' }} // Use CSS to control height
         />
       )}
       {chartData && chartType === 'pie' && (
         <Pie
-          data={chartData}
+          data={{
+            labels: chartData.labels,
+            datasets: chartData.datasets.map((dataset) => ({
+              ...dataset,
+              backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 206, 86, 0.6)', 
+                'rgba(255, 99, 132, 0.6)', 'rgba(153, 102, 255, 0.6)', 'rgba(54, 162, 235, 0.6)'], // Example colors
+            })),
+          }}
           options={{ responsive: true, plugins: { legend: { position: 'top' } } }}
         />
       )}
