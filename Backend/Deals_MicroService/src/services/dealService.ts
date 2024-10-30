@@ -6,7 +6,21 @@ import axios from "axios";
 // Create a Deal
 export const createDealService = async (dealData: IDeal): Promise<IDeal> => {
     const newDeal = new Deal(dealData);
-    return await newDeal.save();  // This will return a Promise<IDeal>
+  const savedDeal = await newDeal.save();  // This will return a Promise<IDeal>
+
+  // Update the contact's deal_ids in the Contacts microservice
+  if (savedDeal.contact_id) {
+    try {
+      await axios.patch(`http://localhost:5005/api/contacts/${savedDeal.contact_id}/add-deal`, {
+        deal_id: savedDeal._id
+      });
+    } catch (error) {
+      console.error(`Failed to update contact with deal ID ${savedDeal._id}:`, error);
+      throw new Error('Failed to update contact with the new deal ID');
+    }
+  }
+
+  return savedDeal;
 };
 
 // Get all Deals
