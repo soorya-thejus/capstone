@@ -22,35 +22,33 @@ const AccountsTable: React.FC = () => {
     fetchAccounts();
   }, []);
 
-  // Handle edit click to open the form with selected account data
   const handleEditClick = (account: Account) => {
     setSelectedAccount(account);
     setEditing(true);
   };
 
-  // Handle delete click with a confirmation dialog
-  const handleDeleteClick = async (id: number) => {
+  const handleDeleteClick = async (_id: string) => {
     if (window.confirm("Are you sure you want to delete this account?")) {
       try {
-        await accountService.deleteAccount(id);
-        setAccounts(accounts.filter(account => account.id !== id));
+        await accountService.deleteAccount(_id);
+        setAccounts(accounts.filter(account => account._id !== _id));
       } catch (error) {
         console.error("Error deleting account", error);
       }
     }
   };
 
-  // Handle saving an account, either updating or creating it
   const handleSaveAccount = async (account: Account) => {
+    console.log("Saving account:", account); // Debugging line
     try {
-      if (account.id === 0) {
-        // Create new account
+      if (!account._id) { // Check if _id is not present for new accounts
         const newAccount = await accountService.createAccount(account);
+        console.log("Created new account:", newAccount); // Debugging line
         setAccounts([...accounts, newAccount]);
       } else {
-        // Update existing account
-        const updatedAccount = await accountService.updateAccount(account.id, account);
-        setAccounts(accounts.map(a => (a.id === updatedAccount.id ? updatedAccount : a)));
+        const updatedAccount = await accountService.updateAccount(account._id, account);
+        console.log("Updated account:", updatedAccount); // Debugging line
+        setAccounts(accounts.map(a => (a._id === updatedAccount._id ? updatedAccount : a)));
       }
       setEditing(false);
       setSelectedAccount(null);
@@ -59,27 +57,42 @@ const AccountsTable: React.FC = () => {
     }
   };
 
-  // Handle cancel action in the form
   const handleCancel = () => {
     setEditing(false);
     setSelectedAccount(null);
+  };
+
+  const handleAddClick = () => {
+    setSelectedAccount({
+      _id: '', // Ensure the ID is a string for MongoDB
+      account_name: '',
+      priority: 'medium',
+      industry: '',
+      description: '',
+      number_of_employees: 0,
+    });
+    setEditing(true);
   };
 
   return (
     <div className={styles.tableContainer}>
       <button
         className={styles.addButton}
-        onClick={() => {
-          setSelectedAccount({ id: 0, account_name: "", priority: "medium", industry: "", description: "", number_of_employees: 0 });
-          setEditing(true);
-        }}
+        onClick={handleAddClick}
       >
         Add Account
       </button>
       
       {isEditing && (
         <AccountForm
-          account={selectedAccount || { id: 0, account_name: "", priority: "medium", industry: "", description: "", number_of_employees: 0 }}
+          account={selectedAccount || {
+            _id: '',
+            account_name: '',
+            priority: 'medium',
+            industry: '',
+            description: '',
+            number_of_employees: 0,
+          }}
           onSave={handleSaveAccount}
           onCancel={handleCancel}
         />
@@ -99,7 +112,7 @@ const AccountsTable: React.FC = () => {
         </thead>
         <tbody>
           {accounts.map(account => (
-            <tr key={account.id}>
+            <tr key={account._id}>
               <td>{account.account_name}</td>
               <td>{account.priority}</td>
               <td>{account.industry}</td>
@@ -109,7 +122,7 @@ const AccountsTable: React.FC = () => {
                 <button onClick={() => handleEditClick(account)}>Edit</button>
               </td>
               <td>
-                <button className={styles.deleteButton} onClick={() => handleDeleteClick(account.id)}>Delete</button>
+                <button className={styles.deleteButton} onClick={() => handleDeleteClick(account._id)}>Delete</button>
               </td>
             </tr>
           ))}

@@ -1,3 +1,4 @@
+// src/services/AccountService.ts
 import axios from 'axios';
 import { Account } from '../types/crm/Account'; // Make sure this matches your type location
 
@@ -11,25 +12,25 @@ export const createAccount = async (accountData: Account) => {
 };
 
 // Get a single account by ID
-export const getAccount = async (id: number) => {
-  const response = await axios.get(`${API_BASE_URL}/${id}`);
+export const getAccount = async (_id: string) => {
+  const response = await axios.get(`${API_BASE_URL}/${_id}`);
   return response.data;
 };
 
 // Get all accounts
 export const getAllAccounts = async () => {
   const response = await axios.get(`${API_BASE_URL}`);
-  return response.data;
+  return response.data; // Make sure this returns an array of accounts with string IDs
 };
 
 // Update an account by ID
-export const updateAccount = async (id: number, accountData: Account) => {
-  const response = await axios.put(`${API_BASE_URL}/${id}`, accountData);
+export const updateAccount = async (_id: string, accountData: Account) => {
+  const response = await axios.put(`${API_BASE_URL}/${_id}`, accountData);
   return response.data;
 };
 
 // Delete an account by ID
-export const deleteAccount = async (id: number) => {
-  const response = await axios.delete(`${API_BASE_URL}/${id}`);
+export const deleteAccount = async (_id: string) => {
+  const response = await axios.delete(`${API_BASE_URL}/${_id}`);
   return response.data;
 };

@@ -62,7 +62,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onSave, onCancel }) => {
             <input type="text" name="phone" value={formData.phone} onChange={handleChange} required />
           </label>
           <div className={styles.buttons}>
-            <button type="submit">Save</button>
+            <button type="submit" onClick={handleSubmit}>Save</button>
             <button type="button" onClick={onCancel}>Cancel</button>
           </div>
         </form>

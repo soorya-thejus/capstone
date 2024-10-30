@@ -1,4 +1,3 @@
-// src/components/AccountForm.tsx
 import React, { useState, useEffect } from 'react';
 import { Account } from '../../types/crm/Account';
 import styles from '../../styles/crm/accountform.module.css';
@@ -11,7 +10,7 @@ interface AccountFormProps {
 
 const AccountForm: React.FC<AccountFormProps> = ({ account, onSave, onCancel }) => {
   const [formData, setFormData] = useState<Account>({
-    id: 0, 
+    _id: "", // Initialize as an empty string for _id
     account_name: "", 
     priority: "medium", 
     industry: "", 
@@ -20,8 +19,17 @@ const AccountForm: React.FC<AccountFormProps> = ({ account, onSave, onCancel }) 
   });
 
   useEffect(() => {
-    if (account.id !== 0) {
+    if (account._id) {
       setFormData(account);
+    } else {
+      setFormData({
+        _id: "",
+        account_name: "",
+        priority: "medium",
+        industry: "",
+        description: "",
+        number_of_employees: 0,
+      });
     }
   }, [account]);
 
@@ -32,14 +40,15 @@ const AccountForm: React.FC<AccountFormProps> = ({ account, onSave, onCancel }) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    console.log("Form submitted with data:", formData); // Debugging line
+    onSave(formData); // Pass formData directly; _id will be handled by the backend
   };
 
   return (
     <div className={styles.popupOverlay}>
       <div className={styles.popup}>
         <form onSubmit={handleSubmit} className={styles.form}>
-          <h3>{account.id ? 'Edit Account' : 'Add Account'}</h3>
+          <h3>{account._id ? 'Edit Account' : 'Add Account'}</h3>
           <label>
             Account Name:
             <input
