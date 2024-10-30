@@ -43,7 +43,7 @@ export const updateContactService = async (id: string, contactData: Partial<ICon
     if (!existingContact) {
       throw new Error('Contact not found');
     }
-
+ 
     // If an account_id is provided in contactData, check if it exists
     // if (contactData.account_id) {
     //     const isAccountValid = await accountExists(contactData.account_id.toString());

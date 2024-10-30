@@ -23,7 +23,8 @@ export const getAllContacts = async (req: Request, res: Response) => {
 export const getContact = async (req: Request, res: Response) => {
     try {
         const contact = await contactService.getContactByIdService(req.params.id);
-        if (!contact)  res.status(404).json({ message: 'Contact not found' });
+        if (!contact)  {res.status(404).json({ message: 'Contact not found' });
+        return;};
         res.status(200).json(contact);
     } catch (error) {
         res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching contact' });
@@ -33,7 +34,8 @@ export const getContact = async (req: Request, res: Response) => {
 export const updateContact = async (req: Request, res: Response) => {
     try {
         const updatedContact = await contactService.updateContactService(req.params.id, req.body);
-        if (!updatedContact)  res.status(404).json({ message: 'Contact not found' });
+        if (!updatedContact)  {res.status(404).json({ message: 'Contact not found' });
+            return;};
         res.status(200).json(updatedContact);
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error updating contact' });
@@ -43,7 +45,8 @@ export const updateContact = async (req: Request, res: Response) => {
 export const deleteContact = async (req: Request, res: Response) => {
     try {
         const deletedContact = await contactService.deleteContactService(req.params.id);
-        if (!deletedContact)  res.status(404).json({ message: 'Contact not found' });
+        if (!deletedContact)  {res.status(404).json({ message: 'Contact not found' });
+                return;};
         res.status(204).json({ message: 'Deleted successfully!' });
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error deleting contact' });
