@@ -42,7 +42,8 @@ export const getAllAccount = async(req:Request,res: Response)=>{
 export const updateAccount = async(req:Request, res:Response)=>{
     try{
         const updatedAccount = await accountService.updateAccountService(req.params.id,req.body);
-        if (!updatedAccount)  res.status(404).json({ message: 'Account not found' });
+        if (!updatedAccount)  {res.status(404).json({ message: 'Account not found' });
+                return;};
         res.status(200).json(updatedAccount);
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error updating account' });
@@ -54,7 +55,8 @@ export const updateAccount = async(req:Request, res:Response)=>{
 export const deleteAccount = async(req: Request, res: Response)=>{
     try{
         const deletedAccnt = await accountService.deleteAccountService(req.params.id);
-        if (!deletedAccnt)  res.status(404).json({ message: 'Account not found' });
+        if (!deletedAccnt)  {res.status(404).json({ message: 'Account not found' });
+            return;};
         res.status(204).json({message: 'Deleted successfully!'});
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error deleting account' });
