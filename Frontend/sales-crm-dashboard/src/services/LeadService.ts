@@ -1,8 +1,7 @@
-// src/services/leadService.ts
 import axios from 'axios';
 import { Lead } from '../types/crm/Lead';
 
-const BASE_URL = 'http://localhost:5001/api/leads'; // Adjust this to your backend URL
+const BASE_URL = 'http://localhost:5001/api/leads';
 
 export const getLeads = async (): Promise<Lead[]> => {
   const response = await axios.get(BASE_URL);
@@ -14,11 +13,11 @@ export const createLead = async (lead: Lead): Promise<Lead> => {
   return response.data;
 };
 
-export const updateLead = async (id: string, lead: Lead): Promise<Lead> => {
-  const response = await axios.put(`${BASE_URL}/${id}`, lead);
+export const updateLead = async (_id: string, lead: Lead): Promise<Lead> => {
+  const response = await axios.put(`${BASE_URL}/${_id}`, lead);
   return response.data;
 };
 
-export const deleteLead = async (id: string): Promise<void> => {
-  await axios.delete(`${BASE_URL}/${id}`);
+export const deleteLead = async (_id: string): Promise<void> => {
+  await axios.delete(`${BASE_URL}/${_id}`);
 };

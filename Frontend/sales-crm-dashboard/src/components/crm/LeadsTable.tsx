@@ -1,16 +1,15 @@
-// src/components/LeadsTable.tsx
 import React, { useState, useEffect } from 'react';
 import { Lead } from '../../types/crm/Lead';
 import LeadForm from './LeadForm';
 import styles from '../../styles/crm/leadstable.module.css';
-import * as leadService from '../../services/LeadService'; // Import the leadService
+import * as leadService from '../../services/LeadService';
 
 const LeadsTable: React.FC = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [orgId] = useState("67221a3f486241a8d7de5ab5"); // Assuming you have a way to get orgId
 
-  // Fetch leads when the component mounts
   useEffect(() => {
     const fetchLeads = async () => {
       const fetchedLeads = await leadService.getLeads();
@@ -20,7 +19,7 @@ const LeadsTable: React.FC = () => {
   }, []);
 
   const handleAddClick = () => {
-    setSelectedLead({ lead_name: "", status: "new lead", company: "", title: "", email: "", phone: "" });
+    //setSelectedLead({ lead_name: "", status: "contacted", company: "", title: "", email: "", phone: "",org_id:"67221a3f486241a8d7de5ab5" });
     setIsFormVisible(true);
   };
 
@@ -29,32 +28,22 @@ const LeadsTable: React.FC = () => {
     setIsFormVisible(true);
   };
 
-  const handleDeleteClick = async (id: string) => {
+  const handleDeleteClick = async (_id: string) => {
     if (window.confirm("Are you sure you want to delete this lead?")) {
-      await leadService.deleteLead(id);
-      setLeads(leads.filter(lead => lead.id !== id));
+      await leadService.deleteLead(_id);
+      setLeads(leads.filter(lead => lead._id !== _id));
     }
   };
 
   const handleSaveLead = async (lead: Lead) => {
-    let savedLead: Lead; // Explicitly type savedLead
-    if (lead.id) {
-      // Update existing lead
-      savedLead = await leadService.updateLead(lead.id, lead);
+    let savedLead: Lead;
+    if (lead._id) {
+      savedLead = await leadService.updateLead(lead._id, lead);
+      setLeads(prevLeads => prevLeads.map(existingLead => (existingLead._id === lead._id ? savedLead : existingLead)));
     } else {
-      // Create new lead
-      savedLead = await leadService.createLead(lead);
+      savedLead = await leadService.createLead({ ...lead, org_id: orgId });
+      setLeads(prevLeads => [...prevLeads, savedLead]);
     }
-    setLeads(prevLeads => {
-      if (savedLead) {
-        if (lead.id) {
-          // Update the lead in the state
-          return prevLeads.map(existingLead => (existingLead.id === lead.id ? savedLead : existingLead));
-        }
-        return [...prevLeads, savedLead]; // Add new lead
-      }
-      return prevLeads;
-    });
     setIsFormVisible(false);
   };
 
@@ -80,7 +69,7 @@ const LeadsTable: React.FC = () => {
         </thead>
         <tbody>
           {leads.map(lead => (
-            <tr key={lead.id}>
+            <tr key={lead._id}>
               <td>{lead.lead_name}</td>
               <td>{lead.status}</td>
               <td>{lead.company}</td>
@@ -91,7 +80,7 @@ const LeadsTable: React.FC = () => {
                 <button onClick={() => handleEditClick(lead)}>Edit</button>
               </td>
               <td>
-                <button className={styles.deleteButton} onClick={() => handleDeleteClick(lead.id!)}>Delete</button>
+                <button className={styles.deleteButton} onClick={() => handleDeleteClick(lead._id!)}>Delete</button>
               </td>
             </tr>
           ))}
@@ -103,6 +92,7 @@ const LeadsTable: React.FC = () => {
           lead={selectedLead}
           onSave={handleSaveLead}
           onCancel={handleCancel}
+          orgId={orgId} // Pass orgId to LeadForm
         />
       )}
     </div>
