@@ -19,7 +19,7 @@ const LeadsTable: React.FC = () => {
   }, []);
 
   const handleAddClick = () => {
-    //setSelectedLead({ lead_name: "", status: "contacted", company: "", title: "", email: "", phone: "",org_id:"67221a3f486241a8d7de5ab5" });
+    setSelectedLead({ lead_name: "", status: "contacted", company: "", title: "", email: "", phone: "",org_id:"67221a3f486241a8d7de5ab5" });
     setIsFormVisible(true);
   };
 
