@@ -56,12 +56,7 @@ export const getContactsByDealId = async (req: Request, res: Response) => {
 
     try {
         // Use the service function to fetch contacts by deal ID
-        const contacts = await contactService.getContactsByDealIdService(dealId);
-
-        if (contacts.length === 0) {
-            res.status(404).json({ message: 'No contacts found for this deal' });
-        }
-
+        const contacts = await Contact.find({ deal_ids: dealId });
         res.status(200).json(contacts);
     } catch (error) {
         res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching contacts' });
@@ -119,11 +114,7 @@ export const removeAccountId = async(req:Request, res:Response)=>{
 export const getContactsByProjectId = async(req:Request, res:Response)=>{
     const {projectId} = req.params;
     try{
-        const contacts= await contactService.getContactsByProjectIdService(projectId);
-        if (contacts.length === 0) {
-            res.status(404).json({ message: 'No contacts found for this project' });
-        }
-
+        const contacts= await Contact.find({project_id:projectId});
         res.status(200).json(contacts);
     } catch (error) {
         res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching contacts' });
@@ -158,6 +149,29 @@ export const getContactsByOrgId = async (req: Request, res: Response) => {
     }
 };
 
+
+
+
+
+
+
+
+export const addDealToContact = async (req: Request, res: Response): Promise<void> => {
+  const { contactId } = req.params;
+  const { deal_id } = req.body;
+
+  try {
+    // Call the service to add the deal ID to the contact's deal_ids array
+    await contactService.addDealToContactService(contactId, deal_id);
+    
+    // Send success response
+    res.status(200).json({ message: 'Deal added to contact successfully' });
+  } catch (error) {
+    // Log and send error response
+    console.error('Failed to add deal to contact:', error);
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Failed to add deal to contact' });
+  }
+};
 
 
 // Update the deal value of a contact by ID

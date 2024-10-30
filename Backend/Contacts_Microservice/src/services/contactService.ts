@@ -214,6 +214,55 @@ export const getContactsByOrgIdService = async (org_id: string): Promise<IContac
 
 
 
+
+export const addDealToContactService = async (contactId: string, dealId: string): Promise<void> => {
+  // Validate ObjectId
+  if (!Types.ObjectId.isValid(contactId) || !Types.ObjectId.isValid(dealId)) {
+    throw new Error('Invalid contactId or dealId');
+  }
+
+  // Add the new deal ID to `deal_ids` using $addToSet to avoid duplicates
+  const updatedContact = await Contact.findByIdAndUpdate(
+    contactId,
+    { $addToSet: { deal_ids: dealId } },
+    { new: true } // Return the updated document
+  );
+
+  if (!updatedContact) {
+    throw new Error(`Contact with ID ${contactId} not found`);
+  }
+
+  // Fetch all deals associated with the updated `deal_ids`
+  try {
+    const response = await axios.post('http://localhost:5002/api/deals/values', {
+      deal_ids: updatedContact.deal_ids,
+    });
+
+    if (response.data && response.data.deals) {
+      // Calculate the total deal value and forecast value
+      const totalDealValue = response.data.deals.reduce(
+        (sum: number, deal: { deal_value: string }) => sum + parseFloat(deal.deal_value),
+        0
+      );
+
+      const totalForecastValue = response.data.deals.reduce(
+        (sum: number, deal: { forecast_value: string }) => sum + parseFloat(deal.forecast_value),
+        0
+      );
+
+      // Update the contact with the new total deal value and forecast value
+      updatedContact.deal_value = totalDealValue;
+      updatedContact.forecast_value = totalForecastValue;
+      await updatedContact.save(); // Save the updated values
+    }
+  } catch (error) {
+    console.error('Failed to fetch deal values or update contact:', error);
+    throw new Error('Failed to update contact with deal values');
+  }
+};
+
+
+
 // export const updateContactDealValueService = async (id: string, dealValue: number): Promise<IContact | null> => {
 //     // Validate ID format
 //     if (!mongoose.isValidObjectId(id)) {
