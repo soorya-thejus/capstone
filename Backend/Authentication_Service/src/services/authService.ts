@@ -1,7 +1,7 @@
 import User, { IUser } from "../models/Auth";
 
 export const createUser = async (userData: Partial<IUser>): Promise<IUser> => {
-    const user = new User(userData);
+    const user = new User(userData); 
     return await user.save();
 };
 
