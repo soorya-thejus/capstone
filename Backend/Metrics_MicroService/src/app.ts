@@ -1,7 +1,8 @@
+
 import express from 'express';
 import cors from 'cors';
-//import leadRoutes from './routes/leadRoutes'; // Import the leads router (adjust path as needed)
 import metricsRoutes from './routes/metricsRoutes';
+import { runConsumer } from './kafka/consumer';
 
 const app = express();
 
@@ -12,6 +13,12 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api', metricsRoutes); 
+app.use('/api', metricsRoutes);
 
-export default app;
+// Start the Kafka consumer
+runConsumer().catch((error) => {
+  console.error('Error starting Kafka consumer:', error);
+  process.exit(1); // Exit process with failure
+});
+
+export default app; // Export the app for use in server.ts

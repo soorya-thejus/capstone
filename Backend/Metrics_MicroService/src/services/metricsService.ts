@@ -1,59 +1,44 @@
-// services/metricsService.ts
+// metricsMicroservice/services/metricsService.ts
 import { Metrics } from '../models/Metrics';
-import axios from 'axios';
 
-async function fetchDeals() {
-  // Fetch all deals from the Deals microservice
-  const response = await axios.get('http://localhost:5002/api/deals');
-  return response.data;
-}
+export const updateMetricsFromDealEvent = async (dealData: any): Promise<void> => {
+  const { deal_value, forecast_value, stage, close_date, expected_close_date } = dealData;
 
-export async function updateDashboardMetrics(): Promise<void> {
-  const deals = await fetchDeals();
-  const metrics = {
-    active_deals_forecast_value: 0,
-    average_won_deal_value: 0,
-    actual_revenue: 0,
-    deal_status_distribution: {} as Record<string, number>,
-    actual_revenue_by_month: {} as Record<string, number>,
-    pipeline_conversion: {} as Record<string, number>,
-    forecasted_revenue_by_month: {} as Record<string, number>,
-    forecasted_revenue_by_stage: {} as Record<string, number>,
-  };
+  // Fetch current metrics from the database
+  const metrics = await Metrics.findOne({}) || new Metrics();
 
-  let wonDeals = 0;
-  let wonDealSum = 0;
+  // Reset or update metrics based on the deal stage
+  if (stage === 'won') {
+    // Add deal value to actual revenue
+    metrics.actual_revenue += deal_value;
 
-  deals.forEach((deal: any) => {
-    // Active deals (not won/lost)
-    if (deal.stage !== 'won' && deal.stage !== 'lost') {
-      metrics.active_deals_forecast_value += deal.forecast_value;
-      metrics.forecasted_revenue_by_stage[deal.stage] = (metrics.forecasted_revenue_by_stage[deal.stage] || 0) + deal.forecast_value;
-    }
+    // Add to actual revenue by month
+    const month = new Date(close_date).toLocaleString('default', { month: 'short', year: 'numeric' });
+    metrics.actual_revenue_by_month[month] = 
+      (metrics.actual_revenue_by_month[month] || 0) + deal_value;
 
-    // Won deals
-    if (deal.stage === 'won') {
-      metrics.actual_revenue += deal.deal_value;
-      wonDealSum += deal.deal_value;
-      wonDeals++;
-      const month = new Date(deal.close_date).toLocaleString('default', { month: 'short', year: 'numeric' });
-      metrics.actual_revenue_by_month[month] = (metrics.actual_revenue_by_month[month] || 0) + deal.deal_value;
-    }
-
-    // Deal Status Distribution and Pipeline Conversion
-    metrics.deal_status_distribution[deal.stage] = (metrics.deal_status_distribution[deal.stage] || 0) + 1;
-    metrics.pipeline_conversion[deal.stage] = (metrics.pipeline_conversion[deal.stage] || 0) + 1;
-
+    // Track won deal counts and values
+    metrics.deal_status_distribution[stage] = 
+      (metrics.deal_status_distribution[stage] || 0) + 1;
+  } 
+  else if (stage !== 'lost') {
+    // For active deals (not won or lost), add to forecasted values
+    metrics.active_deals_forecast_value += forecast_value;
+    
+    // Track forecasted revenue by stage
+    metrics.forecasted_revenue_by_stage[stage] = 
+      (metrics.forecasted_revenue_by_stage[stage] || 0) + forecast_value;
+      
     // Forecasted revenue by month for active deals
-    if (deal.stage !== 'won' && deal.stage !== 'lost') {
-      const month = new Date(deal.expected_close_date).toLocaleString('default', { month: 'short', year: 'numeric' });
-      metrics.forecasted_revenue_by_month[month] = (metrics.forecasted_revenue_by_month[month] || 0) + deal.forecast_value;
-    }
-  });
+    const month = new Date(expected_close_date).toLocaleString('default', { month: 'short', year: 'numeric' });
+    metrics.forecasted_revenue_by_month[month] = 
+      (metrics.forecasted_revenue_by_month[month] || 0) + forecast_value;
+  }
 
-  // Calculate average won deal value
-  metrics.average_won_deal_value = wonDeals > 0 ? wonDealSum / wonDeals : 0;
+  // Update pipeline and deal status distribution for all stages
+  metrics.pipeline_conversion[stage] = 
+    (metrics.pipeline_conversion[stage] || 0) + 1;
 
-  // Save or update the metrics in MongoDB
-  await Metrics.findOneAndUpdate({}, { ...metrics, timestamp: new Date() }, { upsert: true });
-}
+  // Save the updated metrics document
+  await metrics.save();
+};
