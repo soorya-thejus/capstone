@@ -1,13 +1,17 @@
 // controllers/dealController.ts
 import { Request, Response } from 'express';
 import * as dealService from '../services/dealService';
+import { sendDealEvent } from '../kafka/producer';
 
 // Create a Deal
 export const createDeal = async (req: Request, res: Response) => {
     try {
         // Call the service to create a deal with the request body
         const savedDeal = await dealService.createDealService(req.body);
-         res.status(201).json(savedDeal); // Respond with the created deal
+
+        await sendDealEvent(savedDeal);
+
+        res.status(201).json(savedDeal); // Respond with the created deal
     } catch (error) {
         // Handle error if the deal creation fails
          res.status(400).json({ message: error instanceof Error ? error.message : 'Error creating Deal' });
@@ -47,6 +51,9 @@ export const updateDeal = async (req: Request, res: Response) => {
         const updatedDeal = await dealService.updateDealService(req.params.id, req.body);
         if (!updatedDeal)  {res.status(404).json({ message: 'Deal not found' }); // Handle case where deal is not found
                 return;};
+
+        await sendDealEvent(updatedDeal);
+
         res.status(200).json(updatedDeal); // Respond with the updated deal
     } catch (error) {
         // Handle error if updating the deal fails
