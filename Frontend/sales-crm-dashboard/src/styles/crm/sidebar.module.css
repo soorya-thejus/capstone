@@ -7,6 +7,7 @@
     padding: 20px;
     position: fixed;
     overflow-y: auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 /* For smaller screens, sidebar stacks above content */
 @media (max-width: 768px) {
@@ -43,3 +44,17 @@
     background-color: #FF7100;
     color:white ;
 }
+
+  
+  
+.link {
+    color: #333; /* Default link color */
+    text-decoration: none; /* Remove underline */
+    padding: 10px; /* Add padding for spacing */
+    display: block; /* Make links block elements */
+  }
+  
+  .sidebar .activeLink {
+    color: white; /* Desired active text color */
+    background-color: #FF7100; /* Background color for active link */
+  }
