@@ -1,76 +1,92 @@
 // src/components/ContactForm.tsx
 import React, { useState, useEffect } from 'react';
 import { Contact } from '../../types/crm/Contact';
-import styles from '../../styles/crm/contactform.module.css';
+import { ContactService } from '../../services/ContactService';
+import styles from '../../styles/crm/contactform.module.css'; // Importing your existing CSS module
 
 interface ContactFormProps {
-  contact: Contact;
+  contact?: Contact | null; // Allow null as a valid type
+  onClose: () => void;
   onSave: (contact: Contact) => void;
-  onCancel: () => void;
 }
 
-const ContactForm: React.FC<ContactFormProps> = ({ contact, onSave, onCancel }) => {
-  const [formData, setFormData] = useState<Contact>(contact);
+const ContactForm: React.FC<ContactFormProps> = ({ contact, onClose, onSave }) => {
+  const [formData, setFormData] = useState<Contact>({
+    lead_id: contact?.lead_id || '',
+    contact_name: contact?.contact_name || '',
+    account_id: contact?.account_id || null,
+    deal_ids: contact?.deal_ids || [],
+    title: contact?.title || '',
+    email: contact?.email || '',
+    phone: contact?.phone || '',
+    priority: contact?.priority || 'low',
+    deal_value: 0,
+    forecast_value: 0,
+    project_ids: contact?.project_ids || [],
+    org_id: contact?.org_id || '' // Set this based on logged-in organization
+  });
 
   useEffect(() => {
-    setFormData(contact);
+    if (contact) {
+      setFormData(contact);
+    }
   }, [contact]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    if (contact) {
+      const updatedContact = await ContactService.updateContact(contact._id!, formData);
+      onSave(updatedContact);
+    }
+    onClose();
   };
 
   return (
-    <div className={styles.popupOverlay}>
-      <div className={styles.popup}>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <h3>{contact.id ? 'Edit Contact' : 'Add Contact'}</h3>
+    <div className={styles.popup}>
+      <div className={styles.form}>
+        <h3>{contact ? 'Edit Contact' : 'Contact Details'}</h3>
+        <form onSubmit={handleSubmit}>
           <label>
-            Name:
-            <input type="text" name="contact_name" value={formData.contact_name} onChange={handleChange} required />
+            Contact Name
+            <input
+              type="text"
+              value={formData.contact_name}
+              onChange={(e) => setFormData({ ...formData, contact_name: e.target.value })}
+              required
+            />
           </label>
           <label>
-            Account IDs (comma-separated):
-            <input type="text" name="account_ids" value={formData.account_ids.join(', ')} onChange={handleChange} required />
+            Email
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+            />
           </label>
           <label>
-            Deal IDs (comma-separated):
-            <input type="text" name="deal_ids" value={formData.deal_ids.join(', ')} onChange={handleChange} />
+            Phone
+            <input
+              type="text"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              required
+            />
           </label>
           <label>
-            Project ID:
-            <input type="text" name="project_id" value={formData.project_id?.toString()} onChange={handleChange} />
-          </label>
-          <label>
-            Priority:
-            <select name="priority" value={formData.priority} onChange={handleChange}>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
+            Priority
+            <select
+              value={formData.priority}
+              onChange={(e) => setFormData({ ...formData, priority: e.target.value as 'high' | 'medium' | 'low' })}
+            >
               <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
             </select>
           </label>
-          <label>
-            Phone:
-            <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required />
-          </label>
-          <label>
-            Email:
-            <input type="email" name="email" value={formData.email} onChange={handleChange} required />
-          </label>
-          <label>
-            Deals Value:
-            <input type="number" name="deal_value" value={formData.deal_value} onChange={handleChange} />
-          </label>
-          
           <div className={styles.buttonGroup}>
-            <button type="submit">Save</button>
-            <button type="button" onClick={onCancel}>Cancel</button>
+            <button type="submit">{contact ? 'Update Contact' : 'Save Contact'}</button>
+            <button type="button" onClick={onClose}>Cancel</button>
           </div>
         </form>
       </div>

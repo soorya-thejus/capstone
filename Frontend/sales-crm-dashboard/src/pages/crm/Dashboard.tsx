@@ -42,7 +42,7 @@ const Dashboard: React.FC = () => {
             ]
           },
         });
-      }, 1000); // Simulate network delay
+      }, 0); // Simulate network delay
     };
 
     fetchData();
