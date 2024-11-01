@@ -7,6 +7,7 @@ export interface IAccount extends Document {
   description: string;
   number_of_employees: number;
   org_id: Types.ObjectId;
+  created_by: Types.ObjectId;
 }
 
 const AccountSchema: Schema = new Schema({
@@ -19,7 +20,9 @@ const AccountSchema: Schema = new Schema({
   industry: { type: String, required: true },
   description: { type: String, required: false },  // Text type in MongoDB is equivalent to String in Mongoose
   number_of_employees: { type: Number, required: true },
-  org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true}
+  org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true},
+  created_by: { type: Types.ObjectId, ref: 'User', required: true },
+
 
 }, { timestamps: true, versionKey: false });
 
