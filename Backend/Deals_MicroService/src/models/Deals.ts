@@ -14,6 +14,7 @@ export interface IDeal extends Document {
   
   forecast_value: number;
   org_id: Types.ObjectId;
+  created_by: Types.ObjectId;
 }
  
 const DealSchema: Schema = new Schema(
@@ -38,7 +39,8 @@ const DealSchema: Schema = new Schema(
     account_id: {type: Schema.Types.ObjectId, ref:'Account', required:false},
     
     forecast_value: { type: Number },
-    org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true}
+    org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true},
+    created_by: { type: Types.ObjectId, ref: 'User', required: true },
 
   },
   { timestamps: true, versionKey: false }
