@@ -50,10 +50,7 @@ export const deleteAccountService = async (id: string): Promise<IAccount | null>
 };
 
 
-//Get Leads by Org Id
-export const getAccountsByOrgIdService = async (org_id: string): Promise<IAccount[] | null> => {
-    return await Account.find({ org_id }); // Query using org_id, not id
-};
+
 
 
 
@@ -72,3 +69,18 @@ async function getContactsByAccountId(accountId: string) {
         throw new Error('Unable to fetch contacts for acc');
     }
 }
+
+
+
+//Get Leads by Org Id
+export const getAccountsByOrgIdService = async (org_id: string): Promise<IAccount[] | null> => {
+    return await Account.find({ org_id }); // Query using org_id, not id
+};
+
+
+//Get Accounts by Sales Rep in an Org
+export const getAccountsBySalesRep = async (org_id: string, owner_id: string): Promise<IAccount[]|null> => {
+    // Query for accounts matching both the organization and sales rep (owner) criteria
+    const accounts = await Account.find({org_id,owner_id});
+    return accounts;
+  };

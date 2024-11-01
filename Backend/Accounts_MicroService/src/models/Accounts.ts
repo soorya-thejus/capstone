@@ -15,6 +15,7 @@ const AccountSchema: Schema = new Schema({
   priority: {
     type: String,
     enum: ['high', 'medium', 'low'],
+    deafult: "low",
     required: true,
   },
   industry: { type: String, required: true },

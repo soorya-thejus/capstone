@@ -75,3 +75,17 @@ export const getAccountsByOrgId = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching accounts for this organization' });
     }
 };
+
+
+export const getAccountsBySalesRep = async (req: Request, res: Response) => {
+    const { org_id, owner_id } = req.params;
+
+    try {
+        // Pass org_id and owner_id as separate arguments
+        const accounts = await accountService.getAccountsBySalesRep(org_id, owner_id);
+
+        res.json(accounts);
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching accounts' });
+    }
+};

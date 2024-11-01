@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createAccount, deleteAccount, getAccount, getAccountsByOrgId, getAllAccount, updateAccount } from "../controllers/accountController";
+import { createAccount, deleteAccount, getAccount, getAccountsByOrgId, getAccountsBySalesRep, getAllAccount, updateAccount } from "../controllers/accountController";
 
 
 const router = Router();
@@ -17,5 +17,8 @@ router.delete('/accounts/:id',deleteAccount);
 
 // Route to get Accounts by orgId
 router.get('/accounts/orgs/:org_id',getAccountsByOrgId);
+
+// Route to get Accounts by Sales Rep
+router.get('/accounts/orgs/:org_id/salesreps/:owner_id',getAccountsBySalesRep);
 
 export default router;
