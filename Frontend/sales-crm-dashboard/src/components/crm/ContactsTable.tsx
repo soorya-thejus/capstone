@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { ContactService } from '../../services/ContactService';
-import { getAllAccounts } from '../../services/AccountService'; // New account service import
+import { getAllAccounts } from '../../services/AccountService'; 
 import { Contact } from '../../types/crm/Contact';
-import styles from '../../styles/crm/contactstable.module.css';
-import formStyles from '../../styles/crm/contactform.module.css'; // Assuming you have this CSS module for forms
+import styles from '../../styles/crm/contactstable.module.css'; // Corrected CSS import name
+import formStyles from '../../styles/crm/contactform.module.css'; 
 
 interface Account {
   _id: string;
@@ -19,11 +19,15 @@ const ContactTable: React.FC<{ orgId: string }> = ({ orgId }) => {
 
   useEffect(() => {
     const fetchContactsAndAccounts = async () => {
-      const contactsData = await ContactService.getAllContacts(orgId);
-      setContacts(contactsData);
+      try {
+        const contactsData = await ContactService.getAllContacts(orgId);
+        setContacts(contactsData);
 
-      const accountsData = await getAllAccounts(orgId);
-      setAccounts(accountsData);
+        const accountsData = await getAllAccounts(orgId);
+        setAccounts(accountsData);
+      } catch (error) {
+        console.error("Error fetching contacts and accounts:", error);
+      }
     };
     
     fetchContactsAndAccounts();
@@ -37,16 +41,13 @@ const ContactTable: React.FC<{ orgId: string }> = ({ orgId }) => {
 
   const handleSaveAccount = async () => {
     if (selectedContact && selectedAccountId) {
-      // Update the contact with the selected account
       const updatedContact = { ...selectedContact, account_id: selectedAccountId };
       await ContactService.updateContact(selectedContact._id!, updatedContact);
       
-      // Update the state to reflect the new account association
       setContacts((prev) =>
         prev.map((contact) => (contact._id === selectedContact._id ? updatedContact : contact))
       );
 
-      // Close the pop-up and reset selections
       setAccountPopupVisible(false);
       setSelectedAccountId(null);
       setSelectedContact(null);
@@ -62,22 +63,25 @@ const ContactTable: React.FC<{ orgId: string }> = ({ orgId }) => {
     <div className={styles.tableContainer}>
       {isAccountPopupVisible && (
         <div className={formStyles.popupOverlay}>
-          <div className={formStyles.form}>
-            <h3>Select an Account</h3>
-            <select
-              value={selectedAccountId || ''}
-              onChange={(e) => setSelectedAccountId(e.target.value)}
-            >
-              <option value="" disabled>Select an Account</option>
-              {accounts.map((account) => (
-                <option key={account._id} value={account._id}>
-                  {account.account_name}
-                </option>
-              ))}
-            </select>
-            <div className={formStyles.buttonGroup}>
-              <button onClick={handleSaveAccount} type="button">Save</button>
-              <button onClick={() => setAccountPopupVisible(false)} type="button">Cancel</button>
+          <div className={formStyles.popup}>
+            <div className={formStyles.form}>
+              <h3>Select an Account</h3>
+              <select
+                value={selectedAccountId || ''}
+                onChange={(e) => setSelectedAccountId(e.target.value)}
+              >
+                <option value="" disabled>Select an Account</option>
+                {accounts.map((account) => (
+                  <option key={account._id} value={account._id}>
+                    {account.account_name}
+                  </option>
+                ))}
+              </select>
+              <div className={formStyles.buttonGroup}>
+                {/* Changed to submit type */}
+                <button onClick={handleSaveAccount} type="submit">Save</button>
+                <button onClick={() => setAccountPopupVisible(false)} type="button">Cancel</button>
+              </div>
             </div>
           </div>
         </div>
@@ -103,10 +107,10 @@ const ContactTable: React.FC<{ orgId: string }> = ({ orgId }) => {
                 {contact.account_id ? (
                   <>
                     {getAccountNameById(contact.account_id)} {/* Display the account name */}
-                    <button onClick={() => handleAddOrEditAccount(contact)}>Edit Account</button>
+                    <button onClick={() => handleAddOrEditAccount(contact)}>Edit</button>
                   </>
                 ) : (
-                  <button onClick={() => handleAddOrEditAccount(contact)}>Add Account</button>
+                  <button onClick={() => handleAddOrEditAccount(contact)}>Add</button>
                 )}
               </td>
               <td>{contact.deal_ids?.length || 0}</td>

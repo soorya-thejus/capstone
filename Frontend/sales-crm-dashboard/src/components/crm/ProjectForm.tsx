@@ -22,7 +22,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel, or
 
   const fetchContacts = async () => {
     try {
-      const response = await axios.get('/api/contacts'); // Adjust the endpoint as needed
+      const response = await axios.get(''); // Adjust the endpoint as needed
       setContacts(response.data); // Assuming response.data is an array of contacts
     } catch (error) {
       console.error('Error fetching contacts:', error);
