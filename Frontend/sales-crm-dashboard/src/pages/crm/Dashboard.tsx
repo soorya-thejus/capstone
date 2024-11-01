@@ -1,4 +1,3 @@
-// src/pages/crm/Dashboard.tsx
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/crm/DashboardLayout';
 import Widget from '../../components/crm/Widget';
@@ -22,27 +21,25 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setTimeout(() => {
-        setData({
-          activeDeals: 50000, // Monetary value
-          avgDealValue: 7000,
-          actualRevenue: 500000,
-          revenueByMonth: { labels: ['Jan', 'Feb', 'Mar'], datasets: [{ data: [120000, 150000, 130000], label: 'Revenue' }] },
-          dealStatusDistribution: { labels: ['Won', 'Working', 'Discovery', 'Proposal', 'New'], datasets: [{ data: [15, 20, 10, 5, 5], label: 'Status' }] },
-          topDeals: ['Deal 1 - $20k', 'Deal 2 - $18k', 'Deal 3 - $15k'],
-          pipelineConversion: { labels: ['New', 'Discovery', 'Proposal', 'Negotiation', 'Won'], datasets: [{ data: [30, 25, 20, 15, 10], label: 'Conversion' }] },
-          forecastedRevenueByMonth: { labels: ['Apr', 'May', 'Jun'], datasets: [{ data: [140000, 160000, 170000], label: 'Forecasted Revenue' }] },
-          forecastedRevenueByStage: { labels: ['Discovery', 'Proposal', 'Negotiation', 'Won'], datasets: [{ data: [25000, 50000, 100000, 125000], label: 'Forecasted Revenue by Stage' }] },
-          dealsProgressByMonth: { 
-            labels: ['Jan', 'Feb', 'Mar'], 
-            datasets: [
-              { data: [1, 0, 0], label: 'New Deals' },
-              { data: [1, 1, 0], label: 'Won Deals' },
-              { data: [0, 0, 1], label: 'Working Deals' }
-            ]
-          },
-        });
-      }, 0); // Simulate network delay
+      setData({
+        activeDeals: 50000,
+        avgDealValue: 7000,
+        actualRevenue: 500000,
+        revenueByMonth: { labels: ['Jan', 'Feb', 'Mar'], datasets: [{ data: [120000, 150000, 130000], label: 'Revenue' }] },
+        dealStatusDistribution: { labels: ['Won', 'Working', 'Discovery', 'Proposal', 'New'], datasets: [{ data: [15, 20, 10, 5, 5], label: 'Status' }] },
+        topDeals: ['Deal 1 - $20k', 'Deal 2 - $18k', 'Deal 3 - $15k'],
+        pipelineConversion: { labels: ['New', 'Discovery', 'Proposal', 'Negotiation', 'Won'], datasets: [{ data: [30, 25, 20, 15, 10], label: 'Conversion' }] },
+        forecastedRevenueByMonth: { labels: ['Apr', 'May', 'Jun'], datasets: [{ data: [140000, 160000, 170000], label: 'Forecasted Revenue' }] },
+        forecastedRevenueByStage: { labels: ['Discovery', 'Proposal', 'Negotiation', 'Won'], datasets: [{ data: [25000, 50000, 100000, 125000], label: 'Forecasted Revenue by Stage' }] },
+        dealsProgressByMonth: { 
+          labels: ['Jan', 'Feb', 'Mar'], 
+          datasets: [
+            { data: [1, 0, 0], label: 'New Deals' },
+            { data: [1, 1, 0], label: 'Won Deals' },
+            { data: [0, 0, 1], label: 'Working Deals' }
+          ]
+        },
+      });
     };
 
     fetchData();
