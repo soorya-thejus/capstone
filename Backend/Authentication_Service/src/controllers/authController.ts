@@ -88,6 +88,26 @@ export const getAllUsers = async (req: Request, res: Response): Promise<void> =>
 
 
 
+// Get all sales_rep in an organization
+export const getSalesRepsByOrganization = async (req: Request, res: Response): Promise<void> => {
+    const { org_id } = req.params;
+
+    try {
+        const salesReps = await userService.getSalesRepsByOrg(org_id);
+
+        if (!salesReps) {
+            res.status(404).json({ message: 'No sales representatives found for this organization.' });
+            return;
+        }
+
+        res.status(200).json(salesReps);
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : 'Error retrieving sales representatives' });
+    }
+};
+
+
+
 
 
 

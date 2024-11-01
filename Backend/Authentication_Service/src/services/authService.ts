@@ -66,3 +66,23 @@ export const deleteUser = async (userId: string): Promise<IUser | null> => {
 export const getAllUsers = async (): Promise<IUser[]> => {
     return await User.find();
 };
+
+
+
+
+
+
+
+//Get all Sales_Rep in an Organization
+export const getSalesRepsByOrg = async (org_id: string): Promise<IUser[] | null> => {
+  try {
+      // Find users with the specified org_id and role 'Sales Rep'
+      const salesReps = await User.find({ org_id, role: 'Sales Rep' });
+      
+      // If no sales reps are found, return null or an empty array as preferred
+      return salesReps.length > 0 ? salesReps : null;
+  } catch (error) {
+      console.error(`Error retrieving sales reps for organization ${org_id}:`, error);
+      throw new Error(`Could not retrieve sales reps for organization ${org_id}`);
+  }
+};

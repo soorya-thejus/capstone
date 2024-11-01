@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createAdminUser, createSalesRepUser, deleteUser, getAllUsers, getUserDetails, login, register, updateUser, validateToken } from "../controllers/authController";
+import { createAdminUser, createSalesRepUser, deleteUser, getAllUsers, getSalesRepsByOrganization, getUserDetails, login, register, updateUser, validateToken } from "../controllers/authController";
 
 
 const router = Router();
@@ -12,6 +12,8 @@ router.get('/get/:id', getUserDetails);
 router.put('/get/:id', updateUser);
 router.delete('/get/:id', deleteUser);
 router.get('/get', getAllUsers);
+
+router.get('/orgs/:org_id/salesreps',getSalesRepsByOrganization);
 
 
 
