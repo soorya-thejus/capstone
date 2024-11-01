@@ -36,6 +36,7 @@ export const updateLeadService = async (id: string, leadData: Partial<ILead>): P
               email: updatedLead.email,
               phone: updatedLead.phone,
               org_id: updatedLead.org_id,
+              owner_id: updatedLead.owner_id,
           });
       } catch (error) {
           console.error(`Failed to create contact for lead ${id}:`, error);
@@ -52,10 +53,7 @@ export const deleteLeadService = async (id: string): Promise<ILead | null> => {
 };
 
 
-//Get Leads by Org Id
-export const getLeadsByOrgIdService = async (org_id: string): Promise<ILead[] | null> => {
-    return await Lead.find({ org_id }); // Query using org_id, not id
-};
+
 
 
 
@@ -79,3 +77,18 @@ export const getLeadsByOrgIdService = async (org_id: string): Promise<ILead[] | 
   
 //     return updatedLead;
 //   };
+
+
+
+//Get Leads by Org Id
+export const getLeadsByOrgIdService = async (org_id: string): Promise<ILead[] | null> => {
+    return await Lead.find({ org_id }); // Query using org_id, not id
+};
+
+
+//Get Leads by Sales Rep in an Org
+export const getLeadsBySalesRep = async (org_id: string, owner_id: string): Promise<ILead[]|null> => {
+        // Query for leads matching both the organization and sales rep (owner) criteria
+        const leads = await Lead.find({org_id,owner_id});
+        return leads;
+};

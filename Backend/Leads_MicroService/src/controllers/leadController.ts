@@ -84,3 +84,17 @@ export const getLeadsByOrgId = async (req: Request, res: Response) => {
 //       res.status(500).json({ message: error instanceof Error ? error.message : 'Error updating lead status' });
 //     }
 //   };
+
+
+export const getLeadsBySalesRep = async (req: Request, res: Response) => {
+    const { org_id, owner_id } = req.params;
+
+    try {
+        // Pass org_id and owner_id as separate arguments
+        const leads = await leadService.getLeadsBySalesRep(org_id, owner_id);
+
+        res.json(leads);
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching leads' });
+    }
+};
