@@ -22,3 +22,7 @@ export const ContactService = {
 
  
 };
+export function getAllContacts(orgId: string) {
+  throw new Error('Function not implemented.');
+}
+

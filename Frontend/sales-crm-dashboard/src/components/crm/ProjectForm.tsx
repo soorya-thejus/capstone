@@ -1,7 +1,8 @@
+// src/components/ProjectForm.tsx
 import React, { useState, useEffect } from 'react';
 import { Project } from '../../types/crm/Project';
-import styles from '../../styles/crm/projectform.module.css';
-import axios from 'axios'; // Make sure axios is installed and imported
+import styles from '../../styles/crm/projectform.module.css'; // Ensure you're importing your CSS correctly
+import { ContactService } from '../../services/ContactService'; // Correctly importing ContactService
 
 interface ProjectFormProps {
   project: Project;
@@ -22,8 +23,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel, or
 
   const fetchContacts = async () => {
     try {
-      const response = await axios.get(''); // Adjust the endpoint as needed
-      setContacts(response.data); // Assuming response.data is an array of contacts
+      const response = await ContactService.getAllContacts(orgId);
+      console.log('Fetched contacts:', response); // Debugging line to check fetched contacts
+      setContacts(response); // Assuming response is an array of contacts
     } catch (error) {
       console.error('Error fetching contacts:', error);
     } finally {
@@ -86,14 +88,19 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel, or
             ) : (
               <select name="contact_id" value={formData.contact_id} onChange={handleChange} required>
                 <option value="">Select a contact</option>
-                {contacts.map(contact => (
-                  <option key={contact._id} value={contact._id}>
-                    {contact.name} {/* Adjust according to your contact structure */}
-                  </option>
-                ))}
+                {contacts.length > 0 ? (
+                  contacts.map(contact => (
+                    <option key={contact._id} value={contact._id}>
+                      {contact.contact_name} {/* Use contact_name instead of name */}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>No contacts available</option>
+                )}
               </select>
             )}
           </label>
+
           <div className={styles.buttonGroup}>
             <button type="submit">Save</button>
             <button type="button" onClick={onCancel}>Cancel</button>

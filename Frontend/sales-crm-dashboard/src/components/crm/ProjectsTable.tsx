@@ -1,58 +1,73 @@
+// src/components/ProjectsTable.tsx
 import React, { useState, useEffect } from 'react';
 import { Project } from '../../types/crm/Project';
+import { Contact } from '../../types/crm/Contact';
 import ProjectForm from './ProjectForm';
 import * as projectService from '../../services/ProjectService';
+import { ContactService } from '../../services/ContactService';
 import styles from '../../styles/crm/projectstable.module.css';
 
 interface ProjectsTableProps {
-  orgId: string; // Pass organization ID as a prop
+  orgId: string;
 }
 
 const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [contacts, setContacts] = useState<{ [key: string]: string }>({});
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  // Fetch projects when the component mounts
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchProjectsAndContacts = async () => {
       try {
         const fetchedProjects = await projectService.fetchProjectsByOrgId(orgId);
         setProjects(fetchedProjects);
+
+        const fetchedContacts: Contact[] = await ContactService.getAllContacts(orgId);
+        const contactMap = fetchedContacts.reduce((acc: { [key: string]: string }, contact: Contact) => {
+          if (contact._id) {
+            acc[contact._id] = contact.contact_name;
+          }
+          return acc;
+        }, {});
+        setContacts(contactMap);
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        console.error("Error fetching projects or contacts:", error);
       }
     };
 
-    fetchProjects();
+    fetchProjectsAndContacts();
   }, [orgId]);
 
   const handleEditClick = (project: Project) => {
-    setSelectedProject(project);
+    // Format the date to "YYYY-MM-DD" for editing in the ProjectForm
+    setSelectedProject({
+      ...project,
+      start_date: project.start_date ? new Date(project.start_date).toISOString().split("T")[0] : "",
+      end_date: project.end_date ? new Date(project.end_date).toISOString().split("T")[0] : "",
+    });
   };
 
   const handleDeleteClick = async (id: string | undefined) => {
-    if (window.confirm("Are you sure you want to delete this project?")) {
-      if (id) {
-        try {
-          await projectService.deleteProject(id);
-          setProjects(prev => prev.filter(project => project.id !== id));
-        } catch (error) {
-          console.error("Error deleting project:", error);
-        }
+    if (window.confirm("Are you sure you want to delete this project?") && id) {
+      try {
+        await projectService.deleteProject(id);
+        setProjects(prev => prev.filter(project => project.id !== id)); // Remove project from state
+      } catch (error) {
+        console.error("Error deleting project:", error);
       }
     }
   };
 
   const handleAddClick = () => {
     setSelectedProject({
-      id: undefined, // Set to undefined for new project
+      id: undefined,
       project_name: "",
       priority: "medium",
       start_date: "",
       end_date: "",
       status: "not started",
-      contact_id: "", // Adjust based on your contact management
-      org_id: orgId, // Use the organization ID for the new project
+      contact_id: "",
+      org_id: orgId,
     });
   };
 
@@ -62,10 +77,9 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
       if (project.id) {
         savedProject = await projectService.updateProject(project.id, project);
       } else {
-        console.log("Creating new project:", project);
         savedProject = await projectService.createProject(project);
       }
-  
+
       setProjects(prev =>
         prev.some(p => p.id === savedProject.id)
           ? prev.map(p => (p.id === savedProject.id ? savedProject : p))
@@ -76,10 +90,14 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
       console.error("Error saving project:", error);
     }
   };
-  
 
   const handleCancel = () => {
     setSelectedProject(null);
+  };
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   return (
@@ -90,6 +108,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
           <tr>
             <th>Name</th>
             <th>Priority</th>
+            <th>Contact Name</th>
             <th>Start Date</th>
             <th>End Date</th>
             <th>Status</th>
@@ -98,35 +117,41 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
           </tr>
         </thead>
         <tbody>
-          {projects.map(project => (
-            <tr key={project.id}>
-              <td>{project.project_name}</td>
-              <td>{project.priority}</td>
-              <td>{project.start_date}</td>
-              <td>{project.end_date}</td>
-              <td>{project.status}</td>
-              <td>
-                <button onClick={() => handleEditClick(project)}>Edit</button>
-              </td>
-              <td>
-                <button className={styles.deleteButton} onClick={() => handleDeleteClick(project.id)}>Delete</button>
-              </td>
+          {projects.length > 0 ? (
+            projects.map(project => (
+              <tr key={project.id}>
+                <td>{project.project_name}</td>
+                <td>{project.priority}</td>
+                <td>{contacts[project.contact_id || ""] || "N/A"}</td>
+                <td>{formatDate(project.start_date)}</td>
+                <td>{formatDate(project.end_date)}</td>
+                <td>{project.status}</td>
+                <td>
+                  <button onClick={() => handleEditClick(project)}>Edit</button>
+                </td>
+                <td>
+                  <button className={styles.deleteButton} onClick={() => handleDeleteClick(project.id)}>Delete</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={8}>No projects available.</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 
-      {/* Render ProjectForm directly below the table if a project is being edited or added */}
-{(selectedProject !== null) && (
-  <div className={styles.formContainer}>
-    <ProjectForm
-      project={selectedProject}
-      onSave={handleSaveProject}
-      onCancel={handleCancel}
-      orgId={orgId} // Pass orgId here
-    />
-  </div>
-)}
+      {selectedProject !== null && (
+        <div className={styles.formContainer}>
+          <ProjectForm
+            project={selectedProject}
+            onSave={handleSaveProject}
+            onCancel={handleCancel}
+            orgId={orgId}
+          />
+        </div>
+      )}
     </div>
   );
 };
