@@ -9,6 +9,7 @@ export interface ILead extends Document {
   email: string;
   phone: string;
   org_id: Types.ObjectId;
+  created_by: Types.ObjectId;
 }
 
 // Define the Lead schema
@@ -24,7 +25,8 @@ const LeadSchema: Schema = new Schema({
   title: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phone: { type: String, required: true },
-  org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true}
+  org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true},
+  created_by: { type: Types.ObjectId, ref: 'User', required: true },
 
 }, {timestamps: true, versionKey: false });
 
