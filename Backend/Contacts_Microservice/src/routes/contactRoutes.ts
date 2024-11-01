@@ -29,7 +29,6 @@ router.patch('/contacts/:id/remove-project',removeProjectId);
 // Route to get Contacts by orgId
 router.get('/contacts/orgs/:org_id',getContactsByOrgId);
 
-
 router.patch('/contacts/:contactId/add-deal',addDealToContact);
 
 router.patch('/contacts/:contactId/add-project',addProjectToContact);

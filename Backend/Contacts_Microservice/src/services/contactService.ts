@@ -4,9 +4,9 @@ import axios from "axios";
 
 
 export const createContactService = async (contactData: Partial<IContact>): Promise<IContact> => {
-  const { lead_id, contact_name, title, email, phone , org_id} = contactData;
+  const { lead_id, contact_name, title, email, phone , org_id, owner_id} = contactData;
 
-  if (!lead_id || !contact_name || !title || !email || !phone || !org_id) {
+  if (!lead_id || !contact_name || !title || !email || !phone || !org_id || !owner_id) {
       throw new Error('Missing required contact information');
   }
 
@@ -24,6 +24,7 @@ export const createContactService = async (contactData: Partial<IContact>): Prom
       email,
       phone,
       org_id,
+      owner_id,
   });
 
   return await newContact.save();
