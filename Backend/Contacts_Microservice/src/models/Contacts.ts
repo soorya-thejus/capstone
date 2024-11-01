@@ -14,7 +14,7 @@ export interface IContact extends Document {
   forecast_value: number,
   project_ids: Types.ObjectId[];
   org_id: Types.ObjectId;
-  created_by: Types.ObjectId;
+  owner_id: Types.ObjectId;
 
 }
 
@@ -35,7 +35,7 @@ const ContactSchema: Schema = new Schema({
   forecast_value: {type: Number},
   project_ids: [{ type: Schema.Types.ObjectId, ref: 'Project', required: false }],
   org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true},
-  created_by: { type: Types.ObjectId, ref: 'User', required: true },
+  owner_id: { type: Types.ObjectId, ref: 'User', required: true },
 
 }, { timestamps: true, versionKey: false });
 
