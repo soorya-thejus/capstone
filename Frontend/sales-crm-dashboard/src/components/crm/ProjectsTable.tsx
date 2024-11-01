@@ -1,4 +1,3 @@
-// src/components/ProjectsTable.tsx
 import React, { useState, useEffect } from 'react';
 import { Project } from '../../types/crm/Project';
 import { Contact } from '../../types/crm/Contact';
@@ -39,7 +38,6 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
   }, [orgId]);
 
   const handleEditClick = (project: Project) => {
-    // Format the date to "YYYY-MM-DD" for editing in the ProjectForm
     setSelectedProject({
       ...project,
       start_date: project.start_date ? new Date(project.start_date).toISOString().split("T")[0] : "",
@@ -51,7 +49,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
     if (window.confirm("Are you sure you want to delete this project?") && id) {
       try {
         await projectService.deleteProject(id);
-        setProjects(prev => prev.filter(project => project.id !== id)); // Remove project from state
+        setProjects(prev => prev.filter(project => project._id !== id));
       } catch (error) {
         console.error("Error deleting project:", error);
       }
@@ -60,7 +58,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
 
   const handleAddClick = () => {
     setSelectedProject({
-      id: undefined,
+      _id: undefined,  // Use _id here for MongoDB compatibility
       project_name: "",
       priority: "medium",
       start_date: "",
@@ -74,18 +72,19 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
   const handleSaveProject = async (project: Project) => {
     try {
       let savedProject: Project;
-      if (project.id) {
-        savedProject = await projectService.updateProject(project.id, project);
+      if (project._id) {
+        savedProject = await projectService.updateProject(project._id, project);
       } else {
-        savedProject = await projectService.createProject(project);
+        const { _id, ...newProject } = project;  // Exclude _id field for new project creation
+        savedProject = await projectService.createProject(newProject);
       }
 
       setProjects(prev =>
-        prev.some(p => p.id === savedProject.id)
-          ? prev.map(p => (p.id === savedProject.id ? savedProject : p))
+        prev.some(p => p._id === savedProject._id)
+          ? prev.map(p => (p._id === savedProject._id ? savedProject : p))
           : [...prev, savedProject]
       );
-      setSelectedProject(null); // Close form after saving
+      setSelectedProject(null);
     } catch (error) {
       console.error("Error saving project:", error);
     }
@@ -119,7 +118,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
         <tbody>
           {projects.length > 0 ? (
             projects.map(project => (
-              <tr key={project.id}>
+              <tr key={project._id}>
                 <td>{project.project_name}</td>
                 <td>{project.priority}</td>
                 <td>{contacts[project.contact_id || ""] || "N/A"}</td>
@@ -130,7 +129,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
                   <button onClick={() => handleEditClick(project)}>Edit</button>
                 </td>
                 <td>
-                  <button className={styles.deleteButton} onClick={() => handleDeleteClick(project.id)}>Delete</button>
+                  <button className={styles.deleteButton} onClick={() => handleDeleteClick(project._id)}>Delete</button>
                 </td>
               </tr>
             ))

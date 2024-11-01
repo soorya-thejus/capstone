@@ -33,6 +33,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel, or
     }
   };
 
+  //creater me
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -51,7 +53,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel, or
     <div className={styles.popupOverlay}>
       <div className={styles.popup}>
         <form onSubmit={handleSubmit} className={styles.form}>
-          <h3>{project.id ? 'Edit Project' : 'Add Project'}</h3>
+          <h3>{project._id ? 'Edit Project' : 'Add Project'}</h3>
           <label>
             Name:
             <input type="text" name="project_name" value={formData.project_name} onChange={handleChange} required />

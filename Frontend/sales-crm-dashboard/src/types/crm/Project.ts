@@ -1,6 +1,6 @@
 // src/types/crm/Project.ts
 export interface Project {
-  id?: string; // Optional for new projects
+  _id?: string; // Optional for new projects
   project_name: string;
   priority: 'high' | 'medium' | 'low';
   start_date: string; // ISO date string

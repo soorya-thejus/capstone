@@ -1,16 +1,14 @@
-// src/services/ProjectService.ts
 import axios from 'axios';
 import { Project } from '../types/crm/Project';
 
 const BASE_URL = 'http://localhost:5004/api/projects';
 
-// Fetch all projects for a specific organization
 export const fetchProjectsByOrgId = async (orgId: string): Promise<Project[]> => {
   const response = await axios.get<Project[]>(`${BASE_URL}/orgs/${orgId}`);
   return response.data;
 };
 
-export const createProject = async (project: Project): Promise<Project> => {
+export const createProject = async (project: Omit<Project, '_id'>): Promise<Project> => {
   const response = await axios.post<Project>(`${BASE_URL}`, project);
   return response.data;
 };
