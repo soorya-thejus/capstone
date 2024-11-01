@@ -1,5 +1,5 @@
 // models/Metrics.ts
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 
 interface IMetric extends Document {
   timestamp: Date; // Last updated time
@@ -18,6 +18,7 @@ interface IMetric extends Document {
   pipeline_conversion: Record<string, number>;
   forecasted_revenue_by_month: Record<string, number>;
   forecasted_revenue_by_stage: Record<string, number>;
+  org_id: Types.ObjectId;
 }
 
 
@@ -54,13 +55,14 @@ const MetricsSchema: Schema = new Schema({
   }, // Deals in pipeline stages
   forecasted_revenue_by_month: { type: Map, of: Number, default: {} }, // Forecasted revenue by month
   forecasted_revenue_by_stage: {
-    won: { type: Number, default: 0 },
-    lost: { type: Number, default: 0 },
+    // won: { type: Number, default: 0 },
+    // lost: { type: Number, default: 0 },
     new: { type: Number, default: 0 },
     discovery: { type: Number, default: 0 },
     proposal: { type: Number, default: 0 },
     negotiation: { type: Number, default: 0 },
   }, // Forecasted revenue by deal stage
+  org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true},
 });
 
 
