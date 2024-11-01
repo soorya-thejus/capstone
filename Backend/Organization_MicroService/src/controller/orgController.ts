@@ -59,6 +59,36 @@ export const deleteOrganization = async (req: Request, res: Response) => {
 };
 
 
+
+
+
+//Get Sales_Rep By Organization
+export const getSalesRepsByOrg = async (req: Request, res: Response) => {
+    try {
+        const response = await organizationService.fetchSalesRepsByOrg(req.params.id);
+        res.status(200).json(response.data); // Accessing response.data here directly
+    } catch (error) {
+        res.status(400).json({ message: error instanceof Error ? error.message : 'Error fetching sales reps' });
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const getLeadsByOrgId = async(req:Request, res:Response)=>{
     const orgId =req.params.orgId;
 

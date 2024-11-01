@@ -36,6 +36,21 @@ export const deleteOrganizationService = async (id: string): Promise<IOrganizati
 
 
 
+
+
+export const fetchSalesRepsByOrg = async (id: string) => {
+    return axios.get(`http://localhost:5007/orgs/${id}/salesreps`);
+};
+
+
+
+
+
+
+
+
+
+
 //Get Leads By Organization ID
 export const getLeadsByOrgIdService = async (orgId: string) =>{
     return axios.get(`http://localhost:5001/api/leads/orgs/${orgId}`);

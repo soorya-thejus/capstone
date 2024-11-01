@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createOrganization, deleteOrganization, getAccountsByOrgId, getAllOrganizations, getContactsByOrgId, getDealsByOrgId, getLeadsByOrgId, getOrganization, getProjectsByOrgId, updateOrganization } from "../controller/orgController";
+import { createOrganization, deleteOrganization, getAccountsByOrgId, getAllOrganizations, getContactsByOrgId, getDealsByOrgId, getLeadsByOrgId, getOrganization, getProjectsByOrgId, getSalesRepsByOrg, updateOrganization } from "../controller/orgController";
 //import { createProject, deleteProject, getAllProject, getProject, updateProject } from "../controller/prjctController";
 
 
@@ -15,6 +15,11 @@ router.get('/orgs/:id',getOrganization);
 router.put('/orgs/:id',updateOrganization);
 
 router.delete('/orgs/:id',deleteOrganization);
+
+
+router.get('/orgs/:id/salesreps',getSalesRepsByOrg);
+
+
 
 router.get('/orgs/:orgId/leads',getLeadsByOrgId);
 
