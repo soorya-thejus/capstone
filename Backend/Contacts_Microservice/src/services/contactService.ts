@@ -213,6 +213,13 @@ export const getContactsByOrgIdService = async (org_id: string): Promise<IContac
   return await Contact.find({ org_id }); // Query using org_id, not id
 };
 
+//Get Contacts by Sales Rep in an Org
+export const getContactsBySalesRep = async (org_id: string, owner_id: string): Promise<IContact[]|null> => {
+  // Query for contacts matching both the organization and sales rep (owner) criteria
+  const contacts = await Contact.find({org_id,owner_id});
+  return contacts;
+};
+
 
 
 

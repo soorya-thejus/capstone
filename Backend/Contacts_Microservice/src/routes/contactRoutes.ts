@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addDealToContact, addProjectToContact, createContact, deleteContact, getAllContacts, getContact, getContactsByAccountId, getContactsByDealId, getContactsByOrgId, getContactsByProjectId, removeAccountId, removeDealId, removeProjectId, updateContact} from "../controllers/contactController";
+import { addDealToContact, addProjectToContact, createContact, deleteContact, getAllContacts, getContact, getContactsByAccountId, getContactsByDealId, getContactsByOrgId, getContactsByProjectId, getContactsBySalesRep, removeAccountId, removeDealId, removeProjectId, updateContact} from "../controllers/contactController";
 
 const router = Router();
 
@@ -28,6 +28,11 @@ router.patch('/contacts/:id/remove-project',removeProjectId);
 
 // Route to get Contacts by orgId
 router.get('/contacts/orgs/:org_id',getContactsByOrgId);
+
+// Route to get Contacts by Sales Rep
+router.get('/contacts/orgs/:org_id/salesreps/:owner_id',getContactsBySalesRep);
+
+
 
 router.patch('/contacts/:contactId/add-deal',addDealToContact);
 

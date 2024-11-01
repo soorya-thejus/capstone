@@ -154,6 +154,20 @@ export const getContactsByOrgId = async (req: Request, res: Response) => {
 
 
 
+export const getContactsBySalesRep = async (req: Request, res: Response) => {
+    const { org_id, owner_id } = req.params;
+
+    try {
+        // Pass org_id and owner_id as separate arguments
+        const contacts = await contactService.getContactsBySalesRep(org_id, owner_id);
+
+        res.json(contacts);
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching contacts' });
+    }
+};
+
+
 
 
 
