@@ -35,8 +35,9 @@ export const getOrganization = async (req: Request, res: Response) => {
 
 // Update an Organization
 export const updateOrganization = async (req: Request, res: Response) => {
+    const { adminId } = req.body;
     try {
-        const updatedOrganization = await organizationService.updateOrganizationService(req.params.id, req.body);
+        const updatedOrganization = await organizationService.updateOrganizationService(req.params.id, adminId);
         if (!updatedOrganization)  {res.status(404).json({ message: 'Organization not found' });
                     return;};
         res.status(200).json(updatedOrganization);

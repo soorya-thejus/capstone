@@ -3,7 +3,13 @@ import { IOrganization, Organization } from '../models/organization';
 
 // Create a new Organization
 export const createOrganizationService = async (data: Partial<IOrganization>): Promise<IOrganization> => {
-    const organization = new Organization(data);
+    const { name, type, address, contact_info } =data;
+    const organization = await Organization.create({
+        name,
+        type,
+        address,
+        contact_info,
+      });
     return await organization.save();
 };
 
@@ -18,8 +24,9 @@ export const getOrganizationService = async (id: string): Promise<IOrganization 
 };
 
 // Update an Organization by ID
-export const updateOrganizationService = async (id: string, data: Partial<IOrganization>): Promise<IOrganization | null> => {
-    return await Organization.findByIdAndUpdate(id, data, { new: true });
+export const updateOrganizationService = async (id: string, adminId: string): Promise<IOrganization | null> => {
+    // Update only the `admin` field in the organization document
+    return await Organization.findByIdAndUpdate(id, { admin: adminId }, { new: true });
 };
 
 // Delete an Organization by ID
