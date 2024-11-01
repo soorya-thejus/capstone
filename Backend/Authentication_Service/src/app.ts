@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Define routes
-app.use('/', authRoutes);
+app.use('/api', authRoutes);
 
 // Health check route
 app.get('/', (req, res) => {
