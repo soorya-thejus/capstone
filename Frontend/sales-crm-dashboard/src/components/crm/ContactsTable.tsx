@@ -1,109 +1,71 @@
-// src/components/ContactsTable.tsx
+// src/components/ContactTable.tsx
 import React, { useEffect, useState } from 'react';
+import { ContactService } from '../../services/ContactService';
 import { Contact } from '../../types/crm/Contact';
 import ContactForm from './ContactForm';
-import styles from '../../styles/crm/contactstable.module.css';
-import axios from 'axios';
+import styles from '../../styles/crm/contactstable.module.css'; // Assuming you have this CSS module
 
-const ContactsTable: React.FC = () => {
+const ContactTable: React.FC<{ orgId: string }> = ({ orgId }) => {
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const [editingContact, setEditingContact] = useState<Contact | null>(null);
+  const [isFormVisible, setFormVisible] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
   useEffect(() => {
     const fetchContacts = async () => {
-      try {
-        const response = await axios.get('/api/contacts'); // Adjust the URL as per your API
-        setContacts(response.data);
-      } catch (error) {
-        console.error('Error fetching contacts:', error);
-      }
+      const contactsData = await ContactService.getAllContacts(orgId);
+      setContacts(contactsData);
     };
-
     fetchContacts();
-  }, []);
+  }, [orgId]);
 
-  const handleEditClick = (contact: Contact) => {
-    setEditingContact(contact);
+  const handleSave = (contact: Contact) => {
+    setContacts((prev) => {
+      const existingIndex = prev.findIndex(c => c._id === contact._id);
+      if (existingIndex >= 0) {
+        const updatedContacts = [...prev];
+        updatedContacts[existingIndex] = contact;
+        return updatedContacts;
+      }
+      return [...prev, contact];
+    });
   };
 
-  const handleDeleteClick = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this contact?")) {
-      try {
-        await axios.delete(`/api/contacts/${id}`); // Adjust the URL as per your API
-        setContacts(contacts.filter(contact => contact.id !== id));
-      } catch (error) {
-        console.error('Error deleting contact:', error);
-      }
-    }
-  };
-
-  const handleSaveContact = async (contact: Contact) => {
-    try {
-      if (contact.id) {
-        // Edit existing contact
-        await axios.put(`/api/contacts/${contact.id}`, contact); // Adjust the URL as per your API
-        setContacts(prev => prev.map(c => (c.id === contact.id ? contact : c)));
-      } else {
-        // Add new contact
-        const response = await axios.post('/api/contacts', contact); // Adjust the URL as per your API
-        setContacts(prev => [...prev, { ...response.data, id: Date.now() }]); // Assuming the API returns the new contact
-      }
-    } catch (error) {
-      console.error('Error saving contact:', error);
-    }
-    setEditingContact(null); // Close form after saving
+  const handleEdit = (contact: Contact) => {
+    setSelectedContact(contact);
+    setFormVisible(true);
   };
 
   return (
     <div className={styles.tableContainer}>
+      {isFormVisible && (
+        <ContactForm contact={selectedContact} onClose={() => setFormVisible(false)} onSave={handleSave} />
+      )}
       <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Account</th>
-            <th>Deals</th>
-            <th>Project</th>
-            <th>Priority</th>
-            <th>Phone</th>
+            <th>Contact Name</th>
             <th>Email</th>
-            <th>Deals Value</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th>Phone</th>
+            <th>Priority</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {contacts.map(contact => (
-            <tr key={contact.id}>
+            <tr key={contact._id}>
               <td>{contact.contact_name}</td>
-              <td>{contact.account_ids.join(', ')}</td> {/* Adjust based on how you want to display account IDs */}
-              <td>{contact.deal_ids.join(', ')}</td> {/* Adjust based on how you want to display deal IDs */}
-              <td>{contact.project_id.toString()}</td> {/* Adjust to show the project name if necessary */}
-              <td>{contact.priority}</td>
-              <td>{contact.phone}</td>
               <td>{contact.email}</td>
-              <td>{contact.deal_value}</td>
+              <td>{contact.phone}</td>
+              <td>{contact.priority}</td>
               <td>
-                <button onClick={() => handleEditClick(contact)}>Edit</button>
-              </td>
-              <td>
-                <button className={styles.deleteButton} onClick={() => handleDeleteClick(contact.id!)}>Delete</button>
+                <button onClick={() => handleEdit(contact)}>Edit</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {editingContact && (
-        <div className={styles.formContainer}>
-          <ContactForm
-            contact={editingContact}
-            onSave={handleSaveContact}
-            onCancel={() => setEditingContact(null)} // Close form on cancel
-          />
-        </div>
-      )}
     </div>
   );
 };
 
-export default ContactsTable;
+export default ContactTable;

@@ -1,20 +1,35 @@
-// src/components/ProjectForm.tsx
 import React, { useState, useEffect } from 'react';
 import { Project } from '../../types/crm/Project';
 import styles from '../../styles/crm/projectform.module.css';
+import axios from 'axios'; // Make sure axios is installed and imported
 
 interface ProjectFormProps {
   project: Project;
   onSave: (project: Project) => void;
   onCancel: () => void;
+  orgId: string; // Pass orgId to the form
 }
 
-const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel }) => {
+const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel, orgId }) => {
   const [formData, setFormData] = useState<Project>(project);
+  const [contacts, setContacts] = useState<any[]>([]); // Update type according to your contact structure
+  const [loading, setLoading] = useState<boolean>(true); // Loading state for contacts
 
   useEffect(() => {
     setFormData(project);
+    fetchContacts(); // Fetch contacts when the component mounts
   }, [project]);
+
+  const fetchContacts = async () => {
+    try {
+      const response = await axios.get('/api/contacts'); // Adjust the endpoint as needed
+      setContacts(response.data); // Assuming response.data is an array of contacts
+    } catch (error) {
+      console.error('Error fetching contacts:', error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -23,7 +38,11 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel }) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    onSave({
+      ...formData,
+      org_id: orgId, // Ensure org_id is set from prop
+      contact_id: formData.contact_id || '', // Ensure contact_id is included
+    });
   };
 
   return (
@@ -33,33 +52,48 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel }) 
           <h3>{project.id ? 'Edit Project' : 'Add Project'}</h3>
           <label>
             Name:
-            <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+            <input type="text" name="project_name" value={formData.project_name} onChange={handleChange} required />
           </label>
           <label>
             Priority:
             <select name="priority" value={formData.priority} onChange={handleChange} required>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
             </select>
           </label>
           <label>
             Start Date:
-            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} required />
+            <input type="date" name="start_date" value={formData.start_date} onChange={handleChange} required />
           </label>
           <label>
             End Date:
-            <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} required />
+            <input type="date" name="end_date" value={formData.end_date} onChange={handleChange} required />
           </label>
           <label>
             Status:
             <select name="status" value={formData.status} onChange={handleChange} required>
-              <option value="Not Started">Not Started</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
+              <option value="not started">Not Started</option>
+              <option value="working on it">Working on it</option>
+              <option value="stuck">Stuck</option>
+              <option value="done">Done</option>
             </select>
           </label>
-
+          <label>
+            Contact:
+            {loading ? (
+              <p>Loading contacts...</p>
+            ) : (
+              <select name="contact_id" value={formData.contact_id} onChange={handleChange} required>
+                <option value="">Select a contact</option>
+                {contacts.map(contact => (
+                  <option key={contact._id} value={contact._id}>
+                    {contact.name} {/* Adjust according to your contact structure */}
+                  </option>
+                ))}
+              </select>
+            )}
+          </label>
           <div className={styles.buttonGroup}>
             <button type="submit">Save</button>
             <button type="button" onClick={onCancel}>Cancel</button>
