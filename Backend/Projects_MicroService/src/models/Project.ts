@@ -8,7 +8,7 @@ export interface IProject extends Document {
   status: 'not started' | 'working on it' | 'stuck' | 'done';
   contact_id: Types.ObjectId;
   org_id: Types.ObjectId;
-  created_by: Types.ObjectId;
+  owner_id: Types.ObjectId;
 
 }
  
@@ -29,7 +29,7 @@ const ProjectSchema: Schema = new Schema({
   },
   contact_id: {type: Schema.Types.ObjectId, ref: 'Contact', required: true},
   org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true},
-  created_by: { type: Types.ObjectId, ref: 'User', required: true },
+  owner_id: { type: Types.ObjectId, ref: 'User', required: true },
 
 
 }, { timestamps: true, versionKey: false });
