@@ -9,7 +9,7 @@ const Accounts: React.FC = () => {
     <DashboardLayout>
       <div className={styles.accountsContainer}>
         <h2>Manage Your Accounts</h2>
-        <AccountsTable/>
+        <AccountsTable orgId={'67221a3f486241a8d7de5ab5'}/>
       </div>
     </DashboardLayout>
   );

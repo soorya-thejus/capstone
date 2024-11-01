@@ -4,23 +4,27 @@ import AccountForm from './AccountForm';
 import * as accountService from '../../services/AccountService';
 import styles from '../../styles/crm/accountstable.module.css';
 
-const AccountsTable: React.FC = () => {
+interface AccountsTableProps {
+  orgId: string;
+}
+
+const AccountsTable: React.FC<AccountsTableProps> = ({ orgId }) => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [isEditing, setEditing] = useState(false);
 
-  // Fetch all accounts on component mount
+  // Fetch all accounts for the organization on component mount
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const data = await accountService.getAllAccounts();
+        const data = await accountService.getAllAccounts(orgId);
         setAccounts(data);
       } catch (error) {
         console.error("Error fetching accounts", error);
       }
     };
     fetchAccounts();
-  }, []);
+  }, [orgId]);
 
   const handleEditClick = (account: Account) => {
     setSelectedAccount(account);
@@ -39,15 +43,13 @@ const AccountsTable: React.FC = () => {
   };
 
   const handleSaveAccount = async (account: Account) => {
-    console.log("Saving account:", account); // Debugging line
     try {
-      if (!account._id) { // Check if _id is not present for new accounts
-        const newAccount = await accountService.createAccount(account);
-        console.log("Created new account:", newAccount); // Debugging line
+      // Include org_id in the account object if creating a new account
+      if (!account._id) { 
+        const newAccount = await accountService.createAccount({ ...account, org_id: orgId });
         setAccounts([...accounts, newAccount]);
       } else {
         const updatedAccount = await accountService.updateAccount(account._id, account);
-        console.log("Updated account:", updatedAccount); // Debugging line
         setAccounts(accounts.map(a => (a._id === updatedAccount._id ? updatedAccount : a)));
       }
       setEditing(false);
@@ -64,12 +66,13 @@ const AccountsTable: React.FC = () => {
 
   const handleAddClick = () => {
     setSelectedAccount({
-      _id: '', // Ensure the ID is a string for MongoDB
+      _id: '',
       account_name: '',
       priority: 'medium',
       industry: '',
       description: '',
       number_of_employees: 0,
+      org_id: orgId, // Ensure org_id is included in the new account
     });
     setEditing(true);
   };
@@ -92,6 +95,7 @@ const AccountsTable: React.FC = () => {
             industry: '',
             description: '',
             number_of_employees: 0,
+            org_id: orgId,
           }}
           onSave={handleSaveAccount}
           onCancel={handleCancel}
@@ -122,7 +126,12 @@ const AccountsTable: React.FC = () => {
                 <button onClick={() => handleEditClick(account)}>Edit</button>
               </td>
               <td>
-                <button className={styles.deleteButton} onClick={() => handleDeleteClick(account._id)}>Delete</button>
+              <button
+  className={styles.deleteButton}
+  onClick={() => account._id && handleDeleteClick(account._id)}
+>
+  Delete
+</button>
               </td>
             </tr>
           ))}

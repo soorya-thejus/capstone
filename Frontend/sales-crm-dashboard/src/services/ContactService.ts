@@ -6,7 +6,7 @@ const API_URL = 'http://localhost:5005/api/contacts'; // Adjust the URL based on
 
 export const ContactService = {
   getAllContacts: async (orgId: string): Promise<Contact[]> => {
-    const response = await axios.get(`${API_URL}?org_id=${orgId}`);
+    const response = await axios.get(`${API_URL}/orgs/${orgId}`);
     return response.data;
   },
 
@@ -20,7 +20,5 @@ export const ContactService = {
     return response.data;
   },
 
-  deleteContact: async (contactId: string): Promise<void> => {
-    await axios.delete(`${API_URL}/${contactId}`);
-  }
+ 
 };

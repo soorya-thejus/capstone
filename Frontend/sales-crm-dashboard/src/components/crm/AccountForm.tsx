@@ -11,11 +11,12 @@ interface AccountFormProps {
 const AccountForm: React.FC<AccountFormProps> = ({ account, onSave, onCancel }) => {
   const [formData, setFormData] = useState<Account>({
     _id: "", // Initialize as an empty string for _id
-    account_name: "", 
-    priority: "medium", 
-    industry: "", 
-    description: "", 
-    number_of_employees: 0
+    account_name: "",
+    priority: "medium",
+    industry: "",
+    description: "",
+    number_of_employees: 0,
+    org_id: "" // Ensure org_id is included if necessary
   });
 
   useEffect(() => {
@@ -23,12 +24,13 @@ const AccountForm: React.FC<AccountFormProps> = ({ account, onSave, onCancel }) 
       setFormData(account);
     } else {
       setFormData({
-        _id: "",
+        _id: "", // Don't assign an invalid _id for new accounts
         account_name: "",
         priority: "medium",
         industry: "",
         description: "",
         number_of_employees: 0,
+        org_id: "", // Reset org_id if creating a new account
       });
     }
   }, [account]);

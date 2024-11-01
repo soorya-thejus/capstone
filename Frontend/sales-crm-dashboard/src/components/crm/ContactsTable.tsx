@@ -1,65 +1,120 @@
-// src/components/ContactTable.tsx
 import React, { useEffect, useState } from 'react';
 import { ContactService } from '../../services/ContactService';
+import { getAllAccounts } from '../../services/AccountService'; // New account service import
 import { Contact } from '../../types/crm/Contact';
-import ContactForm from './ContactForm';
-import styles from '../../styles/crm/contactstable.module.css'; // Assuming you have this CSS module
+import styles from '../../styles/crm/contactstable.module.css';
+import formStyles from '../../styles/crm/contactform.module.css'; // Assuming you have this CSS module for forms
+
+interface Account {
+  _id: string;
+  account_name: string;
+}
 
 const ContactTable: React.FC<{ orgId: string }> = ({ orgId }) => {
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const [isFormVisible, setFormVisible] = useState(false);
+  const [isAccountPopupVisible, setAccountPopupVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchContacts = async () => {
+    const fetchContactsAndAccounts = async () => {
       const contactsData = await ContactService.getAllContacts(orgId);
       setContacts(contactsData);
+
+      const accountsData = await getAllAccounts(orgId);
+      setAccounts(accountsData);
     };
-    fetchContacts();
+    
+    fetchContactsAndAccounts();
   }, [orgId]);
 
-  const handleSave = (contact: Contact) => {
-    setContacts((prev) => {
-      const existingIndex = prev.findIndex(c => c._id === contact._id);
-      if (existingIndex >= 0) {
-        const updatedContacts = [...prev];
-        updatedContacts[existingIndex] = contact;
-        return updatedContacts;
-      }
-      return [...prev, contact];
-    });
+  const handleAddOrEditAccount = (contact: Contact) => {
+    setSelectedContact(contact);
+    setSelectedAccountId(contact.account_id || null);
+    setAccountPopupVisible(true);
   };
 
-  const handleEdit = (contact: Contact) => {
-    setSelectedContact(contact);
-    setFormVisible(true);
+  const handleSaveAccount = async () => {
+    if (selectedContact && selectedAccountId) {
+      // Update the contact with the selected account
+      const updatedContact = { ...selectedContact, account_id: selectedAccountId };
+      await ContactService.updateContact(selectedContact._id!, updatedContact);
+      
+      // Update the state to reflect the new account association
+      setContacts((prev) =>
+        prev.map((contact) => (contact._id === selectedContact._id ? updatedContact : contact))
+      );
+
+      // Close the pop-up and reset selections
+      setAccountPopupVisible(false);
+      setSelectedAccountId(null);
+      setSelectedContact(null);
+    }
+  };
+
+  const getAccountNameById = (accountId: string | null) => {
+    const account = accounts.find(acc => acc._id === accountId);
+    return account ? account.account_name : 'No Account';
   };
 
   return (
     <div className={styles.tableContainer}>
-      {isFormVisible && (
-        <ContactForm contact={selectedContact} onClose={() => setFormVisible(false)} onSave={handleSave} />
+      {isAccountPopupVisible && (
+        <div className={formStyles.popupOverlay}>
+          <div className={formStyles.form}>
+            <h3>Select an Account</h3>
+            <select
+              value={selectedAccountId || ''}
+              onChange={(e) => setSelectedAccountId(e.target.value)}
+            >
+              <option value="" disabled>Select an Account</option>
+              {accounts.map((account) => (
+                <option key={account._id} value={account._id}>
+                  {account.account_name}
+                </option>
+              ))}
+            </select>
+            <div className={formStyles.buttonGroup}>
+              <button onClick={handleSaveAccount} type="button">Save</button>
+              <button onClick={() => setAccountPopupVisible(false)} type="button">Cancel</button>
+            </div>
+          </div>
+        </div>
       )}
       <table>
         <thead>
           <tr>
             <th>Contact Name</th>
-            <th>Email</th>
-            <th>Phone</th>
+            <th>Account</th>
+            <th>Deals</th>
+            <th>Title</th>
             <th>Priority</th>
-            <th>Actions</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Deals Value</th>
           </tr>
         </thead>
         <tbody>
-          {contacts.map(contact => (
+          {contacts.map((contact) => (
             <tr key={contact._id}>
               <td>{contact.contact_name}</td>
-              <td>{contact.email}</td>
-              <td>{contact.phone}</td>
-              <td>{contact.priority}</td>
               <td>
-                <button onClick={() => handleEdit(contact)}>Edit</button>
+                {contact.account_id ? (
+                  <>
+                    {getAccountNameById(contact.account_id)} {/* Display the account name */}
+                    <button onClick={() => handleAddOrEditAccount(contact)}>Edit Account</button>
+                  </>
+                ) : (
+                  <button onClick={() => handleAddOrEditAccount(contact)}>Add Account</button>
+                )}
               </td>
+              <td>{contact.deal_ids?.length || 0}</td>
+              <td>{contact.title}</td>
+              <td>{contact.priority}</td>
+              <td>{contact.phone}</td>
+              <td>{contact.email}</td>
+              <td>{contact.deal_value ? `$${contact.deal_value.toLocaleString()}` : '-'}</td>
             </tr>
           ))}
         </tbody>
