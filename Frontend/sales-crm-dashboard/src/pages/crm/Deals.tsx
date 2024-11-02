@@ -9,7 +9,7 @@ const Deals: React.FC = () => {
     <DashboardLayout>
       <div className={styles.dealsContainer}>
         <h2>Manage Your Deals</h2>
-        <DealsTable />
+        <DealsTable orgId={'67221a3f486241a8d7de5ab5'} />
       </div>
     </DashboardLayout>
   );
