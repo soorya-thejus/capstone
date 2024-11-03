@@ -9,6 +9,8 @@ export const createDeal = async (req: Request, res: Response) => {
         // Call the service to create a deal with the request body
         const savedDeal = await dealService.createDealService(req.body);
 
+        console.log("Saved Deal:", savedDeal);
+
         await sendDealEvent(savedDeal);
 
         res.status(201).json(savedDeal); // Respond with the created deal
@@ -105,5 +107,20 @@ export const getDealsByOrgId = async (req: Request, res: Response) => {
     } catch (error) {
         console.error("Error fetching deals for org_id:", error);
         res.status(500).json({ message: 'Error fetching deals for this organization' });
+    }
+};
+
+
+
+export const getDealsBySalesRep = async (req: Request, res: Response) => {
+    const { org_id, owner_id } = req.params;
+
+    try {
+        // Pass org_id and owner_id as separate arguments
+        const deals = await dealService.getDealsBySalesRep(org_id, owner_id);
+
+        res.json(deals);
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching deals' });
     }
 };

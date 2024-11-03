@@ -183,3 +183,10 @@ async function calculateTotalForecastValue(dealIds: mongoose.Types.ObjectId[]): 
 }
 
 
+
+//Get Deals by Sales Rep in an Org
+export const getDealsBySalesRep = async (org_id: string, owner_id: string): Promise<IDeal[]|null> => {
+  // Query for deals matching both the organization and sales rep (owner) criteria
+  const deals = await Deal.find({org_id,owner_id});
+  return deals;
+};
