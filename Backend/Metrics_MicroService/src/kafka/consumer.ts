@@ -1,9 +1,9 @@
 // metricsMicroservice/kafka/consumer.ts
 import { Kafka } from 'kafkajs';
 import { updateMetricsFromDealEvent } from '../services/metricsService';
-
+ 
 const kafka = new Kafka({
-  clientId: 'metrics-service',
+  clientId: 'metrics-service1',
   brokers: ['localhost:9093'] // Adjust with your Kafka broker address
 });
 

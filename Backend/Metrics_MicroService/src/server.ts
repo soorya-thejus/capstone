@@ -1,5 +1,4 @@
 import app from './app';
-import './cron/metricsCron';
 import connectDB from './config/db'; // Adjust the path as necessary
 
 // Connect to MongoDB and start the metrics service
