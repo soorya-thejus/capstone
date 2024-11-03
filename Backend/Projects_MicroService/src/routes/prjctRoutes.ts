@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createProject, deleteProject, getAllProject, getProject, getProjectsByOrgId, updateProject } from "../controller/prjctController";
+import { createProject, deleteProject, getAllProject, getProject, getProjectsByOrgId, getProjectsBySalesRep, updateProject } from "../controller/prjctController";
 
 
 const router = Router();
@@ -17,5 +17,8 @@ router.delete('/projects/:id',deleteProject);
 
 // Route to get Projects by orgId
 router.get('/projects/orgs/:org_id',getProjectsByOrgId);
+
+// Route to get Projects by sales_rep for an org
+router.get('/projects/orgs/:org_id/salesreps/:owner_id',getProjectsBySalesRep);
 
 export default router;

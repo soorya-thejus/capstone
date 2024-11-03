@@ -74,3 +74,17 @@ export const getProjectsByOrgId = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching projects for this organization' });
     }
 };
+
+
+
+export const getProjectsBySalesRep = async (req: Request, res: Response) => {
+    const { org_id, owner_id } = req.params;
+
+    try {
+        const leads = await projectService.getProjectsBySalesRep(org_id, owner_id);
+
+        res.json(leads);
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : 'Error fetching projects' });
+    }
+};

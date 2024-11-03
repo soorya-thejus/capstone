@@ -49,6 +49,16 @@ export const getProjectsByOrgIdService = async (org_id: string): Promise<IProjec
     return await Project.find({ org_id }); // Query using org_id, not id
 };
 
+
+//Get Projects by Sales Rep in an Org
+export const getProjectsBySalesRep = async (org_id: string, owner_id: string): Promise<IProject[]|null> => {
+  // Query for projects matching both the organization and sales rep (owner) criteria
+  const projects = await Project.find({org_id,owner_id});
+  return projects;
+};
+
+
+
  
 const CONTACT_MICROSERVICE_URL = 'http://localhost:5005/api/contacts';
 
