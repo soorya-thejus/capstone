@@ -23,8 +23,6 @@ const AccountSchema: Schema = new Schema({
   number_of_employees: { type: Number, required: true },
   org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true},
   owner_id: { type: Types.ObjectId, ref: 'User', required: true },
-
-
 }, { timestamps: true, versionKey: false });
 
 export const Account =  mongoose.model<IAccount>('Account', AccountSchema);
