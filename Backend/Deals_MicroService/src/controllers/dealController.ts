@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import * as dealService from '../services/dealService';
 import { sendDealEvent } from '../kafka/producer';
+import axios from 'axios';
 
 // Create a Deal
 export const createDeal = async (req: Request, res: Response) => {
@@ -9,7 +10,8 @@ export const createDeal = async (req: Request, res: Response) => {
         // Call the service to create a deal with the request body
         const savedDeal = await dealService.createDealService(req.body);
 
-        console.log("Saved Deal:", savedDeal);
+        //console.log("Saved Deal:", savedDeal);
+        //await axios.post('http://localhost:5008/api/metrics', savedDeal);
 
         await sendDealEvent(savedDeal);
 
@@ -55,6 +57,8 @@ export const updateDeal = async (req: Request, res: Response) => {
                 return;};
 
         await sendDealEvent(updatedDeal);
+
+        //await axios.post('http://localhost:5008/api/metrics', updatedDeal);
 
         res.status(200).json(updatedDeal); // Respond with the updated deal
     } catch (error) {
