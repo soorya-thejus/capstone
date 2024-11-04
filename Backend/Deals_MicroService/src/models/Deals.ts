@@ -43,7 +43,6 @@ const DealSchema: Schema = new Schema(
     expected_close_date: { type: Date, required: true },
     close_probability: {
       type: Number,
-      required: true,
       min: 0,
       max: 100,
     },
@@ -59,17 +58,38 @@ const DealSchema: Schema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
-// Pre-save hook to calculate forecast_value and initialize temp_stage
+
+const getCloseProbability = (stage: string): number => {
+  switch (stage) {
+    case 'new':
+      return 60;
+    case 'discovery':
+      return 70;
+    case 'proposal':
+      return 80;
+    case 'negotiation':
+      return 90;
+    case 'won':
+      return 100;
+    case 'lost':
+      return 0;
+    default:
+      return 60; 
+  }
+};
+
+
+// Pre-save hook 
 DealSchema.pre<IDeal>('save', async function (next) {
   try {
-    // Calculate forecast_value
+
+    this.close_probability = getCloseProbability(this.stage);
+
     this.forecast_value = (this.deal_value * this.close_probability) / 100;
 
-    // Initialize temp_stage to the initial stage value
     this.temp_stage = this.stage;
     this.previous_stage = "";
 
-    // Fetch the account_id from the Contact microservice based on contact_id
     if (this.contact_id) {
       const response = await axios.get(`http://localhost:5005/api/contacts/${this.contact_id}`);
       if (response.data && response.data.account_id) {
@@ -85,31 +105,27 @@ DealSchema.pre<IDeal>('save', async function (next) {
   }
 });
 
-// Pre-update hook to handle previous_stage and temp_stage during updates
 DealSchema.pre<IDeal>('findOneAndUpdate', async function (next) {
   const update = this.getUpdate();
 
-  const DealModel = mongoose.model<IDeal>('Deal'); // Explicitly get the Deal model
+  const DealModel = mongoose.model<IDeal>('Deal'); 
   const currentDeal = await DealModel.findOne(this.getQuery());
 
   if (currentDeal) {
-    // Set previous_stage to the current temp_stage
     update.previous_stage = currentDeal.temp_stage;
 
-    // Update temp_stage to the new stage if it’s defined in the update
     if (update.stage !== undefined) {
       update.temp_stage = update.stage;
+
+      update.close_probability = getCloseProbability(update.stage);
     }
   }
 
-  update.type = "update"; // Always set type to update on this hook
-
-  // Calculate forecast_value if either deal_value or close_probability is updated
+  update.type = "update"; 
   if (update.deal_value !== undefined || update.close_probability !== undefined) {
     const dealValue = update.deal_value !== undefined ? update.deal_value : currentDeal?.deal_value;
     const closeProbability = update.close_probability !== undefined ? update.close_probability : currentDeal?.close_probability;
 
-    // Calculate forecast_value
     update.forecast_value = (dealValue * closeProbability) / 100;
   }
 
