@@ -54,9 +54,19 @@ export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise
 
 
   } else if (type === 'update') {
-    // This is an existing deal being updated
+    let previous_forecast_value = 0;
     if (previous_stage) {
-      // Decrement the count for the previous stage
+      const previous_probability = getCloseProbability(previous_stage) / 100; // Convert to decimal
+        previous_forecast_value = previous_probability * deal_value;
+
+        metrics.forecasted_revenue_by_stage[previous_stage] = 
+            (metrics.forecasted_revenue_by_stage[previous_stage] || 0) - previous_forecast_value;
+        metrics.active_deals_forecast_value = 
+            (metrics.active_deals_forecast_value || 0) - previous_forecast_value;
+
+            const month = new Date(expected_close_date).toLocaleString('default', { month: 'short'});
+            metrics.forecasted_revenue_by_month[month] = (metrics.forecasted_revenue_by_month[month] || 0) - previous_forecast_value;
+
       if (previous_stage === 'new') {
         metrics.new_deals = (metrics.new_deals || 0) - 1;
       } else if (previous_stage === 'discovery') {
@@ -70,10 +80,17 @@ export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise
       } else if (previous_stage === 'lost') {
         metrics.lost_deals = (metrics.lost_deals || 0) - 1;
       }
+      
     }
 
     if (stage === 'won') {
       metrics.won_deals = (metrics.won_deals || 0) + 1; // Increment won deals
+      metrics.actual_revenue = (metrics.actual_revenue || 0) + deal_value; 
+      metrics.average_won_deal_value = metrics.won_deals > 0 ? metrics.actual_revenue / metrics.won_deals : 0;
+    
+      const closeDate = new Date(expected_close_date);
+      const month = closeDate.toLocaleString('default', { month: 'short'});
+      metrics.actual_revenue_by_month[month] = (metrics.actual_revenue_by_month[month] || 0) + deal_value;
     } 
     else if (stage === 'lost') {
       metrics.lost_deals = (metrics.lost_deals || 0) + 1; // Increment lost deals
@@ -90,13 +107,13 @@ export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise
         metrics.nego_deals = (metrics.nego_deals || 0) + 1;
       }
 
-      // For active deals (not won or lost), add to forecasted values
+      
       metrics.active_deals_forecast_value = (metrics.active_deals_forecast_value || 0) + forecast_value;
 
-      // Track forecasted revenue by stage
+      
       metrics.forecasted_revenue_by_stage[stage] = (metrics.forecasted_revenue_by_stage[stage] || 0) + forecast_value;
 
-      // Forecasted revenue by month for active deals
+      
       const month = new Date(expected_close_date).toLocaleString('default', { month: 'short'});
       metrics.forecasted_revenue_by_month[month] = (metrics.forecasted_revenue_by_month[month] || 0) + forecast_value;
     }
@@ -128,3 +145,24 @@ export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise
 
 
 
+
+
+
+const getCloseProbability = (stage: string): number => {
+  switch (stage) {
+      case 'new':
+          return 60;
+      case 'discovery':
+          return 70;
+      case 'proposal':
+          return 80;
+      case 'negotiation':
+          return 90;
+      case 'won':
+          return 100;
+      case 'lost':
+          return 0;
+      default:
+          return 60;
+  }
+};
