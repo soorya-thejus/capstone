@@ -18,7 +18,7 @@ export const createOrganization = async (req: Request, res: Response): Promise<v
 
         await newOrganization.save();
 
-        res.status(201).json({ message: 'Organization created successfully', org_id: newOrganization._id });
+        res.status(201).json({ message: 'Organization created successfully', org_id: org._id });
     } catch (error) {
         // Use a type assertion to treat `error` as an `Error` instance
         const err = error as Error;
