@@ -23,7 +23,7 @@ export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise
 
       // Add to actual revenue by month
       const closeDate = new Date(expected_close_date);
-      const month = closeDate.toLocaleString('default', { month: 'short', year: 'numeric' });
+      const month = closeDate.toLocaleString('default', { month: 'short'});
       metrics.actual_revenue_by_month[month] = (metrics.actual_revenue_by_month[month] || 0) + deal_value;
     } 
     else if (stage === 'lost') {
@@ -48,7 +48,7 @@ export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise
       metrics.forecasted_revenue_by_stage[stage] = (metrics.forecasted_revenue_by_stage[stage] || 0) + forecast_value;
 
       // Forecasted revenue by month for active deals
-      const month = new Date(expected_close_date).toLocaleString('default', { month: 'short', year: 'numeric' });
+      const month = new Date(expected_close_date).toLocaleString('default', { month: 'short'});
       metrics.forecasted_revenue_by_month[month] = (metrics.forecasted_revenue_by_month[month] || 0) + forecast_value;
     }
 
@@ -89,6 +89,16 @@ export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise
       } else if (stage === 'negotiation') {
         metrics.nego_deals = (metrics.nego_deals || 0) + 1;
       }
+
+      // For active deals (not won or lost), add to forecasted values
+      metrics.active_deals_forecast_value = (metrics.active_deals_forecast_value || 0) + forecast_value;
+
+      // Track forecasted revenue by stage
+      metrics.forecasted_revenue_by_stage[stage] = (metrics.forecasted_revenue_by_stage[stage] || 0) + forecast_value;
+
+      // Forecasted revenue by month for active deals
+      const month = new Date(expected_close_date).toLocaleString('default', { month: 'short'});
+      metrics.forecasted_revenue_by_month[month] = (metrics.forecasted_revenue_by_month[month] || 0) + forecast_value;
     }
 
   }

@@ -16,11 +16,11 @@ router.get('/get', getAllUsers);
 router.get('/orgs/:org_id/salesreps',getSalesRepsByOrganization);
 
 
-router.post('/linkOrg',createAndLinkOrganization);
-router.post('/register/admin', registerAdmin);
-router.post('/register/salesRep', registerSalesRep);
+router.post('/auth/linkOrg',createAndLinkOrganization);
+router.post('/auth/register/admin', registerAdmin);
+router.post('/auth/register/salesRep', registerSalesRep);
 
-router.post('/login', login);
+router.post('/auth/login', login);
 router.get('/validateToken', validateToken);
 
 export default router;
