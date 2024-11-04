@@ -13,8 +13,7 @@ interface DealFormProps {
 const DealForm: React.FC<DealFormProps> = ({ deal, contacts, onSave, onCancel }) => {
   const [formData, setFormData] = useState<Deal>(deal);
   const [initialStage, setInitialStage] = useState<string | null>(deal.stage);
-  const [warning, setWarning] = useState<string | null>(null);
-  const [errors, setErrors] = useState<{ [key: string]: string | null }>({});
+  const [warning, setWarning] = useState<string | null>('');
 
   useEffect(() => {
     setFormData(deal);
@@ -22,64 +21,42 @@ const DealForm: React.FC<DealFormProps> = ({ deal, contacts, onSave, onCancel })
   }, [deal]);
 
   const validateField = (name: string, value: any) => {
-    let error: string | null = null; // Explicitly set type of `error` to `string | null`
-
-    if (name === "deal_name" && !value) {
-      error = "Deal name is required.";
-    } else if (name === "deal_value" && (isNaN(value) || value <= 0)) {
-      error = "Deal value must be a positive number.";
-    } else if (name === "expected_close_date" && !value) {
-      error = "Expected close date is required.";
-    } else if (name === "close_probability") {
-      if (isNaN(value) || value < 0 || value > 100) {
-        error = "Probability must be between 0 and 100.";
+    // Handle warnings for stage changes
+    if (name === "stage") {
+      if (value === "won" || value === "lost") {
+        setWarning('Once the deal stage is set to Won or Lost, it cannot be modified after saving.');
+      } else {
+        setWarning('');
       }
-    } else if (name === "contact_id" && !value) {
-      error = "Contact must be selected.";
     }
-
-    setErrors(prevErrors => ({ ...prevErrors, [name]: error }));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-
     validateField(name, value);
-
-    if (name === "stage" && (value === "won" || value === "lost")) {
-      setWarning("Once the deal stage is set to Won or Lost, it cannot be modified after saving.");
-    } else {
-      setWarning(null);
-    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const ownerId = sessionStorage.getItem('userId') || '';
 
-    const requiredFields = ["deal_name", "deal_value", "expected_close_date", "close_probability", "contact_id"];
-    let valid = true;
-
-    requiredFields.forEach(field => {
+    // Ensure all fields are filled and valid
+    const requiredFields = ["deal_name", "deal_value", "expected_close_date", "contact_id"];
+    for (const field of requiredFields) {
       if (!formData[field as keyof Deal]) {
-        validateField(field, formData[field as keyof Deal]);
-        valid = false;
+        alert(`Please fill in the ${field.replace(/_/g, ' ')} field.`);
+        return;
       }
-    });
-
-    if (valid) {
-      onSave(formData);
     }
-  };
 
-  const isFormValid = () => {
-    return Object.values(errors).every(error => error === null) &&
-      formData.deal_name &&
-      formData.deal_value > 0 &&
-      formData.expected_close_date &&
-      formData.close_probability >= 0 &&
-      formData.close_probability <= 100 &&
-      formData.contact_id;
+    // Ensure deal value is positive
+    if (formData.deal_value <= 0) {
+      alert("Deal value must be a positive number.");
+      return;
+    }
+
+    onSave({ ...formData, owner_id: ownerId });
   };
 
   return (
@@ -95,7 +72,6 @@ const DealForm: React.FC<DealFormProps> = ({ deal, contacts, onSave, onCancel })
               value={formData.deal_name}
               onChange={handleChange}
             />
-            {errors.deal_name && <p style={{ color: "red"}}>{errors.deal_name}</p>}
           </label>
           <label>
             Stage:
@@ -121,8 +97,8 @@ const DealForm: React.FC<DealFormProps> = ({ deal, contacts, onSave, onCancel })
               name="deal_value"
               value={formData.deal_value}
               onChange={handleChange}
+              min="0" // Prevent negative input
             />
-            {errors.deal_value && <p style={{ color: "red" }}>{errors.deal_value}</p>}
           </label>
           <label>
             Expected Close Date:
@@ -132,17 +108,6 @@ const DealForm: React.FC<DealFormProps> = ({ deal, contacts, onSave, onCancel })
               value={formData.expected_close_date}
               onChange={handleChange}
             />
-            {errors.expected_close_date && <p style={{ color: "red" }}>{errors.expected_close_date}</p>}
-          </label>
-          <label>
-            Close Probability (%):
-            <input
-              type="number"
-              name="close_probability"
-              value={formData.close_probability}
-              onChange={handleChange}
-            />
-            {errors.close_probability && <p style={{ color: "red" }}>{errors.close_probability}</p>}
           </label>
           <label>
             Contact:
@@ -158,10 +123,9 @@ const DealForm: React.FC<DealFormProps> = ({ deal, contacts, onSave, onCancel })
                 </option>
               ))}
             </select>
-            {errors.contact_id && <p style={{ color: "red" }}>{errors.contact_id}</p>}
           </label>
           <div className={styles.buttonGroup}>
-            <button type="submit" disabled={!isFormValid()}>Save</button>
+            <button type="submit" disabled={initialStage === "won" || initialStage === "lost"}>Save</button>
             <button type="button" onClick={onCancel}>Cancel</button>
           </div>
         </form>

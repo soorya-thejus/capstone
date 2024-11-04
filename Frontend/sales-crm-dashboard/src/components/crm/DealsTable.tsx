@@ -115,48 +115,32 @@ const DealsTable: React.FC = () => {
             <th>Stage</th>
             <th>Deal Value</th>
             <th>Expected Close Date</th>
-            <th>Close Probability</th>
-            <th>Forecast Value</th>
             <th>Contact</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            {role === 'Admin' && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
-          {deals.map(deal => {
-            const contact = contacts.find(contact => contact._id === deal.contact_id);
-            return (
-              <tr key={deal._id}>
-                <td>{deal.deal_name}</td>
-                <td>{deal.stage}</td>
-                <td>{deal.deal_value}</td>
-                <td>{formatDate(deal.expected_close_date)}</td>
-                <td>{deal.close_probability}%</td>
-                <td>{deal.forecast_value}</td>
-                <td>{contact ? contact.contact_name : "N/A"}</td>
+          {deals.map(deal => (
+            <tr key={deal._id}>
+              <td>{deal.deal_name}</td>
+              <td>{deal.stage}</td>
+              <td>{deal.deal_value}</td>
+              <td>{formatDate(deal.expected_close_date)}</td>
+              <td>{contacts.find(contact => contact._id === deal.contact_id)?.contact_name}</td>
+              {role === 'Admin' && (
                 <td>
                   <button onClick={() => handleEditClick(deal)}>Edit</button>
+                  {deal.stage !== 'won' && deal.stage !== 'lost' && (
+                    <button className={styles.deleteButton} onClick={() => handleDeleteClick(deal._id!)}>Delete</button>
+                  )}
                 </td>
-                <td>
-                  <button className={styles.deleteButton} onClick={() => {
-                    if (deal._id) {
-                      handleDeleteClick(deal._id);
-                    }
-                  }}>Delete</button>
-                </td>
-              </tr>
-            );
-          })}
+              )}
+            </tr>
+          ))}
         </tbody>
       </table>
-
       {isFormVisible && selectedDeal && (
-        <DealForm
-          deal={selectedDeal}
-          contacts={contacts as { _id: string; contact_name: string }[]} // Cast to the expected type
-          onSave={handleSaveDeal}
-          onCancel={handleCancel}
-        />
+        <DealForm deal={selectedDeal} contacts={contacts as { _id: string; contact_name: string }[]} onSave={handleSaveDeal} onCancel={handleCancel} />
       )}
     </div>
   );
