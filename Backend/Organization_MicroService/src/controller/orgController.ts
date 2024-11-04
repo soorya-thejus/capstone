@@ -3,7 +3,7 @@ import * as organizationService from '../services/orgService'; // Import your or
 import { Organization } from '../models/organization';
  
 // Create an Organization
-export const createOrganization = async (req: Request, res: Response): Promise<void> => {
+export const createOrganization = async (req: Request, res: Response) => {
     try {
         const org = await organizationService.createOrganizationService(req.body);
 
