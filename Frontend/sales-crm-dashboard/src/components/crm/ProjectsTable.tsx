@@ -72,6 +72,7 @@ const ProjectsTable: React.FC = () => {
       status: "not started",
       contact_id: "",
       org_id: orgId,
+      owner_id: userId
     });
   };
 

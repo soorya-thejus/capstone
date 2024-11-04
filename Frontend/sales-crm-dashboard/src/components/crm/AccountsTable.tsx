@@ -82,6 +82,7 @@ const AccountsTable: React.FC = () => {
       description: '',
       number_of_employees: 0,
       org_id: orgId,
+      owner_id:ownerId,
     });
     setEditing(true);
   };
@@ -105,6 +106,7 @@ const AccountsTable: React.FC = () => {
             description: '',
             number_of_employees: 0,
             org_id: orgId,
+            owner_id: ownerId
           }}
           onSave={handleSaveAccount}
           onCancel={handleCancel}

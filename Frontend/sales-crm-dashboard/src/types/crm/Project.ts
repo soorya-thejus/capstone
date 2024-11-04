@@ -8,4 +8,5 @@ export interface Project {
   status: string;
   contact_id?: string; // Optional, reference to a contact
   org_id: string; // Organization ID reference
+  owner_id: string; // User ID reference
 }
