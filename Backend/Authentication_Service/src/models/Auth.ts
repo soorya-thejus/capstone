@@ -9,7 +9,7 @@ export interface IUser extends Document {
 }
 
 const userSchema: Schema = new Schema({
-    org_id: { type: Schema.Types.ObjectId, ref: 'Organization',default:null, required: false },
+    org_id: { type: Schema.Types.ObjectId, ref: 'Organization' },
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },

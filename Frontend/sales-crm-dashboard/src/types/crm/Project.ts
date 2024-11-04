@@ -1,10 +1,11 @@
 // src/types/crm/Project.ts
 export interface Project {
-    id: number;
-    name: string;
-    priority: "High" | "Medium" | "Low";
-    startDate: string;
-    endDate: string;
-    status: "Not Started" | "In Progress" | "Completed";
-  }
-  
+  _id?: string; // Optional for new projects
+  project_name: string;
+  priority: 'high' | 'medium' | 'low';
+  start_date: string; // ISO date string
+  end_date: string; // ISO date string
+  status: string;
+  contact_id?: string; // Optional, reference to a contact
+  org_id: string; // Organization ID reference
+}

@@ -9,7 +9,7 @@ const Projects: React.FC = () => {
     <DashboardLayout>
       <div className={styles.projectsContainer}>
         <h2>Manage Your Projects</h2>
-        <ProjectsTable/>
+        <ProjectsTable orgId={'67221a3f486241a8d7de5ab5'}/>
       </div>
     </DashboardLayout>
   );

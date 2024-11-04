@@ -1,36 +1,49 @@
 // src/components/DealsTable.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Deal } from '../../types/crm/Deal';
+import { Contact } from '../../types/crm/Contact';
 import DealForm from './DealForm';
+import { ContactService } from '../../services/ContactService';
+import { DealService } from '../../services/DealService';
 import styles from '../../styles/crm/dealstable.module.css';
 
-const initialDeals: Deal[] = [
-  {
-    id: 1,
-    name: "Deal A",
-    stage: "New",
-    dealValue: 10000,
-    expectedCloseDate: "2024-12-15",
-    closeProbability: 50,
-    forecastValue: 5000,
-  },
-  // Add more initial deals as needed
-];
+interface DealsTableProps {
+  orgId: string; // Pass orgId as prop
+  ownerId:string;
+}
 
-const DealsTable: React.FC = () => {
-  const [deals, setDeals] = useState<Deal[]>(initialDeals);
+const DealsTable: React.FC<DealsTableProps> = ({ orgId,ownerId }) => {
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
 
+  useEffect(() => {
+    const fetchContacts = async () => {
+      const fetchedContacts = await ContactService.getAllContacts(ownerId);
+      setContacts(fetchedContacts);
+    };
+
+    const fetchDeals = async () => {
+      const fetchedDeals = await DealService.getAllDeals(ownerId);
+      setDeals(fetchedDeals);
+    };
+
+    fetchContacts();
+    fetchDeals();
+  }, [ownerId]);
+
   const handleAddClick = () => {
     setSelectedDeal({
-      id: 0,
-      name: "",
-      stage: "New",
-      dealValue: 0,
-      expectedCloseDate: "",
-      closeProbability: 0,
-      forecastValue: 0,
+      deal_name: "",
+      stage: "new",
+      deal_value: 0,
+      expected_close_date: "",
+      close_probability: 0,
+      forecast_value: 0,
+      contact_id: "",
+      org_id: orgId,
+      owner_id: ownerId,
     });
     setIsFormVisible(true);
   };
@@ -40,27 +53,43 @@ const DealsTable: React.FC = () => {
     setIsFormVisible(true);
   };
 
-  const handleDeleteClick = (id: number) => {
+  const handleDeleteClick = (id: string) => {
     if (window.confirm("Are you sure you want to delete this deal?")) {
-      setDeals(deals.filter(deal => deal.id !== id));
+      DealService.deleteDeal(id).then(() => {
+        setDeals(deals.filter(deal => deal._id !== id));
+      });
     }
   };
 
-  const handleSaveDeal = (deal: Deal) => {
-    setDeals(prevDeals => {
-      if (deal.id === 0) {
-        // Add new deal with unique id
-        return [...prevDeals, { ...deal, id: prevDeals.length + 1 }];
-      } else {
-        // Update existing deal
-        return prevDeals.map(d => (d.id === deal.id ? deal : d));
+  const handleSaveDeal = async (deal: Deal) => {
+    if (!deal._id) {
+      const { _id, ...newDealData } = deal;
+      try {
+        const createdDeal = await DealService.createDeal(newDealData);
+        setDeals(prevDeals => [...prevDeals, createdDeal]);
+      } catch (error) {
+        console.error("Error creating deal:", error);
       }
-    });
+    } else {
+      try {
+        const updatedDeal = await DealService.updateDeal(deal._id, deal);
+        setDeals(prevDeals => prevDeals.map(d => (d._id === updatedDeal._id ? updatedDeal : d)));
+      } catch (error) {
+        console.error("Error updating deal:", error);
+      }
+    }
     setIsFormVisible(false);
+    setSelectedDeal(null);
   };
 
   const handleCancel = () => {
     setIsFormVisible(false);
+    setSelectedDeal(null);
+  };
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   return (
@@ -69,39 +98,49 @@ const DealsTable: React.FC = () => {
       <table>
         <thead>
           <tr>
-            <th>Deal</th>
+            <th>Deal Name</th>
             <th>Stage</th>
             <th>Deal Value</th>
             <th>Expected Close Date</th>
             <th>Close Probability</th>
             <th>Forecast Value</th>
+            <th>Contact</th>
             <th>Edit</th>
             <th>Delete</th>
           </tr>
         </thead>
         <tbody>
-          {deals.map(deal => (
-            <tr key={deal.id}>
-              <td>{deal.name}</td>
-              <td>{deal.stage}</td>
-              <td>{deal.dealValue}</td>
-              <td>{deal.expectedCloseDate}</td>
-              <td>{deal.closeProbability}</td>
-              <td>{deal.forecastValue}</td>
-              <td>
-                <button onClick={() => handleEditClick(deal)}>Edit</button>
-              </td>
-              <td>
-                <button className={styles.deleteButton} onClick={() => handleDeleteClick(deal.id)}>Delete</button>
-              </td>
-            </tr>
-          ))}
+          {deals.map(deal => {
+            const contact = contacts.find(contact => contact._id === deal.contact_id);
+            return (
+              <tr key={deal._id}>
+                <td>{deal.deal_name}</td>
+                <td>{deal.stage}</td>
+                <td>{deal.deal_value}</td>
+                <td>{formatDate(deal.expected_close_date)}</td> {/* Format the expected close date */}
+                <td>{deal.close_probability}%</td>
+                <td>{deal.forecast_value}</td>
+                <td>{contact ? contact.contact_name : "N/A"}</td> {/* Display the contact name */}
+                <td>
+                  <button onClick={() => handleEditClick(deal)}>Edit</button>
+                </td>
+                <td>
+                  <button className={styles.deleteButton} onClick={() => {
+                    if (deal._id) {
+                      handleDeleteClick(deal._id);
+                    }
+                  }}>Delete</button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
       {isFormVisible && selectedDeal && (
         <DealForm
           deal={selectedDeal}
+          contacts={contacts as { _id: string; contact_name: string }[]} // Cast to the expected type
           onSave={handleSaveDeal}
           onCancel={handleCancel}
         />

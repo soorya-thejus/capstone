@@ -1,22 +1,25 @@
-// src/components/LeadsTable.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Lead } from '../../types/crm/Lead';
 import LeadForm from './LeadForm';
 import styles from '../../styles/crm/leadstable.module.css';
-
-const initialLeads: Lead[] = [
-  { id: 1, name: "Alice Johnson", status: "New Lead", company: "Company A", title: "Manager", email: "alice@companya.com" },
-  { id: 2, name: "Bob Brown", status: "Contacted", company: "Company B", title: "Director", email: "bob@companyb.com" },
-  // Add more initial leads as needed
-];
+import * as leadService from '../../services/LeadService';
 
 const LeadsTable: React.FC = () => {
-  const [leads, setLeads] = useState<Lead[]>(initialLeads);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [orgId] = useState("67221a3f486241a8d7de5ab5"); // Assuming you have a way to get orgId
+
+  useEffect(() => {
+    const fetchLeads = async () => {
+      const fetchedLeads = await leadService.getLeads();
+      setLeads(fetchedLeads);
+    };
+    fetchLeads();
+  }, []);
 
   const handleAddClick = () => {
-    setSelectedLead({ id: 0, name: "", status: "New Lead", company: "", title: "", email: "" });
+    setSelectedLead({ lead_name: "", status: "contacted", company: "", title: "", email: "", phone: "",org_id:"67221a3f486241a8d7de5ab5" });
     setIsFormVisible(true);
   };
 
@@ -25,22 +28,22 @@ const LeadsTable: React.FC = () => {
     setIsFormVisible(true);
   };
 
-  const handleDeleteClick = (id: number) => {
+  const handleDeleteClick = async (_id: string) => {
     if (window.confirm("Are you sure you want to delete this lead?")) {
-      setLeads(leads.filter(lead => lead.id !== id));
+      await leadService.deleteLead(_id);
+      setLeads(leads.filter(lead => lead._id !== _id));
     }
   };
 
-  const handleSaveLead = (lead: Lead) => {
-    setLeads(prevLeads => {
-      if (lead.id === 0) {
-        // Add new lead with unique id
-        return [...prevLeads, { ...lead, id: prevLeads.length + 1 }];
-      } else {
-        // Update existing lead
-        return prevLeads.map(l => (l.id === lead.id ? lead : l));
-      }
-    });
+  const handleSaveLead = async (lead: Lead) => {
+    let savedLead: Lead;
+    if (lead._id) {
+      savedLead = await leadService.updateLead(lead._id, lead);
+      setLeads(prevLeads => prevLeads.map(existingLead => (existingLead._id === lead._id ? savedLead : existingLead)));
+    } else {
+      savedLead = await leadService.createLead({ ...lead, org_id: orgId });
+      setLeads(prevLeads => [...prevLeads, savedLead]);
+    }
     setIsFormVisible(false);
   };
 
@@ -59,23 +62,25 @@ const LeadsTable: React.FC = () => {
             <th>Company</th>
             <th>Title</th>
             <th>Email</th>
+            <th>Phone</th>
             <th>Edit</th>
             <th>Delete</th>
           </tr>
         </thead>
         <tbody>
           {leads.map(lead => (
-            <tr key={lead.id}>
-              <td>{lead.name}</td>
+            <tr key={lead._id}>
+              <td>{lead.lead_name}</td>
               <td>{lead.status}</td>
               <td>{lead.company}</td>
               <td>{lead.title}</td>
               <td>{lead.email}</td>
+              <td>{lead.phone}</td>
               <td>
                 <button onClick={() => handleEditClick(lead)}>Edit</button>
               </td>
               <td>
-                <button className={styles.deleteButton} onClick={() => handleDeleteClick(lead.id)}>Delete</button>
+                <button className={styles.deleteButton} onClick={() => handleDeleteClick(lead._id!)}>Delete</button>
               </td>
             </tr>
           ))}
@@ -87,6 +92,7 @@ const LeadsTable: React.FC = () => {
           lead={selectedLead}
           onSave={handleSaveLead}
           onCancel={handleCancel}
+          orgId={orgId} // Pass orgId to LeadForm
         />
       )}
     </div>
