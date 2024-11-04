@@ -1,6 +1,6 @@
 import { Metrics } from '../models/Metrics';
 
-export const updateMetricsFromDealEvent = async (dealData: any): Promise<void> => {
+export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise<void> => {
   const { type, deal_value, forecast_value, stage, expected_close_date, org_id, owner_id, previous_stage } = dealData;
 
   // Fetch current metrics for the specified owner_id or initialize a new metrics object for the salesRep

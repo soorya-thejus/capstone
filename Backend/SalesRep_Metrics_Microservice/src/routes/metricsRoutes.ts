@@ -4,7 +4,7 @@ import { updateMetricsFromDeal } from '../controllers/metricsController';
 
 const router = express.Router();
 
-router.post('/metrics', updateMetricsFromDeal);
+router.post('/salesRepMetrics', updateMetricsFromDeal);
 
 //router.get('/metrics/:org_id', getMetricsByOrg);
 
