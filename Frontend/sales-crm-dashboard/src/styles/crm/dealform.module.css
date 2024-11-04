@@ -8,12 +8,6 @@
   background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
   z-index: 999; /* Ensure above other elements */
 }
-.warning {
-  color: red;
-  font-size: 0.9em;
-  margin-top: 0.5em;
-  z-index: 1010;
-}
 
 .popup {
   position: fixed;
@@ -51,8 +45,16 @@ label {
   color: #555;
 }
 
-input, select {
+select {
   width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+input{
+  width: 94%;
   padding: 8px;
   margin-top: 5px;
   border: 1px solid #ccc;

@@ -89,7 +89,7 @@ const DealForm: React.FC<DealFormProps> = ({ deal, contacts, onSave, onCancel })
               <option value="lost">Lost</option>
             </select>
           </label>
-          {warning && <p style={{ color: "red" }}>{warning}</p>}
+          {warning && <div>{warning}</div>}
           <label>
             Deal Value:
             <input
