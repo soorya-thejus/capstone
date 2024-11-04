@@ -9,4 +9,5 @@ export interface Lead {
   email: string;
   phone: string;
   org_id: string; // Optional if not always used in frontend forms
+  owner_id:string;
 }

@@ -1,3 +1,4 @@
+// src/components/LeadForm.tsx
 import React, { useState, useEffect } from 'react';
 import { Lead } from '../../types/crm/Lead';
 import styles from '../../styles/crm/leadform.module.css';
@@ -6,7 +7,7 @@ interface LeadFormProps {
   lead: Lead;
   onSave: (lead: Lead) => void;
   onCancel: () => void;
-  orgId: string; // Assuming you have a way to get orgId
+  orgId: string; // Keep orgId as prop
 }
 
 const LeadForm: React.FC<LeadFormProps> = ({ lead, onSave, onCancel, orgId }) => {
@@ -23,7 +24,8 @@ const LeadForm: React.FC<LeadFormProps> = ({ lead, onSave, onCancel, orgId }) =>
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ ...formData, org_id: orgId }); // Include org_id in the request body
+    const ownerId = sessionStorage.getItem('userId') || ''; // Get owner_id from session storage here
+    onSave({ ...formData, org_id: orgId, owner_id: ownerId }); // Include org_id and owner_id in the request body
   };
 
   return (

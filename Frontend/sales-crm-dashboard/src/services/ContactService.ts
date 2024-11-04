@@ -5,8 +5,13 @@ import { Contact } from '../types/crm/Contact';
 const API_URL = 'http://localhost:5005/api/contacts'; // Adjust the URL based on your backend
 
 export const ContactService = {
-  getAllContacts: async (orgId: string): Promise<Contact[]> => {
+  getAllContactsByOrgId: async (orgId: string): Promise<Contact[]> => {
     const response = await axios.get(`${API_URL}/orgs/${orgId}`);
+    return response.data;
+  },
+
+  getAllContactsBySalesRep: async (orgId: string, ownerId: string): Promise<Contact[]> => {
+    const response = await axios.get(`${API_URL}/orgs/${orgId}/salesrep/${ownerId}`);
     return response.data;
   },
 
@@ -20,9 +25,11 @@ export const ContactService = {
     return response.data;
   },
 
- 
+  deleteContact: async (contactId: string): Promise<void> => {
+    await axios.delete(`${API_URL}/${contactId}`);
+  },
 };
-export function getAllContacts(orgId: string) {
-  throw new Error('Function not implemented.');
-}
 
+export function getAllContacts(orgId: string) {
+  throw new Error('Function not implemented.'); // You may remove this if it's not necessary
+}

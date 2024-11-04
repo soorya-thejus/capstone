@@ -8,13 +8,13 @@ import axios from 'axios';
 const RequirementGathering: React.FC = () => {
   const navigate = useNavigate();
   const adminId = sessionStorage.getItem('adminId'); // Get admin ID from session storage
-
+  console.log(adminId)
   const [formData, setFormData] = useState({
     name: '',
     type: '',
     address: '',
     contact_info: '',
-    adminId: adminId
+    user_id: adminId
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,12 +36,14 @@ const RequirementGathering: React.FC = () => {
     setError(null);
 
     try {
-      const response = await axios.post('http://localhost:5006/api/orgs', {
-        ...formData,
-        adminId, // Send the admin ID with the organization details
-      });
+      
+      const response = await axios.post('http://localhost:5007/api/auth/linkOrg', 
+        formData // Send the admin ID with the organization details
+      );
+
 
       if (response.status === 201) {
+        //await axios.put(`http://localhost:5007/api/get/${adminId}`,response.data.org_id)
         navigate('/crm/signin'); // Redirect to dashboard or another page after successful submission
       }
     } catch (err) {

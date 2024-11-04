@@ -1,3 +1,4 @@
+// src/components/LeadsTable.tsx
 import React, { useState, useEffect } from 'react';
 import { Lead } from '../../types/crm/Lead';
 import LeadForm from './LeadForm';
@@ -8,18 +9,34 @@ const LeadsTable: React.FC = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [orgId] = useState("67221a3f486241a8d7de5ab5"); // Assuming you have a way to get orgId
+  const orgId = sessionStorage.getItem('orgId') || '';
+  const ownerId = sessionStorage.getItem('userId') || '';
+  const role = sessionStorage.getItem('role') || '';
 
   useEffect(() => {
     const fetchLeads = async () => {
-      const fetchedLeads = await leadService.getLeads();
-      setLeads(fetchedLeads);
+      let fetchedLeads;
+      if (role === 'admin') {
+        fetchedLeads = await leadService.getLeadsByOrgId(orgId);
+      } else if (role === 'sales_rep') {
+        fetchedLeads = await leadService.getLeadsBySalesRep(orgId, ownerId);
+      }
+      setLeads(fetchedLeads || []);
     };
     fetchLeads();
-  }, []);
+  }, [orgId, ownerId, role]);
 
   const handleAddClick = () => {
-    setSelectedLead({ lead_name: "", status: "contacted", company: "", title: "", email: "", phone: "",org_id:"67221a3f486241a8d7de5ab5" });
+    setSelectedLead({
+      lead_name: "",
+      status: "contacted",
+      company: "",
+      title: "",
+      email: "",
+      phone: "",
+      org_id: orgId,
+      owner_id: ownerId, // Get owner_id from session storage here
+    });
     setIsFormVisible(true);
   };
 
@@ -92,7 +109,7 @@ const LeadsTable: React.FC = () => {
           lead={selectedLead}
           onSave={handleSaveLead}
           onCancel={handleCancel}
-          orgId={orgId} // Pass orgId to LeadForm
+          orgId={orgId} // Keep orgId as prop
         />
       )}
     </div>

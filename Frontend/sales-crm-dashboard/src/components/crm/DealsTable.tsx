@@ -7,31 +7,44 @@ import { ContactService } from '../../services/ContactService';
 import { DealService } from '../../services/DealService';
 import styles from '../../styles/crm/dealstable.module.css';
 
-interface DealsTableProps {
-  orgId: string; // Pass orgId as prop
-  ownerId:string;
-}
-
-const DealsTable: React.FC<DealsTableProps> = ({ orgId,ownerId }) => {
+const DealsTable: React.FC = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
 
+  const orgId = sessionStorage.getItem('orgId') || '';
+  const ownerId = sessionStorage.getItem('userId') || '';
+  const role = sessionStorage.getItem('role') || '';
+
   useEffect(() => {
     const fetchContacts = async () => {
-      const fetchedContacts = await ContactService.getAllContacts(ownerId);
-      setContacts(fetchedContacts);
+      let fetchedContacts;
+      if (role === 'admin') {
+        // Fetch all contacts for the organization
+        fetchedContacts = await ContactService.getAllContactsByOrgId(orgId);
+      } else if (role === 'sales_rep') {
+        // Fetch contacts for the sales representative
+        fetchedContacts = await ContactService.getAllContactsBySalesRep(orgId, ownerId);
+      }
+      setContacts(fetchedContacts || []);
     };
 
     const fetchDeals = async () => {
-      const fetchedDeals = await DealService.getAllDeals(ownerId);
-      setDeals(fetchedDeals);
+      let fetchedDeals;
+      if (role === 'admin') {
+        // Fetch all deals for the organization
+        fetchedDeals = await DealService.getAllDealsByOrgId(orgId);
+      } else if (role === 'sales_rep') {
+        // Fetch deals for the sales representative
+        fetchedDeals = await DealService.getAllDealsBySalesRep(orgId, ownerId);
+      }
+      setDeals(fetchedDeals || []);
     };
 
     fetchContacts();
     fetchDeals();
-  }, [ownerId]);
+  }, [orgId, ownerId, role]);
 
   const handleAddClick = () => {
     setSelectedDeal({
@@ -117,10 +130,10 @@ const DealsTable: React.FC<DealsTableProps> = ({ orgId,ownerId }) => {
                 <td>{deal.deal_name}</td>
                 <td>{deal.stage}</td>
                 <td>{deal.deal_value}</td>
-                <td>{formatDate(deal.expected_close_date)}</td> {/* Format the expected close date */}
+                <td>{formatDate(deal.expected_close_date)}</td>
                 <td>{deal.close_probability}%</td>
                 <td>{deal.forecast_value}</td>
-                <td>{contact ? contact.contact_name : "N/A"}</td> {/* Display the contact name */}
+                <td>{contact ? contact.contact_name : "N/A"}</td>
                 <td>
                   <button onClick={() => handleEditClick(deal)}>Edit</button>
                 </td>
