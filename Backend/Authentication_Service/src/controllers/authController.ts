@@ -177,7 +177,7 @@ export const createAndLinkOrganization = async (req: Request, res: Response): Pr
  
 //Register Admin & Sales_Rep
 export const registerAdmin = async (req: Request, res: Response): Promise<void> => {
-    const { org_id,username, email, password, role } = req.body;
+    const { username, email, password, role } = req.body;
 
     try {
         // Check if the organization exists
@@ -205,7 +205,7 @@ export const registerAdmin = async (req: Request, res: Response): Promise<void> 
             email,
             password: hashedPassword,
             role,
-            org_id
+            org_id: null
         });
 
         await newUser.save();
