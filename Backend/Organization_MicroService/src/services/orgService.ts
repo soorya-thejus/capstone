@@ -3,14 +3,8 @@ import { IOrganization, Organization } from '../models/organization';
 
 // Create a new Organization
 export const createOrganizationService = async (data: Partial<IOrganization>): Promise<IOrganization> => {
-    const { name, type, address, contact_info,adminId } =data;
-    const organization = await Organization.create({
-        name,
-        type,
-        address,
-        contact_info,
-        adminId
-      });
+    //const { name, type, address, contact_info,adminId } =data;
+    const organization = new Organization(data);
     return await organization.save();
 
     

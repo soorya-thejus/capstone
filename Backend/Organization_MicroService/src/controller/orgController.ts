@@ -4,21 +4,10 @@ import { Organization } from '../models/organization';
  
 // Create an Organization
 export const createOrganization = async (req: Request, res: Response): Promise<void> => {
-    const { name, type, address, contact_info,adminId } = req.body;
-
     try {
-        // Create a new organization
-        const newOrganization = new Organization({
-            name,
-            type,
-            address,
-            contact_info,
-            adminId
-        });
+        const org = await organizationService.createOrganizationService(req.body);
 
-        await newOrganization.save();
-
-        res.status(201).json({ message: 'Organization created successfully', org_id: newOrganization._id });
+        res.status(201).json({ message: 'Organization created successfully', org_id: org._id });
     } catch (error) {
         // Use a type assertion to treat `error` as an `Error` instance
         const err = error as Error;
