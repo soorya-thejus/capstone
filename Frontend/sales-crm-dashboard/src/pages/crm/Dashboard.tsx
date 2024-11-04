@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/crm/DashboardLayout';
 import Widget from '../../components/crm/Widget';
 import styles from '../../styles/crm/dashboard.module.css';
+import axios from 'axios';
 
 interface DashboardData {
   activeDeals: number;
@@ -19,31 +20,64 @@ interface DashboardData {
 const Dashboard: React.FC = () => {
   const [data, setData] = useState<DashboardData | null>(null);
 
+  const transformData = (metrics: any): DashboardData => {
+    return {
+      activeDeals: metrics.active_deals_forecast_value,
+      avgDealValue: metrics.average_won_deal_value,
+      actualRevenue: metrics.actual_revenue,
+      revenueByMonth: {
+        labels: Object.keys(metrics.actual_revenue_by_month),
+        datasets: [{ data: Object.values(metrics.actual_revenue_by_month), label: 'Revenue by Month' }],
+      },
+      dealStatusDistribution: {
+        labels: Object.keys(metrics.deal_status_distribution),
+        datasets: [{ data: Object.values(metrics.deal_status_distribution), label: 'Status' }],
+      },
+      topDeals: ['Sample Deal 1', 'Sample Deal 2', 'Sample Deal 3'], // Placeholder for top deals
+      pipelineConversion: {
+        labels: Object.keys(metrics.pipeline_conversion),
+        datasets: [{ data: Object.values(metrics.pipeline_conversion), label: 'Conversion' }],
+      },
+      forecastedRevenueByMonth: {
+        labels: Object.keys(metrics.forecasted_revenue_by_month),
+        datasets: [{ data: Object.values(metrics.forecasted_revenue_by_month), label: 'Forecasted Revenue' }],
+      },
+      forecastedRevenueByStage: {
+        labels: Object.keys(metrics.forecasted_revenue_by_stage),
+        datasets: [{ data: Object.values(metrics.forecasted_revenue_by_stage), label: 'Forecasted Revenue by Stage' }],
+      },
+      dealsProgressByMonth: {
+        labels: Object.keys(metrics.actual_revenue_by_month),
+        datasets: [
+          { data: Object.values(metrics.actual_revenue_by_month), label: 'Won Deals' },
+          // Add more progress data as needed
+        ],
+      },
+    };
+  };
+
   useEffect(() => {
     const fetchData = async () => {
-      setData({
-        activeDeals: 50000,
-        avgDealValue: 7000,
-        actualRevenue: 500000,
-        revenueByMonth: { labels: ['Jan', 'Feb', 'Mar'], datasets: [{ data: [120000, 150000, 130000], label: 'Revenue' }] },
-        dealStatusDistribution: { labels: ['Won', 'Working', 'Discovery', 'Proposal', 'New'], datasets: [{ data: [15, 20, 10, 5, 5], label: 'Status' }] },
-        topDeals: ['Deal 1 - $20k', 'Deal 2 - $18k', 'Deal 3 - $15k'],
-        pipelineConversion: { labels: ['New', 'Discovery', 'Proposal', 'Negotiation', 'Won'], datasets: [{ data: [30, 25, 20, 15, 10], label: 'Conversion' }] },
-        forecastedRevenueByMonth: { labels: ['Apr', 'May', 'Jun'], datasets: [{ data: [140000, 160000, 170000], label: 'Forecasted Revenue' }] },
-        forecastedRevenueByStage: { labels: ['Discovery', 'Proposal', 'Negotiation', 'Won'], datasets: [{ data: [25000, 50000, 100000, 125000], label: 'Forecasted Revenue by Stage' }] },
-        dealsProgressByMonth: { 
-          labels: ['Jan', 'Feb', 'Mar'], 
-          datasets: [
-            { data: [1, 0, 0], label: 'New Deals' },
-            { data: [1, 1, 0], label: 'Won Deals' },
-            { data: [0, 0, 1], label: 'Working Deals' }
-          ]
-        },
-      });
+      try {
+        const orgId = sessionStorage.getItem('org_id'); 
+        if (!orgId) {
+          console.error('Organization ID is not available in session');
+          return;
+        }
+  
+        const response = await axios.get(`http://localhost:5008/api/metrics/orgs/${orgId}`);
+        const rawMetrics = response.data; 
+        const formattedData = transformData(rawMetrics);
+        setData(formattedData);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      }
     };
-
+  
     fetchData();
   }, []);
+  
+  
 
   if (!data) return <div>Loading...</div>;
 
