@@ -21,7 +21,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
         const fetchedProjects = await projectService.fetchProjectsByOrgId(orgId);
         setProjects(fetchedProjects);
 
-        const fetchedContacts: Contact[] = await ContactService.getAllContacts(orgId);
+        const fetchedContacts: Contact[] = await ContactService.getAllContactsByOrgId(orgId);
         const contactMap = fetchedContacts.reduce((acc: { [key: string]: string }, contact: Contact) => {
           if (contact._id) {
             acc[contact._id] = contact.contact_name;

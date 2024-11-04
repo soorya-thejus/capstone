@@ -20,10 +20,10 @@ const DealsTable: React.FC = () => {
   useEffect(() => {
     const fetchContacts = async () => {
       let fetchedContacts;
-      if (role === 'admin') {
+      if (role === 'Admin') {
         // Fetch all contacts for the organization
         fetchedContacts = await ContactService.getAllContactsByOrgId(orgId);
-      } else if (role === 'sales_rep') {
+      } else if (role === 'Sales Rep') {
         // Fetch contacts for the sales representative
         fetchedContacts = await ContactService.getAllContactsBySalesRep(orgId, ownerId);
       }
@@ -32,10 +32,10 @@ const DealsTable: React.FC = () => {
 
     const fetchDeals = async () => {
       let fetchedDeals;
-      if (role === 'admin') {
+      if (role === 'Admin') {
         // Fetch all deals for the organization
         fetchedDeals = await DealService.getAllDealsByOrgId(orgId);
-      } else if (role === 'sales_rep') {
+      } else if (role === 'Sales Rep') {
         // Fetch deals for the sales representative
         fetchedDeals = await DealService.getAllDealsBySalesRep(orgId, ownerId);
       }

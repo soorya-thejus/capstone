@@ -9,7 +9,7 @@ const Contacts: React.FC = () => {
     <DashboardLayout>
       <div className={styles.contactsContainer}>
         <h2>Manage Your Contacts</h2>
-        <ContactsTable orgId={'67221a3f486241a8d7de5ab5'}  />
+        <ContactsTable  />
       </div>
     </DashboardLayout>
   );

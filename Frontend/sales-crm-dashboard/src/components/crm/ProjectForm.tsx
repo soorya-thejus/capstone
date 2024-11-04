@@ -23,7 +23,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel, or
 
   const fetchContacts = async () => {
     try {
-      const response = await ContactService.getAllContacts(orgId);
+      const response = await ContactService.getAllContactsByOrgId(orgId);
       console.log('Fetched contacts:', response); // Debugging line to check fetched contacts
       setContacts(response); // Assuming response is an array of contacts
     } catch (error) {

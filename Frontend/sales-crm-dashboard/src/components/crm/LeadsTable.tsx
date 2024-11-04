@@ -14,17 +14,19 @@ const LeadsTable: React.FC = () => {
   const role = sessionStorage.getItem('role') || '';
 
   useEffect(() => {
+    
     const fetchLeads = async () => {
       let fetchedLeads;
-      if (role === 'admin') {
+      if (role === 'Admin') {
         fetchedLeads = await leadService.getLeadsByOrgId(orgId);
-      } else if (role === 'sales_rep') {
+      } else if (role === 'Sales Rep') {
         fetchedLeads = await leadService.getLeadsBySalesRep(orgId, ownerId);
       }
       setLeads(fetchedLeads || []);
     };
     fetchLeads();
   }, [orgId, ownerId, role]);
+  
 
   const handleAddClick = () => {
     setSelectedLead({
