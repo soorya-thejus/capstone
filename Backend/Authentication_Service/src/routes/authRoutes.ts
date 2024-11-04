@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createAdminUser, createSalesRepUser, deleteUser, getAllUsers, getSalesRepsByOrganization, getUserDetails, login, register, updateUser, validateToken } from "../controllers/authController";
+import { createAdminUser, createAndLinkOrganization, createSalesRepUser, deleteUser, getAllUsers, getSalesRepsByOrganization, getUserDetails, login, registerAdmin, registerSalesRep, updateUser, validateToken } from "../controllers/authController";
 
 
 const router = Router();
@@ -16,8 +16,10 @@ router.get('/get', getAllUsers);
 router.get('/orgs/:org_id/salesreps',getSalesRepsByOrganization);
 
 
+router.post('/linkOrg',createAndLinkOrganization);
+router.post('/register/admin', registerAdmin);
+router.post('/register/salesRep', registerSalesRep);
 
-router.post('/register', register);
 router.post('/login', login);
 router.get('/validateToken', validateToken);
 

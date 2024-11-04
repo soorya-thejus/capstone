@@ -21,7 +21,7 @@ export const createAdminUser = async (userData: Partial<IUser>): Promise<IUser> 
     throw new Error(`Error creating admin user: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
-
+ 
 
 export const createSalesRepUser = async (userData: Partial<IUser>): Promise<IUser> => {
     const { org_id, username, email, password } = userData;

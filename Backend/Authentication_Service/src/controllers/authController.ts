@@ -3,7 +3,7 @@ import * as userService from "../services/authService";
 import User from "../models/Auth";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 // Create Admin user
 export const createAdminUser = async (req: Request, res: Response): Promise<void> => {
@@ -113,28 +113,87 @@ export const getSalesRepsByOrganization = async (req: Request, res: Response): P
 
 
 
-
-
-
-//Register Admin & Sales_Rep
-export const register = async (req: Request, res: Response): Promise<void> => {
-    const { org_id, username, email, password, role } = req.body;
+export const createAndLinkOrganization = async (req: Request, res: Response): Promise<void> => {
+    const { user_id, name, type, address, contact_info } = req.body;
 
     try {
-        // Check if the organization exists
-        const orgResponse = await axios.get(`http://localhost:5006/api/orgs/${org_id}`);
-        if (orgResponse.status !== 200) {
-            res.status(404).json({ message: `Organization with id ${org_id} does not exist.` });
+        // Fetch the Admin user to verify they exist and have no org_id set
+        const adminUser = await User.findById(user_id);
+        console.log(adminUser);
+        if (!adminUser) {
+            res.status(404).json({ message: 'Admin user not found.' });
+            return;
+        }
+        if (adminUser.org_id) {
+            res.status(400).json({ message: 'Admin is already associated with an organization.' });
             return;
         }
 
+        // Step 2: Call Organization microservice to create an organization
+        const orgResponse = await axios.post(`http://localhost:5006/api/orgs`, {
+            name,
+            type,
+            address,
+            contact_info,
+            adminId: adminUser._id
+        });
+
+        // Extract org_id from the Organization service's response
+        const { org_id } = orgResponse.data;
+
+        // Step 3: Update the Admin user’s org_id in the Auth microservice database
+        adminUser.org_id = org_id;
+        await adminUser.save();
+
         // If the user role is Admin, ensure only one Admin exists per organization
-        if (role === 'Admin') {
-            const existingAdmin = await User.findOne({ org_id, role: 'Admin' });
-            if (existingAdmin) {
-                res.status(400).json({ message: 'An admin user already exists for this organization.' });
-                return;
-            }
+        // if (adminUser.role === 'Admin') {
+        //     const existingAdmin = await User.findOne({ org_id, role: 'Admin' });
+        //     if (existingAdmin) {
+        //         res.status(400).json({ message: 'An admin user already exists for this organization.' });
+        //         return;
+        //     }
+        // }
+
+        res.status(201).json({ message: 'Organization created and linked to Admin successfully', org_id });
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+            // Cast error as AxiosError
+            const axiosError = error as AxiosError;
+
+            // Check if response and data exist to avoid the error "Property 'message' does not exist on type '{}'"
+            const status = axiosError.response?.status || 500;
+            const message = (axiosError.response?.data as { message?: string }).message || 'An error occurred.';
+            res.status(status).json({ message });
+        } else if (error instanceof Error) {
+            // For non-Axios errors that are standard Errors
+            res.status(500).json({ message: error.message || 'An unknown error occurred.' });
+        } else {
+            // Fallback for truly unknown errors
+            res.status(500).json({ message: 'An unknown error occurred.' });
+        }
+    }
+};
+
+ 
+//Register Admin & Sales_Rep
+export const registerAdmin = async (req: Request, res: Response): Promise<void> => {
+    const { username, email, password, role } = req.body;
+
+    try {
+        // Check if the organization exists
+        // const orgResponse = await axios.get(`http://localhost:5006/api/orgs/${org_id}`);
+        // if (orgResponse.status !== 200) {
+        //     res.status(404).json({ message: `Organization with id ${org_id} does not exist.` });
+        //     return;
+        // }
+
+        
+        
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            res.status(400).json({ message: 'User with this email already exists.' });
+            return;
         }
 
         // Hash the password before saving
@@ -142,19 +201,15 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
         // Create and save the new user
         const newUser = new User({
-            org_id,
             username,
             email,
             password: hashedPassword,
             role,
+            org_id: null
         });
 
         await newUser.save();
 
-        // After saving the new user, update the organization's admin field via the organization microservice
-        if (role === 'Admin') {
-            await axios.put(`http://localhost:5006/api/orgs/${org_id}`, { adminId: newUser._id });
-        }
 
         res.status(201).json({ message: 'User registered successfully', user_id: newUser._id });
     } catch (error) {
@@ -167,6 +222,52 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+
+//Register SalesRep
+export const registerSalesRep = async (req: Request, res: Response): Promise<void> => {
+    const { org_id,username, email, password, role } = req.body;
+
+    try {
+
+        //Check if the organization exists
+        const orgResponse = await axios.get(`http://localhost:5006/api/orgs/${org_id}`);
+        if (orgResponse.status !== 200) {
+            res.status(404).json({ message: `Organization with id ${org_id} does not exist.` });
+            return;
+        }
+
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            res.status(400).json({ message: 'User with this email already exists.' });
+            return;
+        }
+
+        // Hash the password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create and save the new user
+        const newUser = new User({
+            username,
+            email,
+            password: hashedPassword,
+            role,
+            org_id: org_id
+        });
+
+        await newUser.save();
+
+
+        res.status(201).json({ message: 'User registered successfully', user_id: newUser._id });
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Handle error from organization service
+            res.status(error.response?.status || 500).json({ message: error.response?.data?.message || 'An unknown error occurred.' });
+        } else {
+            res.status(500).json({ message: error instanceof Error ? error.message : 'An unknown error occurred.' });
+        }
+    }
+};
 
 //Login Admin & Sales_Rep
 export const login = async (req: Request, res: Response) => {

@@ -11,8 +11,11 @@ export const createOrganizationService = async (data: Partial<IOrganization>): P
         contact_info,
       });
     return await organization.save();
-};
 
+    
+
+};
+ 
 // Get all Organizations
 export const getAllOrganizationsService = async (): Promise<IOrganization[]> => {
     return await Organization.find();
