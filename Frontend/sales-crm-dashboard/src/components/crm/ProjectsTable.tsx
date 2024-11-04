@@ -6,19 +6,25 @@ import * as projectService from '../../services/ProjectService';
 import { ContactService } from '../../services/ContactService';
 import styles from '../../styles/crm/projectstable.module.css';
 
-interface ProjectsTableProps {
-  orgId: string;
-}
-
-const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
+const ProjectsTable: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [contacts, setContacts] = useState<{ [key: string]: string }>({});
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
+  // Retrieve orgId, userId, and role from session storage
+  const orgId = sessionStorage.getItem('orgId') || '';
+  const userId = sessionStorage.getItem('userId') || '';
+  const role = sessionStorage.getItem('role') || '';
+
   useEffect(() => {
     const fetchProjectsAndContacts = async () => {
       try {
-        const fetchedProjects = await projectService.fetchProjectsByOrgId(orgId);
+        let fetchedProjects: Project[] = [];
+        if (role === 'Admin') {
+          fetchedProjects = await projectService.fetchProjectsByOrgId(orgId);
+        } else if (role === 'Sales Rep') {
+          fetchedProjects = await projectService.fetchProjectsBySalesRep(orgId, userId);
+        }
         setProjects(fetchedProjects);
 
         const fetchedContacts: Contact[] = await ContactService.getAllContactsByOrgId(orgId);
@@ -35,7 +41,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
     };
 
     fetchProjectsAndContacts();
-  }, [orgId]);
+  }, [orgId, userId, role]);
 
   const handleEditClick = (project: Project) => {
     setSelectedProject({
@@ -58,7 +64,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
 
   const handleAddClick = () => {
     setSelectedProject({
-      _id: undefined,  // Use _id here for MongoDB compatibility
+      _id: undefined,
       project_name: "",
       priority: "medium",
       start_date: "",
@@ -75,7 +81,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ orgId }) => {
       if (project._id) {
         savedProject = await projectService.updateProject(project._id, project);
       } else {
-        const { _id, ...newProject } = project;  // Exclude _id field for new project creation
+        const { _id, ...newProject } = project;
         savedProject = await projectService.createProject(newProject);
       }
 

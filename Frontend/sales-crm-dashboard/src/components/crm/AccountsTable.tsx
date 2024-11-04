@@ -4,27 +4,36 @@ import AccountForm from './AccountForm';
 import * as accountService from '../../services/AccountService';
 import styles from '../../styles/crm/accountstable.module.css';
 
-interface AccountsTableProps {
-  orgId: string;
-}
-
-const AccountsTable: React.FC<AccountsTableProps> = ({ orgId }) => {
+const AccountsTable: React.FC = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [isEditing, setEditing] = useState(false);
 
-  // Fetch all accounts for the organization on component mount
+  // Fetch orgId, ownerId, and role from session storage
+  const orgId = sessionStorage.getItem('orgId') || '';
+  const ownerId = sessionStorage.getItem('userId') || '';
+  const role = sessionStorage.getItem('role') || '';
+
+  // Fetch all accounts based on role on component mount
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const data = await accountService.getAllAccounts(orgId);
+        let data: Account[] = [];
+
+        // Admins can view all accounts, Sales Reps can only view their accounts
+        if (role === 'Admin') {
+          data = await accountService.getAllAccounts(orgId);
+        } else if (role === 'Sales Rep') {
+          data = await accountService.getAccountsBySalesRep(orgId, ownerId);
+        }
+
         setAccounts(data);
       } catch (error) {
         console.error("Error fetching accounts", error);
       }
     };
     fetchAccounts();
-  }, [orgId]);
+  }, [orgId, ownerId, role]);
 
   const handleEditClick = (account: Account) => {
     setSelectedAccount(account);
@@ -44,8 +53,8 @@ const AccountsTable: React.FC<AccountsTableProps> = ({ orgId }) => {
 
   const handleSaveAccount = async (account: Account) => {
     try {
-      // Include org_id in the account object if creating a new account
-      if (!account._id) { 
+      if (!account._id) {
+        // Creating a new account, include org_id
         const newAccount = await accountService.createAccount({ ...account, org_id: orgId });
         setAccounts([...accounts, newAccount]);
       } else {
@@ -72,7 +81,7 @@ const AccountsTable: React.FC<AccountsTableProps> = ({ orgId }) => {
       industry: '',
       description: '',
       number_of_employees: 0,
-      org_id: orgId, // Ensure org_id is included in the new account
+      org_id: orgId,
     });
     setEditing(true);
   };
@@ -126,12 +135,12 @@ const AccountsTable: React.FC<AccountsTableProps> = ({ orgId }) => {
                 <button onClick={() => handleEditClick(account)}>Edit</button>
               </td>
               <td>
-              <button
-  className={styles.deleteButton}
-  onClick={() => account._id && handleDeleteClick(account._id)}
->
-  Delete
-</button>
+                <button
+                  className={styles.deleteButton}
+                  onClick={() => account._id && handleDeleteClick(account._id)}
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
