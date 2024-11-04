@@ -38,6 +38,7 @@ const SignUp: React.FC = () => {
 
       if (response.status === 201) {
         const { user_id } = response.data; // Retrieve the admin ID from the response
+        console.log(user_id);
         sessionStorage.setItem('adminId', user_id); // Store admin ID in session storage
         navigate('/crm/requirement-gathering'); // Navigate to the requirement gathering page
       }

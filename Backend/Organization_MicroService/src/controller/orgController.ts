@@ -5,7 +5,7 @@ import { Organization } from '../models/organization';
 // Create an Organization
 export const createOrganization = async (req: Request, res: Response): Promise<void> => {
     const { name, type, address, contact_info,adminId } = req.body;
-
+    console.log(req.body);
     try {
         // Create a new organization
         const newOrganization = new Organization({

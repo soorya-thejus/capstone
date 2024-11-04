@@ -37,6 +37,7 @@ const SignIn: React.FC = () => {
       if (response.status === 200) {
         // Store user information in session storage
         const { token, user } = response.data;
+        console.log();
         sessionStorage.setItem('token', token);
         sessionStorage.setItem('userId', user.id);
         sessionStorage.setItem('orgId', user.org_id);
