@@ -47,7 +47,7 @@ export const updateMetricsFromDealEvent = async (dealData: any): Promise<void> =
       metrics.forecasted_revenue_by_stage[stage] = (metrics.forecasted_revenue_by_stage[stage] || 0) + forecast_value;
 
       // Forecasted revenue by month for active deals
-      const month = new Date(expected_close_date).toLocaleString('default', { month: 'short', year: 'numeric' });
+      const month = new Date(expected_close_date).toLocaleString('default', { month: 'short'});
       metrics.forecasted_revenue_by_month[month] = (metrics.forecasted_revenue_by_month[month] || 0) + forecast_value;
     }
 

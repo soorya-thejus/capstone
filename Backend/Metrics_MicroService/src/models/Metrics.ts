@@ -44,7 +44,20 @@ const MetricsSchema: Schema = new Schema({
     proposal: { type: Number, default: 0 },
     negotiation: { type: Number, default: 0 },
   }, // Track deal counts by status
-  actual_revenue_by_month: { type: Map, of: Number, default: {} }, // Revenue by month
+  actual_revenue_by_month: { 
+    Jan: {type: Number, default: 0 },
+    Feb: {type: Number, default: 0 },
+    March: {type: Number, default: 0 },
+    April: {type: Number, default: 0 },
+    May: {type: Number, default: 0 },
+    June: {type: Number, default: 0 },
+    July: {type: Number, default: 0 },
+    Aug: {type: Number, default: 0 },
+    Sept: {type: Number, default: 0 },
+    Oct: {type: Number, default: 0 },
+    Nov: {type: Number, default: 0 },
+    Dec: {type: Number, default: 0 },
+  }, // Revenue by month
   pipeline_conversion: {
     won: { type: Number, default: 0 },
     lost: { type: Number, default: 0 },
@@ -53,7 +66,20 @@ const MetricsSchema: Schema = new Schema({
     proposal: { type: Number, default: 0 },
     negotiation: { type: Number, default: 0 },
   }, // Deals in pipeline stages
-  forecasted_revenue_by_month: { type: Map, of: Number, default: {} }, // Forecasted revenue by month
+  forecasted_revenue_by_month: { 
+    Jan: {type: Number, default: 0 },
+    Feb: {type: Number, default: 0 },
+    March: {type: Number, default: 0 },
+    April: {type: Number, default: 0 },
+    May: {type: Number, default: 0 },
+    June: {type: Number, default: 0 },
+    July: {type: Number, default: 0 },
+    Aug: {type: Number, default: 0 },
+    Sept: {type: Number, default: 0 },
+    Oct: {type: Number, default: 0 },
+    Nov: {type: Number, default: 0 },
+    Dec: {type: Number, default: 0 },
+  }, // Forecasted revenue by month
   forecasted_revenue_by_stage: {
     // won: { type: Number, default: 0 },
     // lost: { type: Number, default: 0 },
