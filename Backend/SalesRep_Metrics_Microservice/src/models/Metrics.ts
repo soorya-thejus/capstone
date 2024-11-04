@@ -19,6 +19,7 @@ interface IMetric extends Document {
   forecasted_revenue_by_month: Record<string, number>;
   forecasted_revenue_by_stage: Record<string, number>;
   org_id: Types.ObjectId;
+  owner_id: Types.ObjectId;
 }
 
 
@@ -63,6 +64,7 @@ const MetricsSchema: Schema = new Schema({
     negotiation: { type: Number, default: 0 },
   }, // Forecasted revenue by deal stage
   org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true},
+  owner_id: {type: Schema.Types.ObjectId, ref: 'User', required: true},
 });
 
 

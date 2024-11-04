@@ -14,7 +14,7 @@ export const runConsumer = async () => {
   await consumer.connect();
   console.log('Kafka Consumer for Sales Rep Metrics connected');
 
-  await consumer.subscribe({ topic: 'deal-events', fromBeginning: true });
+  await consumer.subscribe({ topic: 'deal-events', fromBeginning: false });
   console.log('Subscribed to topic: deal-events for Sales Rep Metrics');
 
   await consumer.run({

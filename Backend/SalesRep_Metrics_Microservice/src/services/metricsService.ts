@@ -1,7 +1,7 @@
 import { Metrics } from '../models/Metrics';
 
 export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise<void> => {
-  const { type, deal_value, forecast_value, stage, expected_close_date, org_id, owner_id, previous_stage } = dealData;
+  const { type, deal_value, forecast_value, stage, expected_close_date,org_id, owner_id, previous_stage } = dealData;
 
   // Fetch current metrics for the specified owner_id or initialize a new metrics object for the salesRep
   let metrics = await Metrics.findOne({ owner_id });// change it to owner_id
@@ -13,6 +13,7 @@ export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise
   
   if (type === 'create') {
     // This is a new deal
+    metrics.org_id=org_id;
     metrics.total_deals = (metrics.total_deals || 0) + 1; // Increment total deals
 
     if (stage === 'won') {
