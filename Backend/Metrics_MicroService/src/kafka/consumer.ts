@@ -3,7 +3,7 @@ import { Kafka } from 'kafkajs';
 import { updateMetricsFromDealEvent } from '../services/metricsService';
  
 const kafka = new Kafka({
-  clientId: 'metrics-service1',
+  clientId: 'metrics-service',
   brokers: ['localhost:9093'] // Adjust with your Kafka broker address
 });
 
