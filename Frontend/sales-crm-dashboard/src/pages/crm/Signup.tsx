@@ -31,10 +31,9 @@ const SignUp: React.FC = () => {
     setError(null);
 
     try {
-      const response = await axios.post('http://localhost:5007/api/register', {
+      const response = await axios.post('http://localhost:5007/api/auth/register/admin', {
         ...formData,
         role: 'Admin',    // Set default role to Admin
-        org_id: null,     // Explicitly set org_id to null
       });
 
       if (response.status === 201) {
