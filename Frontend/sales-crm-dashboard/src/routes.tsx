@@ -24,6 +24,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/crm/projects" element={<Projects />} />
       <Route path="/crm/deals" element={<Deals />} />
       <Route path="/crm/accounts" element={<Accounts />} />
+      <Route path="/crm/requirement-gathering" element={<RequirementGathering />} />
 
     </Routes>
   );

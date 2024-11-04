@@ -33,11 +33,13 @@ const SignUp: React.FC = () => {
     try {
       const response = await axios.post('http://localhost:5007/api/auth/register/admin', {
         ...formData,
-        role: 'Admin',    // Set default role to Admin
+        role: 'Admin', // Set default role to Admin
       });
 
       if (response.status === 201) {
-        navigate('/crm/signin');
+        const { user_id } = response.data; // Retrieve the admin ID from the response
+        sessionStorage.setItem('adminId', user_id); // Store admin ID in session storage
+        navigate('/crm/requirement-gathering'); // Navigate to the requirement gathering page
       }
     } catch (err) {
       setError('Error occurred during sign-up. Please try again.');

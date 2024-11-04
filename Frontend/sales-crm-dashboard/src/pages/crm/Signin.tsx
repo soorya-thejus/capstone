@@ -3,41 +3,52 @@ import React, { useState } from 'react';
 import Topbar from '../../components/crm/Topbar';
 import styles from '../../styles/crm/auth.module.css';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignIn: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  // State for form inputs
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Handle input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prevFormData => ({ ...prevFormData, [name]: value }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Clear any previous errors
-    setError('');
+
+    setIsLoading(true);
+    setError(null);
 
     try {
-      const response = await fetch('http://localhost:5007/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      const response = await axios.post('http://localhost:5007/api/auth/login', {
+        ...formData,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to sign in. Please check your credentials.');
+      if (response.status === 200) {
+        // Store user information in session storage
+        const { token, user } = response.data;
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('userId', user.id);
+        sessionStorage.setItem('orgId', user.org_id);
+        sessionStorage.setItem('username', user.username);
+        sessionStorage.setItem('role', user.role);
+        // Navigate to the dashboard
+        navigate('/crm/dashboard');
       }
-
-      const data = await response.json();
-      // Store token or handle success here
-      // For example, you might want to save the token to localStorage
-      localStorage.setItem('token', data.token);
-
-      // Redirect to the dashboard or another page after successful login
-      navigate('/crm/dashboard'); // Use navigate to redirect
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'An unknown error occurred.');
+    } catch (err) {
+      setError('Invalid email or password. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -47,28 +58,32 @@ const SignIn: React.FC = () => {
       <div className={styles.authContent}>
         <div className={styles.infoSection}>
           <h2>Welcome Back!</h2>
-          <p>Sign in to manage your CRM and track your sales, leads, and more.</p>
+          <p>Log in to access your account.</p>
         </div>
         <div className={styles.formSection}>
           <h2>Sign In</h2>
-          {error && <p className={styles.error}>{error}</p>} {/* Display error message */}
           <form onSubmit={handleSubmit}>
             <label>Email</label>
-            <input 
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              required 
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
             />
             <label>Password</label>
-            <input 
-              type="password" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
             />
-            <button type="submit">Sign In</button>
+            <button type="submit" disabled={isLoading}>
+              {isLoading ? 'Signing In...' : 'Sign In'}
+            </button>
           </form>
+          {error && <p className={styles.error}>{error}</p>}
           <p>Don't have an account? <Link to="/crm/signup">Sign Up</Link></p>
         </div>
       </div>
