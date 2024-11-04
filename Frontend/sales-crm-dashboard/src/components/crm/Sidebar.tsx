@@ -1,5 +1,6 @@
+// src/components/Sidebar.tsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import styles from '../../styles/crm/sidebar.module.css';
 
 const Sidebar: React.FC = () => {
@@ -8,22 +9,34 @@ const Sidebar: React.FC = () => {
       <nav>
         <ul>
           <li>
-            <Link to="/crm/dashboard">Dashboard</Link>
+            <NavLink to="/crm/dashboard" className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}>
+              Dashboard
+            </NavLink>
           </li>
           <li>
-            <Link to="/crm/deals">Deals</Link>
+            <NavLink to="/crm/deals" className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}>
+              Deals
+            </NavLink>
           </li>
           <li>
-            <Link to="/crm/leads">Leads</Link>
+            <NavLink to="/crm/leads" className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}>
+              Leads
+            </NavLink>
           </li>
           <li>
-            <Link to="/crm/contacts">Contacts</Link>
+            <NavLink to="/crm/contacts" className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}>
+              Contacts
+            </NavLink>
           </li>
           <li>
-            <Link to="/crm/accounts">Accounts</Link>
+            <NavLink to="/crm/accounts" className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}>
+              Accounts
+            </NavLink>
           </li>
           <li>
-            <Link to="/crm/projects">Projects</Link>
+            <NavLink to="/crm/projects" className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}>
+              Projects
+            </NavLink>
           </li>
         </ul>
       </nav>

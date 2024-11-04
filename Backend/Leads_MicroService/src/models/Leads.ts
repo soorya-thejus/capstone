@@ -12,6 +12,7 @@ export interface ILead extends Document {
   owner_id: Types.ObjectId;
 }
 
+
 // Define the Lead schema
 const LeadSchema: Schema = new Schema({
   lead_name: { type: String, required: true },
