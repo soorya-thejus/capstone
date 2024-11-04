@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Topbar from '../../components/crm/Topbar';
 import styles from '../../styles/crm/auth.module.css';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
@@ -12,14 +13,12 @@ const SignUp: React.FC = () => {
     username: '',
     email: '',
     password: '',
-    role: 'Sales Rep', // Default role if not specified
-    org_id: '', // If you need to capture organization ID
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prevFormData => ({ ...prevFormData, [name]: value }));
   };
@@ -32,22 +31,17 @@ const SignUp: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:5007/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+      const response = await axios.post('http://localhost:5007/api/register', {
+        ...formData,
+        role: 'Admin',    // Set default role to Admin
+        org_id: null,     // Explicitly set org_id to null
       });
-      
 
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.message || 'Error occurred during sign-up');
-      } else {
-        // On successful registration, redirect to sign-in page
+      if (response.status === 201) {
         navigate('/crm/signin');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError('Error occurred during sign-up. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -88,12 +82,6 @@ const SignUp: React.FC = () => {
               onChange={handleChange}
               required
             />
-            <label>Role</label>
-            <select name="role" value={formData.role} onChange={handleChange} required>
-              <option value="Admin">Admin</option>
-              <option value="Sales Rep">Sales Rep</option>
-              <option value="Project Manager">Project Manager</option>
-            </select>
             <button type="submit" disabled={isLoading}>
               {isLoading ? 'Signing Up...' : 'Sign Up'}
             </button>

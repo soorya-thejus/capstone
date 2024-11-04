@@ -9,4 +9,5 @@ export interface Deal {
   forecast_value: number;
   contact_id: string; // Added contact_id for selected contact
   org_id: string; // Ensure org_id is part of the deal
+  owner_id: string; // Ensure owner_id is part of the deal
 }

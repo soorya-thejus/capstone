@@ -9,9 +9,10 @@ import styles from '../../styles/crm/dealstable.module.css';
 
 interface DealsTableProps {
   orgId: string; // Pass orgId as prop
+  ownerId:string;
 }
 
-const DealsTable: React.FC<DealsTableProps> = ({ orgId }) => {
+const DealsTable: React.FC<DealsTableProps> = ({ orgId,ownerId }) => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
@@ -19,18 +20,18 @@ const DealsTable: React.FC<DealsTableProps> = ({ orgId }) => {
 
   useEffect(() => {
     const fetchContacts = async () => {
-      const fetchedContacts = await ContactService.getAllContacts(orgId);
+      const fetchedContacts = await ContactService.getAllContacts(ownerId);
       setContacts(fetchedContacts);
     };
 
     const fetchDeals = async () => {
-      const fetchedDeals = await DealService.getAllDeals(orgId);
+      const fetchedDeals = await DealService.getAllDeals(ownerId);
       setDeals(fetchedDeals);
     };
 
     fetchContacts();
     fetchDeals();
-  }, [orgId]);
+  }, [ownerId]);
 
   const handleAddClick = () => {
     setSelectedDeal({
@@ -42,6 +43,7 @@ const DealsTable: React.FC<DealsTableProps> = ({ orgId }) => {
       forecast_value: 0,
       contact_id: "",
       org_id: orgId,
+      owner_id: ownerId,
     });
     setIsFormVisible(true);
   };
