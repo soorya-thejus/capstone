@@ -1,11 +1,11 @@
 import express from 'express';
-import { updateMetricsFromDeal } from '../controllers/metricsController';
+import { fetchMetricsBySalesRep, updateMetricsFromDeal } from '../controllers/metricsController';
 
 
 const router = express.Router();
 
 router.post('/salesRepMetrics', updateMetricsFromDeal);
 
-//router.get('/metrics/:org_id', getMetricsByOrg);
+router.get('/metrics/salesRep/:owner_id', fetchMetricsBySalesRep);
 
 export default router;
