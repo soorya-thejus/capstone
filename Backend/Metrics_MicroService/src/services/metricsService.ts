@@ -161,3 +161,10 @@ const getCloseProbability = (stage: string): number => {
           return 60;
   }
 };
+
+
+
+
+export const getMetricsByOrgService = async (org_id: string): Promise<(typeof Metrics)[]> => {
+  return await Metrics.find({ org_id });
+};
