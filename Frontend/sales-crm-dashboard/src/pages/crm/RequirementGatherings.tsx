@@ -14,6 +14,7 @@ const RequirementGathering: React.FC = () => {
     type: '',
     address: '',
     contact_info: '',
+    adminId: adminId
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
