@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
 
-
+ 
 
 
 export interface IOrganization extends Document {
@@ -9,7 +9,7 @@ export interface IOrganization extends Document {
   type: string;
   address: string;
   contact_info: string;
-  admin: Types.ObjectId;
+  adminId: Types.ObjectId;
 }
 
 const OrganizationSchema: Schema = new Schema(
@@ -18,7 +18,7 @@ const OrganizationSchema: Schema = new Schema(
     type: { type: String, required: true },
     address: { type: String, required: true },
     contact_info: { type: String, required: true },
-    admin: { type: Types.ObjectId, ref: 'User', required: false },
+    adminId: { type: Types.ObjectId, ref: 'User', required: false },
   },
   { timestamps: true, versionKey: false }
 );

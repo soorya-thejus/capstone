@@ -1,14 +1,30 @@
 import { Request, Response } from 'express';
 import * as organizationService from '../services/orgService'; // Import your organization service here
-
+import { Organization } from '../models/organization';
+ 
 // Create an Organization
-export const createOrganization = async (req: Request, res: Response) => {
+export const createOrganization = async (req: Request, res: Response): Promise<void> => {
+    const { name, type, address, contact_info,adminId } = req.body;
+
     try {
-        const savedOrganization = await organizationService.createOrganizationService(req.body);
-        res.status(201).json(savedOrganization);
+        // Create a new organization
+        const newOrganization = new Organization({
+            name,
+            type,
+            address,
+            contact_info,
+            adminId
+        });
+
+        await newOrganization.save();
+
+        res.status(201).json({ message: 'Organization created successfully', org_id: newOrganization._id });
     } catch (error) {
-        res.status(400).json({ message: error instanceof Error ? error.message : 'Error creating organization' });
+        // Use a type assertion to treat `error` as an `Error` instance
+        const err = error as Error;
+        res.status(500).json({ message: 'Error creating organization', error: err.message });
     }
+    
 };
 
 // Get All Organizations
