@@ -2,64 +2,115 @@ import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/crm/DashboardLayout';
 import Widget from '../../components/crm/Widget';
 import styles from '../../styles/crm/dashboard.module.css';
+import axios from 'axios';
 
 interface DashboardData {
-  activeDeals: number;
-  avgDealValue: number;
+  activeDealsForecastValue: number;
+  avgWonDealValue: number;
   actualRevenue: number;
-  revenueByMonth: { labels: string[]; datasets: { data: number[]; label: string }[] };
+  actualRevenueByMonth: { labels: string[]; datasets: { data: number[]; label: string }[] };
   dealStatusDistribution: { labels: string[]; datasets: { data: number[]; label: string }[] };
-  topDeals: string[];
+  //topDeals: string[];
   pipelineConversion: { labels: string[]; datasets: { data: number[]; label: string }[] };
   forecastedRevenueByMonth: { labels: string[]; datasets: { data: number[]; label: string }[] };
   forecastedRevenueByStage: { labels: string[]; datasets: { data: number[]; label: string }[] };
-  dealsProgressByMonth: { labels: string[]; datasets: { data: number[]; label: string }[] };
+ // dealsProgressByMonth: { labels: string[]; datasets: { data: number[]; label: string }[] };
 }
 
 const Dashboard: React.FC = () => {
   const [data, setData] = useState<DashboardData | null>(null);
 
+  const transformData = (metrics: any): DashboardData => {
+    return {
+      activeDealsForecastValue: metrics.active_deals_forecast_value,
+      avgWonDealValue: metrics.average_won_deal_value,
+      actualRevenue: metrics.actual_revenue,
+      actualRevenueByMonth: {
+        labels: Object.keys(metrics.actual_revenue_by_month),
+        datasets: [{ data: Object.values(metrics.actual_revenue_by_month), label: 'Actual Revenue by Month' }],
+      },
+      dealStatusDistribution: {
+        labels: Object.keys(metrics.deal_status_distribution),
+        datasets: [{ data: Object.values(metrics.deal_status_distribution), label: 'Deal Status Distribution' }],
+      },
+      //topDeals: ['Sample Deal 1', 'Sample Deal 2', 'Sample Deal 3'], // Placeholder for top deals
+      pipelineConversion: {
+        labels: Object.keys(metrics.pipeline_conversion),
+        datasets: [{ data: Object.values(metrics.pipeline_conversion), label: 'Pipeline Conversion' }],
+      },
+      forecastedRevenueByMonth: {
+        labels: Object.keys(metrics.forecasted_revenue_by_month),
+        datasets: [{ data: Object.values(metrics.forecasted_revenue_by_month), label: 'Forecasted Revenue by Month' }],
+      },
+      forecastedRevenueByStage: {
+        labels: Object.keys(metrics.forecasted_revenue_by_stage),
+        datasets: [{ data: Object.values(metrics.forecasted_revenue_by_stage), label: 'Forecasted Revenue by Stage' }],
+      },
+      // dealsProgressByMonth: {
+      //   labels: Object.keys(metrics.actual_revenue_by_month),
+      //   datasets: [
+      //     { data: Object.values(metrics.actual_revenue_by_month), label: 'Won Deals' },
+      //     // Add more progress data as needed
+      //   ],
+      // },
+    };
+  };
+
+  
   useEffect(() => {
     const fetchData = async () => {
-      setData({
-        activeDeals: 50000,
-        avgDealValue: 7000,
-        actualRevenue: 500000,
-        revenueByMonth: { labels: ['Jan', 'Feb', 'Mar'], datasets: [{ data: [120000, 150000, 130000], label: 'Revenue' }] },
-        dealStatusDistribution: { labels: ['Won', 'Working', 'Discovery', 'Proposal', 'New'], datasets: [{ data: [15, 20, 10, 5, 5], label: 'Status' }] },
-        topDeals: ['Deal 1 - $20k', 'Deal 2 - $18k', 'Deal 3 - $15k'],
-        pipelineConversion: { labels: ['New', 'Discovery', 'Proposal', 'Negotiation', 'Won'], datasets: [{ data: [30, 25, 20, 15, 10], label: 'Conversion' }] },
-        forecastedRevenueByMonth: { labels: ['Apr', 'May', 'Jun'], datasets: [{ data: [140000, 160000, 170000], label: 'Forecasted Revenue' }] },
-        forecastedRevenueByStage: { labels: ['Discovery', 'Proposal', 'Negotiation', 'Won'], datasets: [{ data: [25000, 50000, 100000, 125000], label: 'Forecasted Revenue by Stage' }] },
-        dealsProgressByMonth: { 
-          labels: ['Jan', 'Feb', 'Mar'], 
-          datasets: [
-            { data: [1, 0, 0], label: 'New Deals' },
-            { data: [1, 1, 0], label: 'Won Deals' },
-            { data: [0, 0, 1], label: 'Working Deals' }
-          ]
-        },
-      });
+      try {
+        const orgId = sessionStorage.getItem('orgId');
+        const ownerId = sessionStorage.getItem('userId');
+        const role = sessionStorage.getItem('role');
+  
+        if (!orgId) {
+          console.error('Organization ID is not available in session');
+          return;
+        }
+  
+        let response;
+        if (role === "Admin") {
+          response = await axios.get(`http://localhost:5008/api/metrics/orgs/${orgId}`);
+        } else if (role === "Sales Rep") {
+          response = await axios.get(`http://localhost:5009/api/metrics/salesRep/${ownerId}`);
+        }
+  
+        // Ensure `response` is defined before trying to access `response.data`
+        if (response) {
+          const rawMetrics = response.data;
+          const formattedData = transformData(rawMetrics);
+          setData(formattedData);
+        } else {
+          console.error('No response received: Role may not match expected values');
+        }
+  
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      }
     };
-
+  
     fetchData();
   }, []);
+  
+  
+  
 
   if (!data) return <div>Loading...</div>;
 
   return (
     <DashboardLayout>
       <div className={styles.dashboardWidgets}>
-        <Widget title="Active Deals" content={`$${data.activeDeals.toLocaleString()}`} />
-        <Widget title="Average Value of Won Deals" content={`$${data.avgDealValue}`} />
+        <Widget title="Active Deals Forecast Value" content={`$${data.activeDealsForecastValue.toLocaleString()}`} />
+        <Widget title="Average Value of Won Deals" content={`$${data.avgWonDealValue}`} />
         <Widget title="Actual Revenue" content={`$${data.actualRevenue}`} />
-        <Widget title="Revenue by Month" chartData={data.revenueByMonth} chartType="bar" />
+        <Widget title="Revenue by Month" chartData={data.actualRevenueByMonth} chartType="bar" />
         <Widget title="Deal Status Distribution" chartData={data.dealStatusDistribution} chartType="pie" />
-        <Widget title="Top Deals" content={<ul>{data.topDeals.map((deal, index) => <li key={index}>{deal}</li>)}</ul>} />
+        {/* <Widget title="Top Deals" content={<ul>{data.topDeals.map((deal, index) => <li key={index}>{deal}</li>)}</ul>} /> */}
         <Widget title="Pipeline Conversion" chartData={data.pipelineConversion} chartType="bar" />
         <Widget title="Forecasted Revenue by Month" chartData={data.forecastedRevenueByMonth} chartType="bar" />
         <Widget title="Forecasted Revenue by Stage" chartData={data.forecastedRevenueByStage} chartType="bar" />
-        <Widget title="Deals Progress by Month" chartData={data.dealsProgressByMonth} chartType="bar" />
+        {/* <Widget title="Deals Progress by Month" chartData={data.dealsProgressByMonth} chartType="bar" /> */}
       </div>
     </DashboardLayout>
   );

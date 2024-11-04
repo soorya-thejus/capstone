@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import {  updateMetricsFromDealEvent } from '../services/metricsService';
+import {  getMetricsByOrgService, updateMetricsFromDealEvent } from '../services/metricsService';
 
 
 export const updateMetricsFromDeal = async (req: Request, res: Response) => {
@@ -13,3 +13,14 @@ export const updateMetricsFromDeal = async (req: Request, res: Response) => {
     }
   };
 
+  export const fetchMetricsByOrg = async (req: Request, res: Response) => {
+    try {
+      const { org_id } = req.params;
+      const metrics = await getMetricsByOrgService(org_id);
+      
+      res.status(200).json(metrics);
+    } catch (error) {
+      console.error('Error fetching metrics', error);
+      res.status(500).json({ message: 'Failed to fetch metrics' });
+    }
+  };

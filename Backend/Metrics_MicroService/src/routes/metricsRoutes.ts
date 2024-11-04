@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateMetricsFromDeal } from '../controllers/metricsController';
+import { fetchMetricsByOrg, updateMetricsFromDeal } from '../controllers/metricsController';
 
 
 const router = express.Router();
@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.post('/metrics', updateMetricsFromDeal);
 
-//router.get('/metrics/:org_id', getMetricsByOrg);
+router.get('/metrics/orgs/:org_id', fetchMetricsByOrg);
 
 export default router;
