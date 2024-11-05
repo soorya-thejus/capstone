@@ -7,6 +7,9 @@ interface IMetric extends Document {
   average_won_deal_value: number;
   actual_revenue: number;
   total_deals: number;
+  total_leads: number;
+  qualified_leads: number;
+  lead_conversion_rate: number;
   won_deals: number;
   lost_deals: number;
   new_deals: number;
@@ -27,11 +30,14 @@ interface IMetric extends Document {
 
 // Define the schema
 const MetricsSchema: Schema = new Schema({
-  timestamp: { type: Date, default: Date.now }, // Track last updated time
-  active_deals_forecast_value: { type: Number, default: 0 }, // Total forecasted value for active deals
-  average_won_deal_value: { type: Number, default: 0 }, // Average value of won deals
-  actual_revenue: { type: Number, default: 0 }, // Actual revenue generated from won deals
-  total_deals: { type: Number, default: 0 }, // Total number of deals processed
+  timestamp: { type: Date, default: Date.now }, 
+  active_deals_forecast_value: { type: Number, default: 0 },
+  average_won_deal_value: { type: Number, default: 0 }, 
+  actual_revenue: { type: Number, default: 0 }, 
+  total_deals: { type: Number, default: 0 }, 
+  total_leads: { type: Number, default: 0 },
+  qualified_leads: { type: Number, default: 0 },
+  lead_conversion_rate: { type: Number, default: 0 },
   won_deals: {type: Number, default: 0},
   lost_deals: {type: Number, default: 0},
   new_deals: {type: Number, default: 0},
