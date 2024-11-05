@@ -3,7 +3,7 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IDeal extends Document {
   getQuery: any;
-  getUpdate: any;
+  getUpdate: any; 
   type: 'create' | 'update';
   deal_name: string;
   stage: 'new' | 'discovery' | 'proposal' | 'negotiation' | 'won' | 'lost';
