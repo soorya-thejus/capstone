@@ -2,6 +2,8 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 
 // Define the interface for the Lead document
 export interface ILead extends Document {
+  getUpdate: any;
+  type: 'create' | 'update';
   lead_name: string;
   status: 'new lead' | 'attempted to contact' | 'contacted' | 'qualified' | 'unqualified';
   company: string;
@@ -15,6 +17,7 @@ export interface ILead extends Document {
 
 // Define the Lead schema
 const LeadSchema: Schema = new Schema({
+  type: { type: String, enum: ['create', 'update'], default: 'create', required: false },
   lead_name: { type: String, required: true },
   status: {
     type: String,
@@ -31,5 +34,14 @@ const LeadSchema: Schema = new Schema({
 
 }, {timestamps: true, versionKey: false });
 
+
+
+LeadSchema.pre<ILead>('findOneAndUpdate', async function (next) {
+  const update = this.getUpdate();  
+
+  update.type = "update"; 
+
+  next();
+});
 
 export const Lead = mongoose.model<ILead>('Lead', LeadSchema);
