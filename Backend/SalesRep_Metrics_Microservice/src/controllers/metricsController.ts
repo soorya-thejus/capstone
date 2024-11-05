@@ -16,8 +16,8 @@ export const updateMetricsFromDeal = async (req: Request, res: Response) => {
 
   export const fetchMetricsBySalesRep = async (req: Request, res: Response) => {
     try {
-      const { org_id } = req.params;
-      const metrics = await getMetricsBySalesRepService(org_id);
+      const { owner_id } = req.params;
+      const metrics = await getMetricsBySalesRepService(owner_id);
       
       res.status(200).json(metrics);
     } catch (error) {
