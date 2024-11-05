@@ -60,20 +60,20 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const orgId = sessionStorage.getItem('orgId');
-        const ownerId = sessionStorage.getItem('userId');
+        const org_id = sessionStorage.getItem('orgId');
+        const owner_id = sessionStorage.getItem('userId');
         const role = sessionStorage.getItem('role');
   
-        if (!orgId) {
+        if (!org_id) {
           console.error('Organization ID is not available in session');
           return;
         }
   
         let response;
         if (role === "Admin") {
-          response = await axios.get(`http://localhost:5008/api/metrics/orgs/${orgId}`);
+          response = await axios.get(`http://localhost:5008/api/metrics/orgs/${org_id}`);
         } else if (role === "Sales Rep") {
-          response = await axios.get(`http://localhost:5009/api/metrics/salesRep/${ownerId}`);
+          response = await axios.get(`http://localhost:5009/api/metrics/salesRep/${owner_id}`);
         }
   
         // Ensure `response` is defined before trying to access `response.data`
