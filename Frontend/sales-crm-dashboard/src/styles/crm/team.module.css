@@ -1,0 +1,8 @@
+/* src/styles/deals.module.css */
+.teamContainer {
+    padding-left: 20px;
+}
+
+.teamContainer h2 {
+    color: #2c3e50;
+}

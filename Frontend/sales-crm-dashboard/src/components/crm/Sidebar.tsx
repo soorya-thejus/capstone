@@ -4,6 +4,8 @@ import { NavLink } from 'react-router-dom';
 import styles from '../../styles/crm/sidebar.module.css';
 
 const Sidebar: React.FC = () => {
+  const role = sessionStorage.getItem('role'); // Get role from session
+
   return (
     <div className={styles.sidebar}>
       <nav>
@@ -38,6 +40,13 @@ const Sidebar: React.FC = () => {
               Projects
             </NavLink>
           </li>
+          {role === 'Admin' && (
+            <li>
+              <NavLink to="/crm/team" className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}>
+                Team
+              </NavLink>
+            </li>
+          )}
         </ul>
       </nav>
     </div>
