@@ -24,7 +24,7 @@ export const runConsumer = async () => {
       if (topic === 'deal-events') {
         await updateMetricsFromDealEvent(eventData);
       } else if (topic === 'lead-events') {
-        await updateMetricsFromLeadEvent(eventData); // Handle lead event
+        await updateMetricsFromLeadEvent(eventData); 
       }
     },
   });
