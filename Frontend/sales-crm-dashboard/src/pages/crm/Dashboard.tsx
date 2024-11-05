@@ -22,39 +22,58 @@ const Dashboard: React.FC = () => {
 
   const transformData = (metrics: any): DashboardData => {
     return {
-      activeDealsForecastValue: metrics.active_deals_forecast_value,
-      avgWonDealValue: metrics.average_won_deal_value,
-      actualRevenue: metrics.actual_revenue,
+      activeDealsForecastValue: metrics.active_deals_forecast_value ?? 0,
+      avgWonDealValue: metrics.average_won_deal_value ?? 0,
+      actualRevenue: metrics.actual_revenue ?? 0,
       actualRevenueByMonth: {
-        labels: Object.keys(metrics.actual_revenue_by_month),
-        datasets: [{ data: Object.values(metrics.actual_revenue_by_month), label: 'Actual Revenue by Month' }],
+        labels: metrics.actual_revenue_by_month ? Object.keys(metrics.actual_revenue_by_month) : [],
+        datasets: [
+          {
+            data: metrics.actual_revenue_by_month ? Object.values(metrics.actual_revenue_by_month) : [],
+            label: 'Actual Revenue by Month',
+          },
+        ],
       },
       dealStatusDistribution: {
-        labels: Object.keys(metrics.deal_status_distribution),
-        datasets: [{ data: Object.values(metrics.deal_status_distribution), label: 'Deal Status Distribution' }],
+        labels: metrics.deal_status_distribution ? Object.keys(metrics.deal_status_distribution) : [],
+        datasets: [
+          {
+            data: metrics.deal_status_distribution ? Object.values(metrics.deal_status_distribution) : [],
+            label: 'Deal Status Distribution',
+          },
+        ],
       },
-      //topDeals: ['Sample Deal 1', 'Sample Deal 2', 'Sample Deal 3'], // Placeholder for top deals
       pipelineConversion: {
-        labels: Object.keys(metrics.pipeline_conversion),
-        datasets: [{ data: Object.values(metrics.pipeline_conversion), label: 'Pipeline Conversion' }],
+        labels: metrics.pipeline_conversion ? Object.keys(metrics.pipeline_conversion) : [],
+        datasets: [
+          {
+            data: metrics.pipeline_conversion ? Object.values(metrics.pipeline_conversion) : [],
+            label: 'Pipeline Conversion',
+          },
+        ],
       },
       forecastedRevenueByMonth: {
-        labels: Object.keys(metrics.forecasted_revenue_by_month),
-        datasets: [{ data: Object.values(metrics.forecasted_revenue_by_month), label: 'Forecasted Revenue by Month' }],
+        labels: metrics.forecasted_revenue_by_month ? Object.keys(metrics.forecasted_revenue_by_month) : [],
+        datasets: [
+          {
+            data: metrics.forecasted_revenue_by_month ? Object.values(metrics.forecasted_revenue_by_month) : [],
+            label: 'Forecasted Revenue by Month',
+          },
+        ],
       },
       forecastedRevenueByStage: {
-        labels: Object.keys(metrics.forecasted_revenue_by_stage),
-        datasets: [{ data: Object.values(metrics.forecasted_revenue_by_stage), label: 'Forecasted Revenue by Stage' }],
+        labels: metrics.forecasted_revenue_by_stage ? Object.keys(metrics.forecasted_revenue_by_stage) : [],
+        datasets: [
+          {
+            data: metrics.forecasted_revenue_by_stage ? Object.values(metrics.forecasted_revenue_by_stage) : [],
+            label: 'Forecasted Revenue by Stage',
+          },
+        ],
       },
-      // dealsProgressByMonth: {
-      //   labels: Object.keys(metrics.actual_revenue_by_month),
-      //   datasets: [
-      //     { data: Object.values(metrics.actual_revenue_by_month), label: 'Won Deals' },
-      //     // Add more progress data as needed
-      //   ],
-      // },
     };
   };
+  
+  
 
   
   useEffect(() => {
@@ -79,12 +98,18 @@ const Dashboard: React.FC = () => {
         }
   
         if (response) {
-          console.log('API Response:', response.data); // Check the response data
-          const rawMetrics = response.data;
+          console.log('API Response:', response.data); // Check the response data structure
+          const rawMetrics = response.data[0];
+          // Check if each expected field is available
+          console.log('Active Deals Forecast Value:', rawMetrics.active_deals_forecast_value);
+          console.log('Average Won Deal Value:', rawMetrics.average_won_deal_value);
+          console.log('Actual Revenue:', rawMetrics.actual_revenue);
+          // Continue logging each expected field to verify structure
           const formattedData = transformData(rawMetrics);
           console.log('Formatted Data:', formattedData); // Verify formatted data
           setData(formattedData);
-        } else {
+        }
+        else {
           console.error('No response received: Role may not match expected values');
         }
   
