@@ -110,7 +110,7 @@ export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise
       
       metrics.active_deals_forecast_value = (metrics.active_deals_forecast_value || 0) + forecast_value;
 
-      
+
       metrics.forecasted_revenue_by_stage[stage] = (metrics.forecasted_revenue_by_stage[stage] || 0) + forecast_value;
 
       
@@ -127,6 +127,9 @@ export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise
   metrics.pipeline_conversion.negotiation = metrics.nego_deals||0;
   metrics.pipeline_conversion.won = metrics.won_deals||0;
   metrics.pipeline_conversion.lost = metrics.lost_deals||0;
+
+
+  metrics.commission = 0.1*(metrics.actual_revenue);
   
 
   // Calculate deal status distribution percentage for each stage

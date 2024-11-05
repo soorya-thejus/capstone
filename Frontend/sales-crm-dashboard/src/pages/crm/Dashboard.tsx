@@ -8,6 +8,7 @@ interface DashboardData {
   activeDealsForecastValue: number;
   avgWonDealValue: number;
   actualRevenue: number;
+  commission: number;
   actualRevenueByMonth: { labels: string[]; datasets: { data: number[]; label: string }[] };
   dealStatusDistribution: { labels: string[]; datasets: { data: number[]; label: string }[] };
   pipelineConversion: { labels: string[]; datasets: { data: number[]; label: string }[] };
@@ -19,6 +20,7 @@ const defaultDashboardData: DashboardData = {
   activeDealsForecastValue: 0,
   avgWonDealValue: 0,
   actualRevenue: 0,
+  commission: 0,
   actualRevenueByMonth: { labels: [], datasets: [{ data: [], label: 'Actual Revenue by Month' }] },
   dealStatusDistribution: { labels: [], datasets: [{ data: [], label: 'Deal Status Distribution' }] },
   pipelineConversion: { labels: [], datasets: [{ data: [], label: 'Pipeline Conversion' }] },
@@ -34,6 +36,7 @@ const Dashboard: React.FC = () => {
       activeDealsForecastValue: metrics.active_deals_forecast_value ?? 0,
       avgWonDealValue: metrics.average_won_deal_value ?? 0,
       actualRevenue: metrics.actual_revenue ?? 0,
+      commission: metrics.commission ?? 0,
       actualRevenueByMonth: {
         labels: metrics.actual_revenue_by_month ? Object.keys(metrics.actual_revenue_by_month) : [],
         datasets: [{
@@ -117,6 +120,9 @@ const Dashboard: React.FC = () => {
         <Widget title="Active Deals Forecast Value" content={`$${data.activeDealsForecastValue.toLocaleString()}`} />
         <Widget title="Average Value of Won Deals" content={`$${data.avgWonDealValue}`} />
         <Widget title="Actual Revenue" content={`$${data.actualRevenue}`} />
+        {sessionStorage.getItem('role') === "Sales Rep" && (
+        <Widget title="Commission Rate" content={`$${data.commission?.toLocaleString()}`} />
+        )}
         <Widget title="Revenue by Month" chartData={data.actualRevenueByMonth} chartType="bar" />
         <Widget title="Deal Status Distribution" chartData={data.dealStatusDistribution} chartType="pie" />
         <Widget title="Pipeline Conversion" chartData={data.pipelineConversion} chartType="bar" />
@@ -125,6 +131,13 @@ const Dashboard: React.FC = () => {
       </div>
     </DashboardLayout>
   );
+
+
+
+
+
+
+
 };
 
 export default Dashboard;

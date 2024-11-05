@@ -13,6 +13,7 @@ interface IMetric extends Document {
   discovery_deals: number;
   proposal_deals: number;
   nego_deals: number;
+  commission: number;
   deal_status_distribution: Record<string, number>;
   actual_revenue_by_month: Record<string, number>;
   pipeline_conversion: Record<string, number>;
@@ -37,6 +38,7 @@ const MetricsSchema: Schema = new Schema({
   discovery_deals:{type: Number, default: 0},
   proposal_deals: {type: Number, default: 0},
   nego_deals: {type: Number, default: 0},
+  commission: {type: Number, default: 0},
   deal_status_distribution: {
     won: { type: Number, default: 0 },
     lost: { type: Number, default: 0 },
