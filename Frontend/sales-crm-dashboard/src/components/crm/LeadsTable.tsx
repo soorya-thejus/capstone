@@ -93,14 +93,13 @@ const LeadsTable: React.FC = () => {
               <td>{lead.email}</td>
               <td>{lead.phone}</td>
               <td>
-                <button onClick={() => handleEditClick(lead)}>Edit</button>
+              <button onClick={() => handleEditClick(lead)}>Edit</button>
               </td>
               <td>
-                <button 
-                  className={styles.deleteButton} 
-                  onClick={() => handleDeleteClick(lead._id!)} 
-                  style={{ display: (lead.status === "qualified" || lead.status === "unqualified") ? 'none' : 'inline' }}
-                >
+                <button
+                  className={`${styles.deleteButton} ${lead.status === 'qualified' || lead.status === 'unqualified' ? styles.disabledDeleteButton : ''}`}
+                  onClick={() => handleDeleteClick(lead._id!)}
+                  disabled={lead.status === 'qualified' || lead.status === 'unqualified'}>
                   Delete
                 </button>
               </td>

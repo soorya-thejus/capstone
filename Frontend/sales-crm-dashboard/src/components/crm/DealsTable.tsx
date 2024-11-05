@@ -135,12 +135,18 @@ const DealsTable: React.FC = () => {
               <td>{deal.close_probability}</td>
               <td>{deal.forecast_value}</td>
               
-                <td>
-                  <button onClick={() => handleEditClick(deal)}>Edit</button></td>
-                  <td>{deal.stage !== 'won' && deal.stage !== 'lost' && (
-                    <button className={styles.deleteButton} onClick={() => handleDeleteClick(deal._id!)}>Delete</button>
-                  )}
-                </td>
+              <td>
+              <button onClick={() => handleEditClick(deal)}>Edit</button>
+              </td>
+              <td>
+                <button
+                  className={`${styles.deleteButton} ${deal.stage === 'won' || deal.stage === 'lost' ? styles.disabledDeleteButton : ''}`}
+                  onClick={() => handleDeleteClick(deal._id!)}
+                  disabled={deal.stage === 'won' || deal.stage === 'lost'}>
+                  Delete
+                </button>
+              </td>
+
               
             </tr>
           ))}

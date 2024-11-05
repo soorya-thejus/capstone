@@ -51,4 +51,13 @@
     font-size: 14px;
     transition: background 0.3s;
   }
+  .disabledDeleteButton {
+    background-color: gray; /* Color when disabled */
+    color: #ccc;
+    cursor: not-allowed; /* Changes cursor to indicate it's disabled */
+  }
+  
+  .disabledDeleteButton:hover {
+    background-color: gray; /* Hover color when disabled */
+  }
   
