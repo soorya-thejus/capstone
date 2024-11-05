@@ -38,7 +38,7 @@ const MetricsSchema: Schema = new Schema({
   lead_conversion_rate: { type: Number, default: 0 },
   won_deals: {type: Number, default: 0},
   lost_deals: {type: Number, default: 0},
-  new_deals: {type: Number, default: 0},
+  new_deals: {type: Number, default: 0}, 
   discovery_deals:{type: Number, default: 0},
   proposal_deals: {type: Number, default: 0},
   nego_deals: {type: Number, default: 0},
