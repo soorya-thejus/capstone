@@ -12,8 +12,7 @@
 /* For smaller screens, sidebar stacks above content */
 @media (max-width: 768px) {
     .sidebar {
-        position: relative;
-        height: auto;
+        height: 100%;
     }
     
 }

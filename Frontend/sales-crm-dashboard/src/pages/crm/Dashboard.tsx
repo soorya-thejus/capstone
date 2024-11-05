@@ -97,14 +97,14 @@ const Dashboard: React.FC = () => {
         }
 
         if (response && Array.isArray(response.data) && response.data.length > 0) {
-          console.log('API Response:', response.data); // Check the response data structure
-          const rawMetrics = response.data[0]; // Assuming response.data is an array
+          console.log('API Response:', response.data);
+          const rawMetrics = response.data[0];
           const formattedData = transformData(rawMetrics);
-          console.log('Formatted Data:', formattedData); // Verify formatted data
+          console.log('Formatted Data:', formattedData);
           setData(formattedData);
         } else {
           console.error('No valid data received: Role may not match expected values or response is empty');
-          setData(defaultDashboardData); // Reset to default values if no valid data received
+          setData(defaultDashboardData);
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -117,27 +117,22 @@ const Dashboard: React.FC = () => {
   return (
     <DashboardLayout>
       <div className={styles.dashboardWidgets}>
-        <Widget title="Active Deals Forecast Value" content={`$${data.activeDealsForecastValue.toLocaleString()}`} />
-        <Widget title="Average Value of Won Deals" content={`$${data.avgWonDealValue}`} />
-        <Widget title="Actual Revenue" content={`$${data.actualRevenue}`} />
-        {sessionStorage.getItem('role') === "Sales Rep" && (
-        <Widget title="Commission Rate" content={`$${data.commission?.toLocaleString()}`} />
-        )}
-        <Widget title="Revenue by Month" chartData={data.actualRevenueByMonth} chartType="bar" />
-        <Widget title="Deal Status Distribution" chartData={data.dealStatusDistribution} chartType="pie" />
-        <Widget title="Pipeline Conversion" chartData={data.pipelineConversion} chartType="bar" />
-        <Widget title="Forecasted Revenue by Month" chartData={data.forecastedRevenueByMonth} chartType="bar" />
-        <Widget title="Forecasted Revenue by Stage" chartData={data.forecastedRevenueByStage} chartType="bar" />
+        <Widget title="Active Deals Forecast Value" content={`$${data.activeDealsForecastValue.toLocaleString()}`} className={styles.smallWidget} />
+        <Widget title="Average Value of Won Deals" content={`$${data.avgWonDealValue}`} className={styles.smallWidget} />
+        <Widget title="Actual Revenue" content={`$${data.actualRevenue}`} className={styles.smallWidget} />
+        <Widget title="Actual Revenue" content={`$${data.actualRevenue}`} className={styles.smallWidget} />
+
+        <Widget title="Revenue by Month" chartData={data.actualRevenueByMonth} chartType="bar" className={styles.fullWidth} />
+        
+        <Widget title="Deal Status Distribution" chartData={data.dealStatusDistribution} chartType="pie" className={styles.smallChart} />
+
+        <Widget title="Pipeline Conversion" chartData={data.pipelineConversion} chartType="bar" className={styles.largeChart} />
+        <Widget title="Forecasted Revenue by Month" chartData={data.forecastedRevenueByMonth} chartType="bar" className={styles.largeChart} />
+        <Widget title="Forecasted Revenue by Stage" chartData={data.forecastedRevenueByStage} chartType="bar" className={styles.largeChart} />
+
       </div>
     </DashboardLayout>
   );
-
-
-
-
-
-
-
 };
 
 export default Dashboard;

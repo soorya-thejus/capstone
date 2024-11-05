@@ -4,6 +4,8 @@ import { getAccountsBySalesRep,getAllAccounts } from '../../services/AccountServ
 import { Contact } from '../../types/crm/Contact';
 import styles from '../../styles/crm/contactstable.module.css';
 import formStyles from '../../styles/crm/contactform.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
 interface Account {
   _id: string;
@@ -125,10 +127,18 @@ const ContactTable: React.FC = () => {
                 {contact.account_id ? (
                   <>
                     {getAccountNameById(contact.account_id)} 
-                    <button onClick={() => handleAddOrEditAccount(contact)}>Edit</button>
+                    <FontAwesomeIcon
+                      icon={faEdit}
+                      onClick={() => handleAddOrEditAccount(contact)}
+                      className={styles.editIcon}
+                    />
                   </>
                 ) : (
-                  <button onClick={() => handleAddOrEditAccount(contact)}>Add</button>
+                  <FontAwesomeIcon
+                    icon={faEdit}
+                    onClick={() => handleAddOrEditAccount(contact)}
+                    className={styles.editIcon}
+                  />
                 )}
               </td>
               <td>{contact.deal_ids?.length || 0}</td>

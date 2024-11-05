@@ -53,55 +53,57 @@ const TeamMemberSignup: React.FC = () => {
     <div className={styles.signupContainer}>
       {!isSubmitted ? (
         <>
-          <div className={styles.header}>
-            <h2>Sign Up Team Member</h2>
-          </div>
-          <div className={styles.form}>
-            <form onSubmit={handleSignup}>
-              <label>
-                Username:
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </label>
-              <label>
-                Email:
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </label>
-              <label>
-                Password:
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </label>
-              <label>
-                Role:
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  required
-                >
-                  <option value="Admin">Admin</option>
-                  <option value="Project Manager">Project Manager</option>
-                  <option value="Sales Rep">Sales Rep</option>
-                </select>
-              </label>
-              <button type="button" onClick={handleBack} className={styles.backButton}>Go Back to Dashboard</button>
-              <button type="submit" className={styles.signupButton}>Sign Up Team Member</button>
-            </form>
-            {message && <p className={styles.message}>{message}</p>}
-          </div>
+<h2>Signup Team Member</h2>
+<div className={styles.form}>
+  <form onSubmit={handleSignup}>
+    {/* Input fields */}
+    <label>
+      Username:
+      <input
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        required
+      />
+    </label>
+    <label>
+      Email:
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+    </label>
+    <label>
+      Password:
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+    </label>
+    <label>
+      Role:
+      <select
+        value={role}
+        onChange={(e) => setRole(e.target.value)}
+        required
+      >
+        <option value="Admin">Admin</option>
+        <option value="Project Manager">Project Manager</option>
+        <option value="Sales Rep">Sales Rep</option>
+      </select>
+    </label>
+    <div className={styles.formButtons}>
+      <button type="button" onClick={handleBack} className={styles.backButton}>Go Back to Dashboard</button>
+      <button type="submit" className={styles.signupButton}>Sign Up Team Member</button>
+    </div>
+  </form>
+  {message && <p className={styles.message}>{message}</p>}
+</div>
+
         </>
       ) : (
         <div className={styles.successMessage}>

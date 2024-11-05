@@ -19,11 +19,12 @@ interface WidgetProps {
   content?: string | JSX.Element;
   chartData?: { labels: string[]; datasets: { data: number[]; label: string }[] };
   chartType?: 'bar' | 'pie';
+  className?: string;
 }
 
-const Widget: React.FC<WidgetProps> = ({ title, content, chartData, chartType }) => {
+const Widget: React.FC<WidgetProps> = ({ title, content, chartData, chartType, className }) => {
   return (
-    <div className={styles.widget}>
+    <div className={`${styles.widget} ${className}`}>
       <h3>{title}</h3>
       {content && <div>{content}</div>}
       {chartData && chartType === 'bar' && (
@@ -40,7 +41,7 @@ const Widget: React.FC<WidgetProps> = ({ title, content, chartData, chartType })
             plugins: { legend: { position: 'top' }, title: { display: true, text: title } },
             scales: { y: { stacked: true, min: 0 }, x: { stacked: true } },
           }}
-          style={{ height: '800px' }}
+          style={{ height: '300px' }} // Adjust height for bar charts
         />
       )}
       {chartData && chartType === 'pie' && (
@@ -50,13 +51,14 @@ const Widget: React.FC<WidgetProps> = ({ title, content, chartData, chartType })
             datasets: chartData.datasets.map(dataset => ({
               ...dataset,
               backgroundColor: [
-                'lightgreen','red',
+                'lightgreen', 'red',
                 'lightblue', 'yellow',
                 'orange', 'pink',
               ],
             })),
           }}
           options={{ responsive: true, plugins: { legend: { position: 'top' } } }}
+          style={{ height: '300px' }} // Adjust height for pie chart
         />
       )}
     </div>

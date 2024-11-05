@@ -37,3 +37,16 @@ tr:nth-child(even) {
   font-size: 14px;
   transition: background 0.3s;
 }
+/* Add to contactstable.module.css */
+.editIcon {
+  margin-left: 8px;
+  color: #dc3545; /* Default color for the icon */
+  cursor: pointer;
+  transition: color 0.3s ease;
+  text-decoration: none; /* Remove underline */
+}
+
+.editIcon:hover {
+  color: #E06600; /* Darker shade on hover */
+}
+
