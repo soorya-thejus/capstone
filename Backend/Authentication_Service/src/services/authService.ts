@@ -86,3 +86,20 @@ export const getSalesRepsByOrg = async (org_id: string): Promise<IUser[] | null>
       throw new Error(`Could not retrieve sales reps for organization ${org_id}`);
   }
 };
+
+
+
+
+//Get all Project_Manager in an Organization
+export const getPrjctManagersByOrg = async (org_id: string): Promise<IUser[] | null> => {
+  try {
+      // Find users with the specified org_id and role 'Project Manager'
+      const prjctManagers = await User.find({ org_id, role: 'Project Manager' });
+      
+      // If no project managers are found, return null or an empty array as preferred
+      return prjctManagers.length > 0 ? prjctManagers : null;
+  } catch (error) {
+      console.error(`Error retrieving project managers for organization ${org_id}:`, error);
+      throw new Error(`Could not retrieve project managers for organization ${org_id}`);
+  }
+};

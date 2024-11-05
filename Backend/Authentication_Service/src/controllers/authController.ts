@@ -108,6 +108,25 @@ export const getSalesRepsByOrganization = async (req: Request, res: Response): P
 
 
 
+// Get all Project_Manager in an organization
+export const getPrjctManagersByOrganization = async (req: Request, res: Response): Promise<void> => {
+    const { org_id } = req.params;
+
+    try {
+        const prjctManager = await userService.getPrjctManagersByOrg(org_id);
+
+        if (!prjctManager) {
+            res.status(404).json({ message: 'No project managers found for this organization.' });
+            return;
+        }
+
+        res.status(200).json(prjctManager);
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : 'Error retrieving project managers' });
+    }
+};
+
+
 
 
 
@@ -175,7 +194,7 @@ export const createAndLinkOrganization = async (req: Request, res: Response): Pr
 };
 
  
-//Register Admin & Sales_Rep
+//Register Admin
 export const registerAdmin = async (req: Request, res: Response): Promise<void> => {
     const { username, email, password, role } = req.body;
 
@@ -223,8 +242,8 @@ export const registerAdmin = async (req: Request, res: Response): Promise<void> 
 };
 
 
-//Register SalesRep
-export const registerSalesRep = async (req: Request, res: Response): Promise<void> => {
+//Register SalesRep/ProjectManager
+export const registerTeam = async (req: Request, res: Response): Promise<void> => {
     const { org_id,username, email, password, role } = req.body;
 
     try {
@@ -269,7 +288,7 @@ export const registerSalesRep = async (req: Request, res: Response): Promise<voi
     }
 };
 
-//Login Admin & Sales_Rep
+//Login Admin / Sales_Rep / Project Manager
 export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     try 
