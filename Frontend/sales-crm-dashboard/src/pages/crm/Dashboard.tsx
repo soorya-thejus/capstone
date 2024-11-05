@@ -64,6 +64,8 @@ const Dashboard: React.FC = () => {
         const owner_id = sessionStorage.getItem('userId');
         const role = sessionStorage.getItem('role');
   
+        console.log('Fetched session data:', { org_id, owner_id, role });
+  
         if (!org_id) {
           console.error('Organization ID is not available in session');
           return;
@@ -76,10 +78,11 @@ const Dashboard: React.FC = () => {
           response = await axios.get(`http://localhost:5009/api/metrics/salesRep/${owner_id}`);
         }
   
-        // Ensure `response` is defined before trying to access `response.data`
         if (response) {
+          console.log('API Response:', response.data); // Check the response data
           const rawMetrics = response.data;
           const formattedData = transformData(rawMetrics);
+          console.log('Formatted Data:', formattedData); // Verify formatted data
           setData(formattedData);
         } else {
           console.error('No response received: Role may not match expected values');
@@ -92,6 +95,7 @@ const Dashboard: React.FC = () => {
   
     fetchData();
   }, []);
+  
   
   
   
