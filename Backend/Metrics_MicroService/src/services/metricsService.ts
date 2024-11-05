@@ -1,5 +1,41 @@
 import { Metrics } from '../models/Metrics';
 
+
+export const updateMetricsFromLeadEvent = async (leadData: any): Promise<void> => {
+  const { type, org_id, status } = leadData;
+
+  let metrics = await Metrics.findOne({ org_id });
+  if (!metrics) {
+    metrics = new Metrics({ org_id });
+  }
+
+  if (type === "create") {
+    metrics.total_leads = (metrics.total_leads || 0) + 1; 
+
+    if (status === "qualified") {
+      metrics.qualified_leads = (metrics.qualified_leads || 0) + 1; 
+    }
+
+  } else if (type === "update") {
+
+    if (status === "qualified") {
+      metrics.qualified_leads = (metrics.qualified_leads || 0) + 1; 
+    }
+
+    else if (status === "unqualified") {
+      metrics.qualified_leads = Math.max((metrics.qualified_leads || 0) - 1, 0); 
+    }
+  }
+
+  if (metrics.total_leads > 0) {
+    metrics.lead_conversion_rate = (metrics.qualified_leads || 0) / metrics.total_leads * 100;
+  } else {
+    metrics.lead_conversion_rate = 0; 
+  }
+
+  await metrics.save();
+};
+
 export const updateMetricsFromDealEvent = async (dealData: any): Promise<void> => {
   const { type, deal_value, forecast_value, stage, expected_close_date, org_id, owner_id, previous_stage } = dealData;
 
