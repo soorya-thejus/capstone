@@ -1,15 +1,23 @@
 import axios from 'axios';
 
-const API_URL = 'https://api.yourcrm.com'; // Replace with your actual API endpoint
+const API_URL = 'http://localhost:5007/api'; // Replace with your actual API endpoint
 
-export const signup = async (data: { organizationName: string; email: string; password: string }) => {
-  return axios.post(`${API_URL}/auth/signup`, data);
+export const registerAdmin = async (data: { organizationName: string; email: string; password: string }) => {
+  return axios.post(`${API_URL}/auth/register/admin`, data);
 };
 
-export const signin = async (data: { email: string; password: string }) => {
-  return axios.post(`${API_URL}/auth/signin`, data);
+export const registerSalesRep = async (data: { org_id: string; username: string; email: string; password: string }) => {
+  return axios.post(`${API_URL}/auth/register/salesRep`, data);
+};
+
+export const login = async (data: { email: string; password: string }) => {
+  return axios.post(`${API_URL}/auth/login`, data);
+};
+
+export const linkOrganization = async (data: { org_id: string }) => {
+  return axios.post(`${API_URL}/auth/linkOrg`, data);
 };
 
 export const logout = () => {
-  localStorage.removeItem('token'); // Clear token or session info
+  sessionStorage.clear(); // Clear all session data on logout
 };
