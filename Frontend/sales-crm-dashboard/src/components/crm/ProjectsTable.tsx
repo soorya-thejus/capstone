@@ -20,13 +20,17 @@ const ProjectsTable: React.FC = () => {
     const fetchProjectsAndContacts = async () => {
       try {
         let fetchedProjects: Project[] = [];
-        if (role === 'Admin') {
+  
+        if (role === 'Admin' || role === 'Project Manager') {
           fetchedProjects = await projectService.fetchProjectsByOrgId(orgId);
         } else if (role === 'Sales Rep') {
           fetchedProjects = await projectService.fetchProjectsBySalesRep(orgId, userId);
+          console.log("Fetched Projects for Sales Rep:", fetchedProjects); // Debugging line
         }
+  
         setProjects(fetchedProjects);
-
+  
+        // Fetch contacts for the organization
         const fetchedContacts: Contact[] = await ContactService.getAllContactsByOrgId(orgId);
         const contactMap = fetchedContacts.reduce((acc: { [key: string]: string }, contact: Contact) => {
           if (contact._id) {
@@ -39,20 +43,25 @@ const ProjectsTable: React.FC = () => {
         console.error("Error fetching projects or contacts:", error);
       }
     };
-
+  
     fetchProjectsAndContacts();
   }, [orgId, userId, role]);
+  
 
   const handleEditClick = (project: Project) => {
-    setSelectedProject({
-      ...project,
-      start_date: project.start_date ? new Date(project.start_date).toISOString().split("T")[0] : "",
-      end_date: project.end_date ? new Date(project.end_date).toISOString().split("T")[0] : "",
-    });
+    // Sales Rep should not be able to edit projects
+    if (role !== 'Sales Rep') {
+      setSelectedProject({
+        ...project,
+        start_date: project.start_date ? new Date(project.start_date).toISOString().split("T")[0] : "",
+        end_date: project.end_date ? new Date(project.end_date).toISOString().split("T")[0] : "",
+      });
+    }
   };
 
   const handleDeleteClick = async (id: string | undefined) => {
-    if (window.confirm("Are you sure you want to delete this project?") && id) {
+    // Sales Rep should not be able to delete projects
+    if (role !== 'Sales Rep' && window.confirm("Are you sure you want to delete this project?") && id) {
       try {
         await projectService.deleteProject(id);
         setProjects(prev => prev.filter(project => project._id !== id));
@@ -63,17 +72,20 @@ const ProjectsTable: React.FC = () => {
   };
 
   const handleAddClick = () => {
-    setSelectedProject({
-      _id: undefined,
-      project_name: "",
-      priority: "medium",
-      start_date: "",
-      end_date: "",
-      status: "not started",
-      contact_id: "",
-      org_id: orgId,
-      owner_id: userId
-    });
+    // Sales Rep should not be able to add projects
+    if (role !== 'Sales Rep') {
+      setSelectedProject({
+        _id: undefined,
+        project_name: "",
+        priority: "medium",
+        start_date: "",
+        end_date: "",
+        status: "not started",
+        contact_id: "",
+        org_id: orgId,
+        owner_id: userId
+      });
+    }
   };
 
   const handleSaveProject = async (project: Project) => {
@@ -108,7 +120,9 @@ const ProjectsTable: React.FC = () => {
 
   return (
     <div className={styles.tableContainer}>
-      <button onClick={handleAddClick} className={styles.addButton}>Add Project</button>
+      {(role === 'Admin' || role === 'Project Manager') && (
+        <button onClick={handleAddClick} className={styles.addButton}>Add Project</button>
+      )}
       <table>
         <thead>
           <tr>
@@ -118,8 +132,12 @@ const ProjectsTable: React.FC = () => {
             <th>Start Date</th>
             <th>End Date</th>
             <th>Status</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            {(role === 'Admin' || role === 'Project Manager') && (
+              <>
+                <th>Edit</th>
+                <th>Delete</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -132,12 +150,16 @@ const ProjectsTable: React.FC = () => {
                 <td>{formatDate(project.start_date)}</td>
                 <td>{formatDate(project.end_date)}</td>
                 <td>{project.status}</td>
-                <td>
-                  <button onClick={() => handleEditClick(project)}>Edit</button>
-                </td>
-                <td>
-                  <button className={styles.deleteButton} onClick={() => handleDeleteClick(project._id)}>Delete</button>
-                </td>
+                {(role === 'Admin' || role === 'Project Manager') && (
+                  <>
+                    <td>
+                      <button onClick={() => handleEditClick(project)}>Edit</button>
+                    </td>
+                    <td>
+                      <button className={styles.deleteButton} onClick={() => handleDeleteClick(project._id)}>Delete</button>
+                    </td>
+                  </>
+                )}
               </tr>
             ))
           ) : (

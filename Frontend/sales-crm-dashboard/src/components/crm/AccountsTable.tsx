@@ -25,6 +25,9 @@ const AccountsTable: React.FC = () => {
           data = await accountService.getAllAccounts(orgId);
         } else if (role === 'Sales Rep') {
           data = await accountService.getAccountsBySalesRep(orgId, ownerId);
+        } else if (role === 'Project Manager') {
+          // Project Managers can view all accounts
+          data = await accountService.getAllAccounts(orgId);
         }
 
         setAccounts(data);
@@ -82,21 +85,24 @@ const AccountsTable: React.FC = () => {
       description: '',
       number_of_employees: 0,
       org_id: orgId,
-      owner_id:ownerId,
+      owner_id: ownerId,
     });
     setEditing(true);
   };
 
   return (
     <div className={styles.tableContainer}>
-      <button
-        className={styles.addButton}
-        onClick={handleAddClick}
-      >
-        Add Account
-      </button>
+      {/* Show Add Account button only for Admin and Sales Rep */}
+      {(role === 'Admin' || role === 'Sales Rep') && (
+        <button
+          className={styles.addButton}
+          onClick={handleAddClick}
+        >
+          Add Account
+        </button>
+      )}
       
-      {isEditing && (
+      {isEditing && (role !== 'Project Manager') && (
         <AccountForm
           account={selectedAccount || {
             _id: '',
@@ -121,8 +127,8 @@ const AccountsTable: React.FC = () => {
             <th>Industry</th>
             <th>Description</th>
             <th>Employees</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            {role !== 'Project Manager' && <th>Edit</th>}
+            {role !== 'Project Manager' && <th>Delete</th>}
           </tr>
         </thead>
         <tbody>
@@ -133,17 +139,21 @@ const AccountsTable: React.FC = () => {
               <td>{account.industry}</td>
               <td>{account.description}</td>
               <td>{account.number_of_employees}</td>
-              <td>
-                <button onClick={() => handleEditClick(account)}>Edit</button>
-              </td>
-              <td>
-                <button
-                  className={styles.deleteButton}
-                  onClick={() => account._id && handleDeleteClick(account._id)}
-                >
-                  Delete
-                </button>
-              </td>
+              {role !== 'Project Manager' && (
+                <td>
+                  <button onClick={() => handleEditClick(account)}>Edit</button>
+                </td>
+              )}
+              {role !== 'Project Manager' && (
+                <td>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => account._id && handleDeleteClick(account._id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

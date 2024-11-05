@@ -19,6 +19,9 @@ const LeadsTable: React.FC = () => {
         fetchedLeads = await leadService.getLeadsByOrgId(orgId);
       } else if (role === 'Sales Rep') {
         fetchedLeads = await leadService.getLeadsBySalesRep(orgId, ownerId);
+      } else if (role === 'Project Manager') {
+        // Fetch all leads for Project Managers
+        fetchedLeads = await leadService.getLeadsByOrgId(orgId);
       }
       setLeads(fetchedLeads || []);
     };
@@ -69,7 +72,9 @@ const LeadsTable: React.FC = () => {
 
   return (
     <div className={styles.tableContainer}>
-      <button onClick={handleAddClick} className={styles.addButton}>Add Lead</button>
+      {(role === 'Admin' || role === 'Sales Rep') && (
+        <button onClick={handleAddClick} className={styles.addButton}>Add Lead</button>
+      )}
       <table>
         <thead>
           <tr>
@@ -79,8 +84,12 @@ const LeadsTable: React.FC = () => {
             <th>Title</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            {(role === 'Admin' || role === 'Sales Rep') && (
+              <>
+                <th>Edit</th>
+                <th>Delete</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -92,17 +101,21 @@ const LeadsTable: React.FC = () => {
               <td>{lead.title}</td>
               <td>{lead.email}</td>
               <td>{lead.phone}</td>
-              <td>
-              <button onClick={() => handleEditClick(lead)}>Edit</button>
-              </td>
-              <td>
-                <button
-                  className={`${styles.deleteButton} ${lead.status === 'qualified' || lead.status === 'unqualified' ? styles.disabledDeleteButton : ''}`}
-                  onClick={() => handleDeleteClick(lead._id!)}
-                  disabled={lead.status === 'qualified' || lead.status === 'unqualified'}>
-                  Delete
-                </button>
-              </td>
+              {(role === 'Admin' || role === 'Sales Rep') && (
+                <>
+                  <td>
+                    <button onClick={() => handleEditClick(lead)}>Edit</button>
+                  </td>
+                  <td>
+                    <button
+                      className={`${styles.deleteButton} ${lead.status === 'qualified' || lead.status === 'unqualified' ? styles.disabledDeleteButton : ''}`}
+                      onClick={() => handleDeleteClick(lead._id!)}
+                      disabled={lead.status === 'qualified' || lead.status === 'unqualified'}>
+                      Delete
+                    </button>
+                  </td>
+                </>
+              )}
             </tr>
           ))}
         </tbody>

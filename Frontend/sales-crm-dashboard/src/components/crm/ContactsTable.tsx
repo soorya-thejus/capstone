@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ContactService } from '../../services/ContactService';
-import { getAccountsBySalesRep,getAllAccounts } from '../../services/AccountService'; 
+import { getAccountsBySalesRep, getAllAccounts } from '../../services/AccountService'; 
 import { Contact } from '../../types/crm/Contact';
 import styles from '../../styles/crm/contactstable.module.css';
 import formStyles from '../../styles/crm/contactform.module.css';
@@ -35,6 +35,9 @@ const ContactTable: React.FC = () => {
           contactsData = await ContactService.getAllContactsByOrgId(orgId);
         } else if (role === 'Sales Rep') {
           contactsData = await ContactService.getAllContactsBySalesRep(orgId, ownerId);
+        } else if (role === 'Project Manager') {
+          // Fetch all contacts for Project Manager
+          contactsData = await ContactService.getAllContactsByOrgId(orgId);
         }
 
         setContacts(contactsData);
@@ -44,6 +47,8 @@ const ContactTable: React.FC = () => {
           accountsData = await getAllAccounts(orgId);
         } else if (role === 'Sales Rep') {
           accountsData = await getAccountsBySalesRep(orgId, ownerId);
+        } else if (role === 'Project Manager') {
+          accountsData = await getAllAccounts(orgId); // Ensure Project Managers can see all accounts
         }
         setAccounts(accountsData);
       } catch (error) {
@@ -126,17 +131,20 @@ const ContactTable: React.FC = () => {
               <td>
                 {contact.account_id ? (
                   <>
-                    {getAccountNameById(contact.account_id)} 
-                    <FontAwesomeIcon
-                      icon={faEdit}
-                      onClick={() => handleAddOrEditAccount(contact)}
-                      className={styles.editIcon}
-                    />
+                    {getAccountNameById(contact.account_id)}
+                    {/* Render edit icon only if the user is not a Project Manager */}
+                    {role !== 'Project Manager' && (
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        onClick={() => handleAddOrEditAccount(contact)}
+                        className={styles.editIcon}
+                      />
+                    )}
                   </>
                 ) : (
                   <FontAwesomeIcon
                     icon={faEdit}
-                    onClick={() => handleAddOrEditAccount(contact)}
+                    onClick={() => role !== 'Project Manager' && handleAddOrEditAccount(contact)}
                     className={styles.editIcon}
                   />
                 )}

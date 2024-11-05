@@ -1,4 +1,3 @@
-// pages/SignIn.tsx
 import React, { useState } from 'react';
 import Topbar from '../../components/crm/Topbar';
 import styles from '../../styles/crm/auth.module.css';
@@ -37,14 +36,18 @@ const SignIn: React.FC = () => {
       if (response.status === 200) {
         // Store user information in session storage
         const { token, user } = response.data;
-        console.log();
         sessionStorage.setItem('token', token);
         sessionStorage.setItem('userId', user.id);
         sessionStorage.setItem('orgId', user.org_id);
         sessionStorage.setItem('username', user.username);
         sessionStorage.setItem('role', user.role);
-        // Navigate to the dashboard
-        navigate('/crm/dashboard');
+        
+        // Navigate based on user role
+        if (user.role === 'Project Manager') {
+          navigate('/crm/projects'); // Navigate to Projects for Project Managers
+        } else {
+          navigate('/crm/dashboard'); // Default navigation for other roles
+        }
       }
     } catch (err) {
       setError('Invalid email or password. Please try again.');

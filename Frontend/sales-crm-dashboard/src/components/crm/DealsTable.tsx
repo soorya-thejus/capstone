@@ -25,14 +25,17 @@ const DealsTable: React.FC = () => {
         fetchedContacts = await ContactService.getAllContactsByOrgId(orgId);
       } else if (role === 'Sales Rep') {
         fetchedContacts = await ContactService.getAllContactsBySalesRep(orgId, ownerId);
+      } else {
+        // Project Manager also fetches all contacts
+        fetchedContacts = await ContactService.getAllContactsByOrgId(orgId);
       }
       setContacts(fetchedContacts || []);
     };
 
     const fetchDeals = async () => {
       let fetchedDeals;
-      if (role === 'Admin') {
-        fetchedDeals = await DealService.getAllDealsByOrgId(orgId);
+      if (role === 'Admin' || role === 'Project Manager') {
+        fetchedDeals = await DealService.getAllDealsByOrgId(orgId); // Project Managers can fetch all deals
       } else if (role === 'Sales Rep') {
         fetchedDeals = await DealService.getAllDealsBySalesRep(orgId, ownerId);
       }
@@ -46,31 +49,21 @@ const DealsTable: React.FC = () => {
   useEffect(() => {
     const fetchAccountNames = async () => {
       const newAccountNames: { [key: string]: string } = {};
-
-      // Create a set to track fetched account IDs to prevent duplicates
       const fetchedAccountIds = new Set<string>();
 
-      // Iterate over contacts to fetch account names
       for (const contact of contacts) {
         const accountId = contact.account_id;
-
-        // Only fetch if accountId exists and hasn't been fetched before
         if (accountId && !fetchedAccountIds.has(accountId)) {
           try {
             const accountData = await getAccount(accountId);
-            console.log(`Fetched account data for ID ${accountId}:`, accountData);
-
-            // Assuming account name is at accountData.name
             newAccountNames[accountId] = accountData.account_name || "Unknown Account";
-            fetchedAccountIds.add(accountId); // Mark this accountId as fetched
+            fetchedAccountIds.add(accountId);
           } catch (error) {
-            console.error(`Error fetching account with ID ${accountId}:`, error);
             newAccountNames[accountId] = "Unknown Account";
           }
         }
       }
 
-      // Only update accountNames if there are new entries
       if (Object.keys(newAccountNames).length > 0) {
         setAccountNames(prevAccountNames => ({ ...prevAccountNames, ...newAccountNames }));
       }
@@ -79,7 +72,7 @@ const DealsTable: React.FC = () => {
     if (contacts.length > 0) {
       fetchAccountNames();
     }
-  }, [contacts]); // Only depend on contacts here
+  }, [contacts]);
 
   const handleAddClick = () => {
     setSelectedDeal({
@@ -142,7 +135,9 @@ const DealsTable: React.FC = () => {
 
   return (
     <div className={styles.tableContainer}>
-      <button onClick={handleAddClick} className={styles.addButton}>Add Deal</button>
+      {role !== 'Project Manager' && (
+        <button onClick={handleAddClick} className={styles.addButton}>Add Deal</button>
+      )}
       <table>
         <thead>
           <tr>
@@ -154,8 +149,8 @@ const DealsTable: React.FC = () => {
             <th>Account</th>
             <th>Close Probability</th>
             <th>Forecast Value</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            {role !== 'Project Manager' && <th>Edit</th>}
+            {role !== 'Project Manager' && <th>Delete</th>}
           </tr>
         </thead>
         <tbody>
@@ -174,18 +169,22 @@ const DealsTable: React.FC = () => {
                 <td>{deal.close_probability}</td>
                 <td>{deal.forecast_value}</td>
                 
-                <td>
-                  <button onClick={() => handleEditClick(deal)}>Edit</button>
-                </td>
-                <td>
-                  <button
-                    className={`${styles.deleteButton} ${deal.stage === 'won' || deal.stage === 'lost' ? styles.disabledDeleteButton : ''}`}
-                    onClick={() => handleDeleteClick(deal._id!)}
-                    disabled={deal.stage === 'won' || deal.stage === 'lost'}
-                  >
-                    Delete
-                  </button>
-                </td>
+                {role !== 'Project Manager' && (
+                  <>
+                    <td>
+                      <button onClick={() => handleEditClick(deal)}>Edit</button>
+                    </td>
+                    <td>
+                      <button
+                        className={`${styles.deleteButton} ${deal.stage === 'won' || deal.stage === 'lost' ? styles.disabledDeleteButton : ''}`}
+                        onClick={() => handleDeleteClick(deal._id!)}
+                        disabled={deal.stage === 'won' || deal.stage === 'lost'}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </>
+                )}
               </tr>
             );
           })}

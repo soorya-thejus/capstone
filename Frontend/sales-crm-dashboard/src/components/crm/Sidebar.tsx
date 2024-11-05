@@ -10,11 +10,13 @@ const Sidebar: React.FC = () => {
     <div className={styles.sidebar}>
       <nav>
         <ul>
+        {(role != 'Project Manager') && (
           <li>
+            
             <NavLink to="/crm/dashboard" className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}>
               Dashboard
             </NavLink>
-          </li>
+          </li>)}
           <li>
             <NavLink to="/crm/deals" className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}>
               Deals
