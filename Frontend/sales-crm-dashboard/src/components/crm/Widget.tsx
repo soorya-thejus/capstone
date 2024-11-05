@@ -32,7 +32,7 @@ const Widget: React.FC<WidgetProps> = ({ title, content, chartData, chartType })
             labels: chartData.labels,
             datasets: chartData.datasets.map(dataset => ({
               ...dataset,
-              backgroundColor: 'rgba(75, 192, 192, 0.6)', // Default color
+              backgroundColor: 'blue', // Default color
             })),
           }}
           options={{
@@ -40,7 +40,7 @@ const Widget: React.FC<WidgetProps> = ({ title, content, chartData, chartType })
             plugins: { legend: { position: 'top' }, title: { display: true, text: title } },
             scales: { y: { stacked: true, min: 0 }, x: { stacked: true } },
           }}
-          style={{ height: '300px' }}
+          style={{ height: '800px' }}
         />
       )}
       {chartData && chartType === 'pie' && (
@@ -50,8 +50,9 @@ const Widget: React.FC<WidgetProps> = ({ title, content, chartData, chartType })
             datasets: chartData.datasets.map(dataset => ({
               ...dataset,
               backgroundColor: [
-                'rgba(75, 192, 192, 0.6)', 'rgba(255, 206, 86, 0.6)',
-                'rgba(255, 99, 132, 0.6)', 'rgba(153, 102, 255, 0.6)',
+                'lightgreen','red',
+                'lightblue', 'yellow',
+                'orange', 'pink',
               ],
             })),
           }}
