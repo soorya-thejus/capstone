@@ -10,8 +10,8 @@ import Leads from './pages/crm/Leads';
 import Projects from './pages/crm/Projects';
 import Deals from './pages/crm/Deals';
 import Accounts from './pages/crm/Accounts';
-import SalesRepSignup from './components/crm/SalesRepSignup';
 import Team from './pages/crm/Team';
+import TeamMemberSignup from './components/crm/TeamMemberSignup';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -27,7 +27,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/crm/deals" element={<Deals />} />
       <Route path="/crm/accounts" element={<Accounts />} />
       <Route path="/crm/requirement-gathering" element={<RequirementGathering />} />
-      <Route path="/crm/sales-rep-signup" element={<SalesRepSignup />} />
+      <Route path="/crm/team-member-signup" element={<TeamMemberSignup />} />
       <Route path="/crm/team" element={<Team />} />
 
     </Routes>

@@ -116,6 +116,9 @@ const DealsTable: React.FC = () => {
             <th>Deal Value</th>
             <th>Expected Close Date</th>
             <th>Contact</th>
+            <th>Account</th>
+            <th>Close Probability</th>
+            <th>Forecast Value</th>
             <th>Edit</th>
             <th>Delete</th>
           </tr>
@@ -128,6 +131,9 @@ const DealsTable: React.FC = () => {
               <td>{deal.deal_value}</td>
               <td>{formatDate(deal.expected_close_date)}</td>
               <td>{contacts.find(contact => contact._id === deal.contact_id)?.contact_name}</td>
+              <td>{contacts.find(contact => contact._id === deal.contact_id)?.contact_name}</td>
+              <td>{deal.close_probability}</td>
+              <td>{deal.forecast_value}</td>
               
                 <td>
                   <button onClick={() => handleEditClick(deal)}>Edit</button></td>
@@ -135,6 +141,7 @@ const DealsTable: React.FC = () => {
                     <button className={styles.deleteButton} onClick={() => handleDeleteClick(deal._id!)}>Delete</button>
                   )}
                 </td>
+              
             </tr>
           ))}
         </tbody>

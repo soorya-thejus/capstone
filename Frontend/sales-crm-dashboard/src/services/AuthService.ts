@@ -22,3 +22,6 @@ export const linkOrganization = async (data: { name: string; type: string; addre
 export const logout = () => {
   sessionStorage.clear(); // Clear all session data on logout
 };
+export const registerTeamMember = async (data: { org_id: string; username: string; email: string; password: string; role: string }) => {
+  return axios.post(`${API_URL}/auth/register/team`, data);
+};

@@ -1,6 +1,6 @@
 // src/components/crm/Navbar.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Use react-router-dom for navigation
+import { useNavigate } from 'react-router-dom';
 import styles from '../../styles/crm/navbar.module.css';
 
 const Navbar: React.FC = () => {
@@ -12,24 +12,27 @@ const Navbar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    sessionStorage.clear(); // Clear session storage to log out
-    navigate('/crm/signin'); // Navigate to the signin page
+    sessionStorage.clear();
+    navigate('/crm/signin');
   };
 
-  const navigateToSalesRepSignup = () => {
-    navigate('/crm/sales-rep-signup'); // Navigate to Sales Rep signup page
+  const navigateToTeamMemberSignup = () => {
+    navigate('/crm/team-member-signup'); // Navigate to Team Member signup page
   };
-  const role=sessionStorage.getItem("role");
+
+  const role = sessionStorage.getItem("role");
+
   return (
     <div className={styles.navbar}>
-      <h1>Welcome, {role}</h1>
+      <h1 className={styles.title}>TRACKLYZE</h1> {/* Added title here */}
+      <h2>Welcome, {role}</h2> {/* Optional welcome message */}
       <div className={styles.profile}>
-        <button onClick={toggleMenu} className={styles.profileButton}>
-          Profile
-        </button>
+        {role === 'Admin' && (
+          <button onClick={navigateToTeamMemberSignup} className={styles.addButton}>Add Team</button>
+        )}
+        <button onClick={toggleMenu} className={styles.profileButton}>Profile</button>
         {isMenuOpen && (
           <div className={styles.dropdownMenu}>
-            <button onClick={navigateToSalesRepSignup}>Add Sales Rep</button>
             <button onClick={handleLogout}>Logout</button>
           </div>
         )}

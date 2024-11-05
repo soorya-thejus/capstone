@@ -1,40 +1,47 @@
-/* src/components/ContactsTable.module.css */
+/* src/styles/crm/teamtable.module.css */
+
 .tableContainer {
-    margin: 20px;
+    padding: 20px;
   }
   
-  h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
+  .roleSelectContainer {
+    margin-bottom: 20px;
+    width: 150px;
+    justify-content: flex-start;
   }
   
-  table {
+  .roleDropdown {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #f9f9f9;
+    transition: background-color 0.2s;
+    outline: none;
+  }
+  
+  /* Style selected option with a slight background */
+  .roleDropdown option:hover {
+    background-color: #e0e0e0;
+  }
+  
+  /* Table styling */
+  .teamTable {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 20px;
   }
   
-  th, td {
-    padding: 10px;
-    text-align: left;
+  .teamTable th,
+  .teamTable td {
     border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
   }
   
-  th {
+  .teamTable th {
     background-color: #f4f4f4;
-  }
-  
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .deleteButton{
-    background-color: #dc3545;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s;
+    font-weight: bold;
   }
   

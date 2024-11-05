@@ -1,13 +1,17 @@
 .navbar {
     background-color: #F8F8F8;
     color: #1A1C22;
-    padding: 15px 20px;
+    padding: 5px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
+.title {
+    font-size: 1.5rem; /* Adjust size as needed */
+    font-weight: bold;
+    color: #FF7100; /* You can adjust the color */
+}
 .navbar h1 {
     margin: 0;
     font-size: 18px;
@@ -59,3 +63,20 @@
 .dropdownMenu button:hover {
     background-color: #f0f0f0;
 }
+
+.addButton {
+    background-color: #FF7100;
+    color: white;
+    margin-right: 10px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.addButton:hover {
+    background-color: #E06600;
+}
+
