@@ -11,7 +11,7 @@ export const getAllAccounts = async (orgId: string) => {
 
 // Get accounts associated with a specific sales rep
 export const getAccountsBySalesRep = async (orgId: string, ownerId: string) => {
-  const response = await axios.get(`${API_BASE_URL}/orgs/${orgId}/salesrep/${ownerId}`);
+  const response = await axios.get(`${API_BASE_URL}/orgs/${orgId}/salesreps/${ownerId}`);
   return response.data;
 };
 

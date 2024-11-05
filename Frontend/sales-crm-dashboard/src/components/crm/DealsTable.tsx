@@ -116,7 +116,7 @@ const DealsTable: React.FC = () => {
             <th>Deal Value</th>
             <th>Expected Close Date</th>
             <th>Contact</th>
-            {role === 'Admin' && <th>Actions</th>}
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -127,14 +127,13 @@ const DealsTable: React.FC = () => {
               <td>{deal.deal_value}</td>
               <td>{formatDate(deal.expected_close_date)}</td>
               <td>{contacts.find(contact => contact._id === deal.contact_id)?.contact_name}</td>
-              {role === 'Admin' && (
+              
                 <td>
                   <button onClick={() => handleEditClick(deal)}>Edit</button>
                   {deal.stage !== 'won' && deal.stage !== 'lost' && (
                     <button className={styles.deleteButton} onClick={() => handleDeleteClick(deal._id!)}>Delete</button>
                   )}
                 </td>
-              )}
             </tr>
           ))}
         </tbody>

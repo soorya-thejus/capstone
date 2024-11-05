@@ -19,10 +19,10 @@ const Navbar: React.FC = () => {
   const navigateToSalesRepSignup = () => {
     navigate('/crm/sales-rep-signup'); // Navigate to Sales Rep signup page
   };
-
+  const role=sessionStorage.getItem("role");
   return (
     <div className={styles.navbar}>
-      <h1>Welcome, Admin</h1>
+      <h1>Welcome, {role}</h1>
       <div className={styles.profile}>
         <button onClick={toggleMenu} className={styles.profileButton}>
           Profile

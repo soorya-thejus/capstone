@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ContactService } from '../../services/ContactService';
-import { getAllAccounts } from '../../services/AccountService'; 
+import { getAccountsBySalesRep,getAllAccounts } from '../../services/AccountService'; 
 import { Contact } from '../../types/crm/Contact';
 import styles from '../../styles/crm/contactstable.module.css';
 import formStyles from '../../styles/crm/contactform.module.css';
@@ -26,6 +26,7 @@ const ContactTable: React.FC = () => {
     const fetchContactsAndAccounts = async () => {
       try {
         let contactsData: Contact[] = [];
+        let accountsData: Account[] = [];
 
         // Fetch contacts based on the role
         if (role === 'Admin') {
@@ -37,7 +38,11 @@ const ContactTable: React.FC = () => {
         setContacts(contactsData);
 
         // Fetch accounts associated with the orgId
-        const accountsData = await getAllAccounts(orgId);
+        if (role === 'Admin') {
+          accountsData = await getAllAccounts(orgId);
+        } else if (role === 'Sales Rep') {
+          accountsData = await getAccountsBySalesRep(orgId, ownerId);
+        }
         setAccounts(accountsData);
       } catch (error) {
         console.error("Error fetching contacts and accounts:", error);
