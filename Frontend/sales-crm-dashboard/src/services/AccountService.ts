@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { Account } from '../types/crm/Account'; // Make sure this matches your type location
+import { Account } from '../types/crm/Account';
 
-// Base URL for API
-const API_BASE_URL = 'http://localhost:5003/api/accounts'; // Update the port and path as needed
+const API_BASE_URL = 'http://localhost:5003/api/accounts';
 
 // Get all accounts for a specific organization
 export const getAllAccounts = async (orgId: string) => {
@@ -10,10 +9,16 @@ export const getAllAccounts = async (orgId: string) => {
   return response.data;
 };
 
+// Get accounts associated with a specific sales rep
+export const getAccountsBySalesRep = async (orgId: string, ownerId: string) => {
+  const response = await axios.get(`${API_BASE_URL}/orgs/${orgId}/salesrep/${ownerId}`);
+  return response.data;
+};
+
 // Create a new account
 export const createAccount = async (accountData: Account) => {
-  const { _id, ...dataWithoutId } = accountData; // Exclude _id if it's an empty string
-  const response = await axios.post(`${API_BASE_URL}`, dataWithoutId); // Use dataWithoutId
+  const { _id, ...dataWithoutId } = accountData;
+  const response = await axios.post(`${API_BASE_URL}`, dataWithoutId);
   return response.data;
 };
 

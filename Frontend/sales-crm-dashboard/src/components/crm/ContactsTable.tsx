@@ -2,36 +2,50 @@ import React, { useEffect, useState } from 'react';
 import { ContactService } from '../../services/ContactService';
 import { getAllAccounts } from '../../services/AccountService'; 
 import { Contact } from '../../types/crm/Contact';
-import styles from '../../styles/crm/contactstable.module.css'; // Corrected CSS import name
-import formStyles from '../../styles/crm/contactform.module.css'; 
+import styles from '../../styles/crm/contactstable.module.css';
+import formStyles from '../../styles/crm/contactform.module.css';
 
 interface Account {
   _id: string;
   account_name: string;
 }
 
-const ContactTable: React.FC<{ orgId: string }> = ({ orgId }) => {
+const ContactTable: React.FC = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isAccountPopupVisible, setAccountPopupVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
 
+  // Fetch orgId, ownerId, and role from session storage
+  const orgId = sessionStorage.getItem('orgId') || '';
+  const ownerId = sessionStorage.getItem('userId') || '';
+  const role = sessionStorage.getItem('role') || '';
+
   useEffect(() => {
     const fetchContactsAndAccounts = async () => {
       try {
-        const contactsData = await ContactService.getAllContacts(orgId);
+        let contactsData: Contact[] = [];
+
+        // Fetch contacts based on the role
+        if (role === 'Admin') {
+          contactsData = await ContactService.getAllContactsByOrgId(orgId);
+        } else if (role === 'Sales Rep') {
+          contactsData = await ContactService.getAllContactsBySalesRep(orgId, ownerId);
+        }
+
         setContacts(contactsData);
 
+        // Fetch accounts associated with the orgId
         const accountsData = await getAllAccounts(orgId);
         setAccounts(accountsData);
       } catch (error) {
         console.error("Error fetching contacts and accounts:", error);
       }
     };
-    
+
     fetchContactsAndAccounts();
-  }, [orgId]);
+  }, [orgId, ownerId, role]);
 
   const handleAddOrEditAccount = (contact: Contact) => {
     setSelectedContact(contact);
@@ -43,7 +57,7 @@ const ContactTable: React.FC<{ orgId: string }> = ({ orgId }) => {
     if (selectedContact && selectedAccountId) {
       const updatedContact = { ...selectedContact, account_id: selectedAccountId };
       await ContactService.updateContact(selectedContact._id!, updatedContact);
-      
+
       setContacts((prev) =>
         prev.map((contact) => (contact._id === selectedContact._id ? updatedContact : contact))
       );
@@ -78,7 +92,6 @@ const ContactTable: React.FC<{ orgId: string }> = ({ orgId }) => {
                 ))}
               </select>
               <div className={formStyles.buttonGroup}>
-                {/* Changed to submit type */}
                 <button onClick={handleSaveAccount} type="submit">Save</button>
                 <button onClick={() => setAccountPopupVisible(false)} type="button">Cancel</button>
               </div>
@@ -106,7 +119,7 @@ const ContactTable: React.FC<{ orgId: string }> = ({ orgId }) => {
               <td>
                 {contact.account_id ? (
                   <>
-                    {getAccountNameById(contact.account_id)} {/* Display the account name */}
+                    {getAccountNameById(contact.account_id)} 
                     <button onClick={() => handleAddOrEditAccount(contact)}>Edit</button>
                   </>
                 ) : (

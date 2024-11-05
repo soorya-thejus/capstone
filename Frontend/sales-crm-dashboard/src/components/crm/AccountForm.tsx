@@ -9,31 +9,39 @@ interface AccountFormProps {
 }
 
 const AccountForm: React.FC<AccountFormProps> = ({ account, onSave, onCancel }) => {
+  // Retrieve orgId and userId (for owner_id) from session storage
+  const orgId = sessionStorage.getItem('orgId') || '';
+  const ownerId = sessionStorage.getItem('userId') || '';
+
   const [formData, setFormData] = useState<Account>({
-    _id: "", // Initialize as an empty string for _id
+    _id: "",
     account_name: "",
     priority: "medium",
     industry: "",
     description: "",
     number_of_employees: 0,
-    org_id: "" // Ensure org_id is included if necessary
+    org_id: orgId,  // Set orgId from session storage
+    owner_id: ownerId // Set ownerId from session storage
   });
 
   useEffect(() => {
     if (account._id) {
+      // Editing an existing account, so set form data to provided account
       setFormData(account);
     } else {
+      // Reset to default values for a new account
       setFormData({
-        _id: "", // Don't assign an invalid _id for new accounts
+        _id: "",
         account_name: "",
         priority: "medium",
         industry: "",
         description: "",
         number_of_employees: 0,
-        org_id: "", // Reset org_id if creating a new account
+        org_id: orgId,  // Ensure orgId is set for new account
+        owner_id: ownerId // Ensure ownerId is set for new account
       });
     }
-  }, [account]);
+  }, [account, orgId, ownerId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

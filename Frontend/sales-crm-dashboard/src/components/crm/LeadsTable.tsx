@@ -1,4 +1,3 @@
-// src/components/LeadsTable.tsx
 import React, { useState, useEffect } from 'react';
 import { Lead } from '../../types/crm/Lead';
 import LeadForm from './LeadForm';
@@ -16,9 +15,9 @@ const LeadsTable: React.FC = () => {
   useEffect(() => {
     const fetchLeads = async () => {
       let fetchedLeads;
-      if (role === 'admin') {
+      if (role === 'Admin') {
         fetchedLeads = await leadService.getLeadsByOrgId(orgId);
-      } else if (role === 'sales_rep') {
+      } else if (role === 'Sales Rep') {
         fetchedLeads = await leadService.getLeadsBySalesRep(orgId, ownerId);
       }
       setLeads(fetchedLeads || []);
@@ -35,7 +34,7 @@ const LeadsTable: React.FC = () => {
       email: "",
       phone: "",
       org_id: orgId,
-      owner_id: ownerId, // Get owner_id from session storage here
+      owner_id: ownerId,
     });
     setIsFormVisible(true);
   };
@@ -97,7 +96,13 @@ const LeadsTable: React.FC = () => {
                 <button onClick={() => handleEditClick(lead)}>Edit</button>
               </td>
               <td>
-                <button className={styles.deleteButton} onClick={() => handleDeleteClick(lead._id!)}>Delete</button>
+                <button 
+                  className={styles.deleteButton} 
+                  onClick={() => handleDeleteClick(lead._id!)} 
+                  style={{ display: (lead.status === "qualified" || lead.status === "unqualified") ? 'none' : 'inline' }}
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
@@ -109,7 +114,7 @@ const LeadsTable: React.FC = () => {
           lead={selectedLead}
           onSave={handleSaveLead}
           onCancel={handleCancel}
-          orgId={orgId} // Keep orgId as prop
+          orgId={orgId}
         />
       )}
     </div>

@@ -1,39 +1,35 @@
-// src/components/ProjectForm.tsx
 import React, { useState, useEffect } from 'react';
 import { Project } from '../../types/crm/Project';
-import styles from '../../styles/crm/projectform.module.css'; // Ensure you're importing your CSS correctly
-import { ContactService } from '../../services/ContactService'; // Correctly importing ContactService
+import styles from '../../styles/crm/projectform.module.css';
+import { ContactService } from '../../services/ContactService';
 
 interface ProjectFormProps {
   project: Project;
   onSave: (project: Project) => void;
   onCancel: () => void;
-  orgId: string; // Pass orgId to the form
+  orgId: string;
 }
 
 const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel, orgId }) => {
   const [formData, setFormData] = useState<Project>(project);
-  const [contacts, setContacts] = useState<any[]>([]); // Update type according to your contact structure
-  const [loading, setLoading] = useState<boolean>(true); // Loading state for contacts
+  const [contacts, setContacts] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     setFormData(project);
-    fetchContacts(); // Fetch contacts when the component mounts
+    fetchContacts();
   }, [project]);
 
   const fetchContacts = async () => {
     try {
-      const response = await ContactService.getAllContacts(orgId);
-      console.log('Fetched contacts:', response); // Debugging line to check fetched contacts
-      setContacts(response); // Assuming response is an array of contacts
+      const response = await ContactService.getAllContactsByOrgId(orgId);
+      setContacts(response);
     } catch (error) {
       console.error('Error fetching contacts:', error);
     } finally {
-      setLoading(false); // Set loading to false after fetching
+      setLoading(false);
     }
   };
-
-  //creater me
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -44,8 +40,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel, or
     e.preventDefault();
     onSave({
       ...formData,
-      org_id: orgId, // Ensure org_id is set from prop
-      contact_id: formData.contact_id || '', // Ensure contact_id is included
+      org_id: orgId,
+      contact_id: formData.contact_id || '',
     });
   };
 
@@ -93,7 +89,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSave, onCancel, or
                 {contacts.length > 0 ? (
                   contacts.map(contact => (
                     <option key={contact._id} value={contact._id}>
-                      {contact.contact_name} {/* Use contact_name instead of name */}
+                      {contact.contact_name}
                     </option>
                   ))
                 ) : (
