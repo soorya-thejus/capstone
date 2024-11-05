@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
 
   const handleLogout = () => {
     sessionStorage.clear(); // Clear session storage to log out
-    navigate('/signin'); // Navigate to the signin page
+    navigate('/crm/signin'); // Navigate to the signin page
   };
 
   const navigateToSalesRepSignup = () => {

@@ -11,7 +11,7 @@ export const ContactService = {
   },
 
   getAllContactsBySalesRep: async (orgId: string, ownerId: string): Promise<Contact[]> => {
-    const response = await axios.get(`${API_URL}/orgs/${orgId}/salesrep/${ownerId}`);
+    const response = await axios.get(`${API_URL}/orgs/${orgId}/salesreps/${ownerId}`);
     return response.data;
   },
 

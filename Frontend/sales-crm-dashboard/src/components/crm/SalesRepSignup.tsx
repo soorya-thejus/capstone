@@ -27,7 +27,8 @@ const SalesRepSignup: React.FC = () => {
     }
 
     try {
-      await registerSalesRep({ org_id: orgId, username, email, password });
+      // Pass the role as "Sales Rep" to the signup function
+      await registerSalesRep({ org_id: orgId, username, email, password, role: 'Sales Rep' });
       setSuccess(true); // Set success state to true
       setMessage('Sales Rep successfully signed up!');
     } catch (error) {

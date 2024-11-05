@@ -10,7 +10,7 @@ export const getLeadsByOrgId = async (orgId: string): Promise<Lead[]> => {
 };
 
 export const getLeadsBySalesRep = async (orgId: string, ownerId: string): Promise<Lead[]> => {
-  const response = await axios.get(`${BASE_URL}/orgs/${orgId}/salesrep/${ownerId}`);
+  const response = await axios.get(`${BASE_URL}/orgs/${orgId}/salesreps/${ownerId}`);
   return response.data;
 };
 

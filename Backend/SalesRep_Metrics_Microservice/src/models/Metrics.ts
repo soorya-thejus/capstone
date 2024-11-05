@@ -31,12 +31,12 @@ const MetricsSchema: Schema = new Schema({
   average_won_deal_value: { type: Number, default: 0 }, // Average value of won deals
   actual_revenue: { type: Number, default: 0 }, // Actual revenue generated from won deals
   total_deals: { type: Number, default: 0 }, // Total number of deals processed
-  won_deals: {type: Number, deafult: 0},
-  lost_deals: {type: Number, deafult: 0},
-  new_deals: {type: Number, deafult: 0},
-  discovery_deals:{type: Number, deafult: 0},
-  proposal_deals: {type: Number, deafult: 0},
-  nego_deals: {type: Number, deafult: 0},
+  won_deals: {type: Number, default: 0},
+  lost_deals: {type: Number, default: 0},
+  new_deals: {type: Number, default: 0},
+  discovery_deals:{type: Number, default: 0},
+  proposal_deals: {type: Number, default: 0},
+  nego_deals: {type: Number, default: 0},
   deal_status_distribution: {
     won: { type: Number, default: 0 },
     lost: { type: Number, default: 0 },

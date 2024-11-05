@@ -3,12 +3,11 @@ import React, { useState } from 'react';
 import Topbar from '../../components/crm/Topbar';
 import styles from '../../styles/crm/auth.module.css';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { linkOrganization } from '../../services/AuthService'; // Import the linkOrganization function
 
 const RequirementGathering: React.FC = () => {
   const navigate = useNavigate();
   const adminId = sessionStorage.getItem('adminId'); // Get admin ID from session storage
-  console.log(adminId)
   const [formData, setFormData] = useState({
     name: '',
     type: '',
@@ -36,14 +35,10 @@ const RequirementGathering: React.FC = () => {
     setError(null);
 
     try {
-      
-      const response = await axios.post('http://localhost:5007/api/auth/linkOrg', 
-        formData // Send the admin ID with the organization details
-      );
-
+      // Use the linkOrganization function from AuthService
+      const response = await linkOrganization(formData);
 
       if (response.status === 201) {
-        //await axios.put(`http://localhost:5007/api/get/${adminId}`,response.data.org_id)
         navigate('/crm/signin'); // Redirect to dashboard or another page after successful submission
       }
     } catch (err) {

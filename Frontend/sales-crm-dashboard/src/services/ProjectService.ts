@@ -11,7 +11,7 @@ export const fetchProjectsByOrgId = async (orgId: string): Promise<Project[]> =>
 
 // Get projects assigned to a specific sales rep
 export const fetchProjectsBySalesRep = async (orgId: string, userId: string): Promise<Project[]> => {
-  const response = await axios.get<Project[]>(`${BASE_URL}/orgs/${orgId}/salesrep/${userId}`);
+  const response = await axios.get<Project[]>(`${BASE_URL}/orgs/${orgId}/salesreps/${userId}`);
   return response.data;
 };
 
