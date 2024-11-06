@@ -21,9 +21,13 @@ const ProjectsTable: React.FC = () => {
       try {
         let fetchedProjects: Project[] = [];
   
-        if (role === 'Admin' || role === 'Project Manager') {
+        if (role === 'Admin' ) {
           fetchedProjects = await projectService.fetchProjectsByOrgId(orgId);
-        } else if (role === 'Sales Rep') {
+        }else if ( role === 'Project Manager') {
+          fetchedProjects = await projectService.fetchProjectsByProjectManager(orgId,userId);
+        }
+        
+        else if (role === 'Sales Rep') {
           fetchedProjects = await projectService.fetchProjectsBySalesRep(orgId, userId);
           console.log("Fetched Projects for Sales Rep:", fetchedProjects); // Debugging line
         }

@@ -131,13 +131,16 @@ const Dashboard: React.FC = () => {
         <Widget title="Average Value of Won Deals" content={`$${data.avgWonDealValue}`} className={styles.smallWidget} />
         <Widget title="Actual Revenue" content={`$${data.actualRevenue}`} className={styles.smallWidget} />
 
-        {role === "Admin" && (
           <>
-            <Widget title="Lead Conversion" content={`${data.leadConversion}%`} className={styles.smallWidget} />
-            <Widget title="Total Leads" content={`${data.totalLeads}`} className={styles.smallWidget} />
+          <Widget
+  title="Leads Conversion"
+  chartType="progress"
+  progressValue={data.leadConversion}
+/>
+          <Widget title="Total Leads" content={`${data.totalLeads}`} className={styles.smallWidget} />
             <Widget title="Total Deals" content={`${data.totalDeals}`} className={styles.smallWidget} />
           </>
-        )}
+        
 
         {role === "Sales Rep" && (
           <Widget title="Commission" content={`$${data.commission}`} className={styles.smallWidget} />

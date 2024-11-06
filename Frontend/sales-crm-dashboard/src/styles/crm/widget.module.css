@@ -23,3 +23,26 @@
 .widget canvas {
     margin-top: 10px; /* Space between text and chart */
 }
+.progressBarContainer {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  
+  .progressBar {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+  }
+  
+  .progressText {
+    padding-left: 8px;
+    color: #fff;
+  }
+  
