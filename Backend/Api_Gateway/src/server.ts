@@ -11,6 +11,9 @@ app.use('/api/accounts', createProxyMiddleware({ target: 'http://localhost:5003/
 app.use('/api/projects', createProxyMiddleware({ target: 'http://localhost:5004/api/projects', changeOrigin: true }));
 app.use('/api/contacts', createProxyMiddleware({ target: 'http://localhost:5005/api/contacts', changeOrigin: true }));
 app.use('/api/orgs', createProxyMiddleware({ target: 'http://localhost:5006/api/orgs', changeOrigin: true }));
+// app.use('/api/', createProxyMiddleware({ target: 'http://localhost:5007/api/', changeOrigin: true }));
+// app.use('/api/', createProxyMiddleware({ target: 'http://localhost:5008/api/', changeOrigin: true }));
+// app.use('/api/', createProxyMiddleware({ target: 'http://localhost:5009/api/', changeOrigin: true }));
 app.listen(PORT, () => {
   console.log(`API Gateway running on port ${PORT}`);
 });
