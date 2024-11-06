@@ -9,6 +9,7 @@ export interface IProject extends Document {
   contact_id: Types.ObjectId;
   org_id: Types.ObjectId;
   owner_id: Types.ObjectId;
+  rep_id: Types.ObjectId;
 
 }
  
@@ -30,7 +31,7 @@ const ProjectSchema: Schema = new Schema({
   contact_id: {type: Schema.Types.ObjectId, ref: 'Contact', required: true},
   org_id: {type: Schema.Types.ObjectId, ref: 'Organization', required: true},
   owner_id: { type: Types.ObjectId, ref: 'User', required: true },
-
+  rep_id: { type: Types.ObjectId, ref: 'User', required: false },
 
 }, { timestamps: true, versionKey: false });
 
