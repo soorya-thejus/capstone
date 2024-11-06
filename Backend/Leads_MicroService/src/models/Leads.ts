@@ -2,10 +2,13 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 
 // Define the interface for the Lead document
 export interface ILead extends Document {
+  getQuery: any;
   getUpdate: any;
   type: 'create' | 'update';
   lead_name: string;
   status: 'new lead' | 'attempted to contact' | 'contacted' | 'qualified' | 'unqualified';
+  temp_status: string;
+  previous_status: string;
   company: string;
   title: string;
   email: string;
@@ -25,6 +28,14 @@ const LeadSchema: Schema = new Schema({
     default: 'new lead', // Set default status to 'new lead'
     required: true,
   },
+  temp_status: {
+    type: String,
+    required: false,
+  },
+  previous_status: {
+    type: String,
+    required: false,
+  },
   company: { type: String, required: true },
   title: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -35,9 +46,35 @@ const LeadSchema: Schema = new Schema({
 }, {timestamps: true, versionKey: false });
 
 
+LeadSchema.pre<ILead>('save', async function (next) {
+  try {
+
+    
+
+    this.temp_status = this.status;
+    this.previous_status = "";
+
+    
+
+    next();
+  } catch (error) {
+    next(error instanceof Error ? error : new Error('An unexpected error occurred'));
+  }
+});
 
 LeadSchema.pre<ILead>('findOneAndUpdate', async function (next) {
-  const update = this.getUpdate();  
+  const update = this.getUpdate();
+  
+  const LeadModel = mongoose.model<ILead>('Lead'); 
+  const currentLead = await LeadModel.findOne(this.getQuery());
+
+  if (currentLead) {
+    update.previous_status = currentLead.temp_status;
+
+    if (update.status !== undefined) {
+      update.temp_status = update.status;
+    }
+  }
 
   update.type = "update"; 
 
