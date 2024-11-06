@@ -10,8 +10,9 @@ interface IMetric extends Document {
   total_leads: number;
   qualified_leads: number;
   lead_conversion_rate: number;
+  deal_conversion_rate: number;
   won_deals: number;
-  lost_deals: number;
+  lost_deals: number; 
   new_deals: number;
   discovery_deals: number;
   proposal_deals: number;
@@ -36,6 +37,7 @@ const MetricsSchema: Schema = new Schema({
   total_leads: { type: Number, default: 0 },
   qualified_leads: { type: Number, default: 0 },
   lead_conversion_rate: { type: Number, default: 0 },
+  deal_conversion_rate: { type: Number, default: 0 },
   won_deals: {type: Number, default: 0},
   lost_deals: {type: Number, default: 0},
   new_deals: {type: Number, default: 0}, 

@@ -170,6 +170,12 @@ export const updateMetricsFromDealEvent = async (dealData: any): Promise<void> =
   metrics.deal_status_distribution.won = metrics.total_deals > 0 ? ((metrics.won_deals || 0) / metrics.total_deals) * 100 : 0;
   metrics.deal_status_distribution.lost = metrics.total_deals > 0 ? ((metrics.lost_deals || 0) / metrics.total_deals) * 100 : 0;
 
+
+  if (metrics.total_deals > 0) {
+    metrics.deal_conversion_rate = (metrics.won_deals || 0) / metrics.total_deals * 100;
+  } else {
+    metrics.deal_conversion_rate = 0; 
+  }
   // Save the updated metrics document
   await metrics.save();
 };
