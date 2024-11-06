@@ -120,7 +120,7 @@ const ProjectsTable: React.FC = () => {
 
   return (
     <div className={styles.tableContainer}>
-      {(role === 'Admin' || role === 'Project Manager') && (
+      {(role === 'Project Manager') && (
         <button onClick={handleAddClick} className={styles.addButton}>Add Project</button>
       )}
       <table>

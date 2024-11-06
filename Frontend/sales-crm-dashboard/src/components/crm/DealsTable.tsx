@@ -135,7 +135,7 @@ const DealsTable: React.FC = () => {
 
   return (
     <div className={styles.tableContainer}>
-      {role !== 'Project Manager' && (
+      {role === 'Sales Rep' && (
         <button onClick={handleAddClick} className={styles.addButton}>Add Deal</button>
       )}
       <table>

@@ -31,7 +31,7 @@ const LeadsTable: React.FC = () => {
   const handleAddClick = () => {
     setSelectedLead({
       lead_name: "",
-      status: "contacted",
+      status: "new lead",
       company: "",
       title: "",
       email: "",
@@ -72,7 +72,7 @@ const LeadsTable: React.FC = () => {
 
   return (
     <div className={styles.tableContainer}>
-      {(role === 'Admin' || role === 'Sales Rep') && (
+      {(role ==='Sales Rep') && (
         <button onClick={handleAddClick} className={styles.addButton}>Add Lead</button>
       )}
       <table>

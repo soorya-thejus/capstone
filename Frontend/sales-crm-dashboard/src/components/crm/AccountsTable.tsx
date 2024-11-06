@@ -93,7 +93,7 @@ const AccountsTable: React.FC = () => {
   return (
     <div className={styles.tableContainer}>
       {/* Show Add Account button only for Admin and Sales Rep */}
-      {(role === 'Admin' || role === 'Sales Rep') && (
+      {(role === 'Sales Rep') && (
         <button
           className={styles.addButton}
           onClick={handleAddClick}

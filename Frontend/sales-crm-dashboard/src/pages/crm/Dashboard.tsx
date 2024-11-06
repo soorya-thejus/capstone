@@ -11,6 +11,7 @@ interface DashboardData {
   commission: number;
   leadConversion: number;
   totalLeads: number;
+  qualifiedLeads:number;
   totalDeals: number;
   actualRevenueByMonth: { labels: string[]; datasets: { data: number[]; label: string }[] };
   dealStatusDistribution: { labels: string[]; datasets: { data: number[]; label: string }[] };
@@ -26,6 +27,7 @@ const defaultDashboardData: DashboardData = {
   commission: 0,
   leadConversion: 0,
   totalLeads: 0,
+  qualifiedLeads:0,
   totalDeals: 0,
   actualRevenueByMonth: { labels: [], datasets: [{ data: [], label: 'Actual Revenue by Month' }] },
   dealStatusDistribution: { labels: [], datasets: [{ data: [], label: 'Deal Status Distribution' }] },
@@ -46,8 +48,9 @@ const Dashboard: React.FC = () => {
       avgWonDealValue: metrics.average_won_deal_value ?? 0,
       actualRevenue: metrics.actual_revenue ?? 0,
       commission: metrics.commission ?? 0,
-      leadConversion: metrics.lead_conversion ?? 0,
+      leadConversion: metrics.lead_conversion_rate ?? 0,
       totalLeads: metrics.total_leads ?? 0,
+      qualifiedLeads: metrics.qualified_leads?? 0,
       totalDeals: metrics.total_deals ?? 0,
       actualRevenueByMonth: {
         labels: metrics.actual_revenue_by_month ? Object.keys(metrics.actual_revenue_by_month) : [],
