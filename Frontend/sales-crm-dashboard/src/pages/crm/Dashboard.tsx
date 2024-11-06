@@ -10,11 +10,10 @@ interface DashboardData {
   actualRevenue: number;
   commission: number;
   leadConversion: number;
-  totalLeads: number;
-  qualifiedLeads:number;
-  totalDeals: number;
+  dealConversion: number;
   actualRevenueByMonth: { labels: string[]; datasets: { data: number[]; label: string }[] };
   dealStatusDistribution: { labels: string[]; datasets: { data: number[]; label: string }[] };
+  leadStatusDistribution: { labels: string[]; datasets: { data: number[]; label: string }[] }; // Added leadStatusDistribution
   pipelineConversion: { labels: string[]; datasets: { data: number[]; label: string }[] };
   forecastedRevenueByMonth: { labels: string[]; datasets: { data: number[]; label: string }[] };
   forecastedRevenueByStage: { labels: string[]; datasets: { data: number[]; label: string }[] };
@@ -26,11 +25,10 @@ const defaultDashboardData: DashboardData = {
   actualRevenue: 0,
   commission: 0,
   leadConversion: 0,
-  totalLeads: 0,
-  qualifiedLeads:0,
-  totalDeals: 0,
+  dealConversion: 0,
   actualRevenueByMonth: { labels: [], datasets: [{ data: [], label: 'Actual Revenue by Month' }] },
   dealStatusDistribution: { labels: [], datasets: [{ data: [], label: 'Deal Status Distribution' }] },
+  leadStatusDistribution: { labels: [], datasets: [{ data: [], label: 'Lead Status Distribution' }] }, // Added default data for leadStatusDistribution
   pipelineConversion: { labels: [], datasets: [{ data: [], label: 'Pipeline Conversion' }] },
   forecastedRevenueByMonth: { labels: [], datasets: [{ data: [], label: 'Forecasted Revenue by Month' }] },
   forecastedRevenueByStage: { labels: [], datasets: [{ data: [], label: 'Forecasted Revenue by Stage' }] },
@@ -39,7 +37,6 @@ const defaultDashboardData: DashboardData = {
 const Dashboard: React.FC = () => {
   const [data, setData] = useState<DashboardData>(defaultDashboardData);
 
-  // Retrieve role from session storage
   const role = sessionStorage.getItem('role') || '';
 
   const transformData = (metrics: any): DashboardData => {
@@ -49,43 +46,30 @@ const Dashboard: React.FC = () => {
       actualRevenue: metrics.actual_revenue ?? 0,
       commission: metrics.commission ?? 0,
       leadConversion: metrics.lead_conversion_rate ?? 0,
-      totalLeads: metrics.total_leads ?? 0,
-      qualifiedLeads: metrics.qualified_leads?? 0,
-      totalDeals: metrics.total_deals ?? 0,
+      dealConversion: metrics.deal_conversion_rate ?? 0,
       actualRevenueByMonth: {
-        labels: metrics.actual_revenue_by_month ? Object.keys(metrics.actual_revenue_by_month) : [],
-        datasets: [{
-          data: metrics.actual_revenue_by_month ? Object.values(metrics.actual_revenue_by_month) : [],
-          label: 'Actual Revenue by Month',
-        }],
+        labels: Object.keys(metrics.actual_revenue_by_month || {}),
+        datasets: [{ data: Object.values(metrics.actual_revenue_by_month || {}), label: 'Actual Revenue by Month' }],
       },
       dealStatusDistribution: {
-        labels: metrics.deal_status_distribution ? Object.keys(metrics.deal_status_distribution) : [],
-        datasets: [{
-          data: metrics.deal_status_distribution ? Object.values(metrics.deal_status_distribution) : [],
-          label: 'Deal Status Distribution',
-        }],
+        labels: Object.keys(metrics.deal_status_distribution || {}),
+        datasets: [{ data: Object.values(metrics.deal_status_distribution || {}), label: 'Deal Status Distribution' }],
+      },
+      leadStatusDistribution: { // Added transformation for leadStatusDistribution
+        labels: Object.keys(metrics.lead_status_distribution || {}),
+        datasets: [{ data: Object.values(metrics.lead_status_distribution || {}), label: 'Lead Status Distribution' }],
       },
       pipelineConversion: {
-        labels: metrics.pipeline_conversion ? Object.keys(metrics.pipeline_conversion) : [],
-        datasets: [{
-          data: metrics.pipeline_conversion ? Object.values(metrics.pipeline_conversion) : [],
-          label: 'Pipeline Conversion',
-        }],
+        labels: Object.keys(metrics.pipeline_conversion || {}),
+        datasets: [{ data: Object.values(metrics.pipeline_conversion || {}), label: 'Pipeline Conversion' }],
       },
       forecastedRevenueByMonth: {
-        labels: metrics.forecasted_revenue_by_month ? Object.keys(metrics.forecasted_revenue_by_month) : [],
-        datasets: [{
-          data: metrics.forecasted_revenue_by_month ? Object.values(metrics.forecasted_revenue_by_month) : [],
-          label: 'Forecasted Revenue by Month',
-        }],
+        labels: Object.keys(metrics.forecasted_revenue_by_month || {}),
+        datasets: [{ data: Object.values(metrics.forecasted_revenue_by_month || {}), label: 'Forecasted Revenue by Month' }],
       },
       forecastedRevenueByStage: {
-        labels: metrics.forecasted_revenue_by_stage ? Object.keys(metrics.forecasted_revenue_by_stage) : [],
-        datasets: [{
-          data: metrics.forecasted_revenue_by_stage ? Object.values(metrics.forecasted_revenue_by_stage) : [],
-          label: 'Forecasted Revenue by Stage',
-        }],
+        labels: Object.keys(metrics.forecasted_revenue_by_stage || {}),
+        datasets: [{ data: Object.values(metrics.forecasted_revenue_by_stage || {}), label: 'Forecasted Revenue by Stage' }],
       },
     };
   };
@@ -102,18 +86,16 @@ const Dashboard: React.FC = () => {
         }
 
         let response;
-        if (role === "Admin") {
+        if (role === 'Admin') {
           response = await axios.get(`http://localhost:5008/api/metrics/orgs/${org_id}`);
-        } else if (role === "Sales Rep") {
+        } else if (role === 'Sales Rep') {
           response = await axios.get(`http://localhost:5009/api/metrics/salesRep/${owner_id}`);
         }
 
         if (response && Array.isArray(response.data) && response.data.length > 0) {
           const rawMetrics = response.data[0];
-          const formattedData = transformData(rawMetrics);
-          setData(formattedData);
+          setData(transformData(rawMetrics));
         } else {
-          console.error('No valid data received: Role may not match expected values or response is empty');
           setData(defaultDashboardData);
         }
       } catch (error) {
@@ -127,31 +109,39 @@ const Dashboard: React.FC = () => {
   return (
     <DashboardLayout>
       <div className={styles.dashboardWidgets}>
-        <Widget title="Active Deals Forecast Value" content={`$${data.activeDealsForecastValue.toLocaleString()}`} className={styles.smallWidget} />
-        <Widget title="Average Value of Won Deals" content={`$${data.avgWonDealValue}`} className={styles.smallWidget} />
-        <Widget title="Actual Revenue" content={`$${data.actualRevenue}`} className={styles.smallWidget} />
+        <div className={styles.smallWidgets}>
+          <Widget title="Active Deals Forecast Value" content={`$${data.activeDealsForecastValue.toLocaleString()}`} />
+          <Widget title="Average Won Deal Value" content={`$${data.avgWonDealValue.toFixed(2)}`} />
+          <Widget title="Actual Revenue" content={`$${data.actualRevenue.toFixed(2)}`} />
+          {role === 'Sales Rep' && <Widget title="Commission" content={`$${data.commission.toFixed(2)}`} />}
+        </div>
 
-          <>
-          <Widget
-  title="Leads Conversion"
-  chartType="progress"
-  progressValue={data.leadConversion}
-/>
-          <Widget title="Total Leads" content={`${data.totalLeads}`} className={styles.smallWidget} />
-            <Widget title="Total Deals" content={`${data.totalDeals}`} className={styles.smallWidget} />
-          </>
-        
+        <div className={styles.progressWidgets}>
+          <Widget title="Lead Conversion Rate" progressValue={data.leadConversion} />
+          <Widget title="Deal Conversion Rate" progressValue={data.dealConversion} />
+        </div>
 
-        {role === "Sales Rep" && (
-          <Widget title="Commission" content={`$${data.commission}`} className={styles.smallWidget} />
-        )}
+        {/* Chart Section with Lead Status Distribution and Revenue by Month */}
+        <div className={styles.chartRow}>
+          {data.leadStatusDistribution.labels.length > 0 && ( // Updated to use leadStatusDistribution
+            <Widget title="Lead Status Distribution" chartData={data.leadStatusDistribution} chartType="pie" />
+          )}
+          <Widget 
+            title="Revenue by Month" 
+            chartData={data.actualRevenueByMonth} 
+            chartType="bar" 
+            className={styles.largeWidget} 
+          />
+          {data.dealStatusDistribution.labels.length > 0 && (
+            <Widget title="Deal Status Distribution" chartData={data.dealStatusDistribution} chartType="pie" />
+          )}
+        </div>
 
-        <Widget title="Revenue by Month" chartData={data.actualRevenueByMonth} chartType="bar" className={styles.fullWidth} />
-        
-        <Widget title="Deal Status Distribution" chartData={data.dealStatusDistribution} chartType="pie" className={styles.smallChart} />
-        <Widget title="Pipeline Conversion" chartData={data.pipelineConversion} chartType="bar" className={styles.largeChart} />
-        <Widget title="Forecasted Revenue by Month" chartData={data.forecastedRevenueByMonth} chartType="bar" className={styles.largeChart} />
-        <Widget title="Forecasted Revenue by Stage" chartData={data.forecastedRevenueByStage} chartType="bar" className={styles.largeChart} />
+        <div className={styles.forecastWidgets}>
+          <Widget title="Pipeline Conversion" chartData={data.pipelineConversion} chartType="bar" />
+          <Widget title="Forecasted Revenue by Month" chartData={data.forecastedRevenueByMonth} chartType="bar" />
+          <Widget title="Forecasted Revenue by Stage" chartData={data.forecastedRevenueByStage} chartType="bar" />
+        </div>
       </div>
     </DashboardLayout>
   );
