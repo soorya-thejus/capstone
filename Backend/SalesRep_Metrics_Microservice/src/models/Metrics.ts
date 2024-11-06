@@ -9,6 +9,10 @@ interface IMetric extends Document {
   total_deals: number;
   total_leads: number;
   qualified_leads: number;
+  unqualified_leads: number;
+  new_leads: number;
+  atc_leads: number;
+  contacted_leads: number;
   lead_conversion_rate: number;
   deal_conversion_rate: number;
   won_deals: number;
@@ -19,6 +23,7 @@ interface IMetric extends Document {
   nego_deals: number;
   commission: number;
   deal_status_distribution: Record<string, number>;
+  lead_status_distribution: Record<string, number>;
   actual_revenue_by_month: Record<string, number>;
   pipeline_conversion: Record<string, number>;
   forecasted_revenue_by_month: Record<string, number>;
@@ -38,6 +43,10 @@ const MetricsSchema: Schema = new Schema({
   total_deals: { type: Number, default: 0 }, 
   total_leads: { type: Number, default: 0 },
   qualified_leads: { type: Number, default: 0 },
+  unqualified_leads: { type: Number, default: 0 },
+  new_leads: { type: Number, default: 0 },
+  atc_leads: { type: Number, default: 0 },
+  contacted_leads: { type: Number, default: 0 },
   lead_conversion_rate: { type: Number, default: 0 },
   deal_conversion_rate: { type: Number, default: 0 },
   won_deals: {type: Number, default: 0},
@@ -55,6 +64,13 @@ const MetricsSchema: Schema = new Schema({
     proposal: { type: Number, default: 0 },
     negotiation: { type: Number, default: 0 },
   }, // Track deal counts by status
+  lead_status_distribution: {
+    qualified: { type: Number, default: 0 },
+    unqualified: { type: Number, default: 0 },
+    new: { type: Number, default: 0 },
+    atc: { type: Number, default: 0 },
+    contacted: { type: Number, default: 0 },
+  },
   actual_revenue_by_month: { 
     Jan: {type: Number, default: 0 },
     Feb: {type: Number, default: 0 },
