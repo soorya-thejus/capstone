@@ -2,7 +2,7 @@ import { Metrics } from '../models/Metrics';
 
 
 export const updateMetricsFromLeadEvent = async (leadData: any): Promise<void> => {
-  const { type, org_id, status } = leadData;
+  const { type, org_id, status , previous_status} = leadData;
 
   let metrics = await Metrics.findOne({ org_id });
   if (!metrics) {
@@ -15,17 +15,65 @@ export const updateMetricsFromLeadEvent = async (leadData: any): Promise<void> =
     if (status === "qualified") {
       metrics.qualified_leads = (metrics.qualified_leads || 0) + 1; 
     }
+    else if(status === "unqualified"){
+      metrics.unqualified_leads = (metrics.unqualified_leads || 0) + 1;
+    }
+    else{
+      if (status === 'new lead') {
+        metrics.new_leads = (metrics.new_leads || 0) + 1;
+      } else if (status === 'attempted to contact') {
+        metrics.atc_leads = (metrics.atc_leads || 0) + 1;
+      } else if (status === 'contacted') {
+        metrics.contacted_leads = (metrics.contacted_leads || 0) + 1;
+      }
+    }
 
   } else if (type === "update") {
+
+    // if (status === "qualified") {
+    //   metrics.qualified_leads = (metrics.qualified_leads || 0) + 1; 
+    // }
+
+    // else if (status === "unqualified") {
+    //   metrics.qualified_leads = Math.max((metrics.qualified_leads || 0) - 1, 0); 
+    // }
+    if(previous_status){
+      if (previous_status === 'new lead') {
+        metrics.new_leads = (metrics.new_leads || 0) - 1;
+      } else if (previous_status === 'attempted to contact') {
+        metrics.atc_leads = (metrics.atc_leads || 0) - 1;
+      } else if (previous_status === 'contacted') {
+        metrics.contacted_leads = (metrics.contacted_leads || 0) - 1;
+      } else if (previous_status === 'unqualified') {
+        metrics.unqualified_leads = (metrics.unqualified_leads || 0) - 1;
+      } else if (previous_status === 'qualified') {
+        metrics.qualified_leads = (metrics.qualified_leads || 0) - 1;
+      } 
+    }
 
     if (status === "qualified") {
       metrics.qualified_leads = (metrics.qualified_leads || 0) + 1; 
     }
-
-    else if (status === "unqualified") {
-      metrics.qualified_leads = Math.max((metrics.qualified_leads || 0) - 1, 0); 
+    else if(status === "unqualified"){
+      metrics.unqualified_leads = (metrics.unqualified_leads || 0) + 1;
     }
+    else{
+      if (status === 'new lead') {
+        metrics.new_leads = (metrics.new_leads || 0) + 1;
+      } else if (status === 'attempted to contact') {
+        metrics.atc_leads = (metrics.atc_leads || 0) + 1;
+      } else if (status === 'contacted') {
+        metrics.contacted_leads = (metrics.contacted_leads || 0) + 1;
+      }
+    }
+
   }
+
+  metrics.lead_status_distribution.new = metrics.total_leads > 0 ? ((metrics.new_leads || 0) / metrics.total_leads) * 100 : 0;
+  metrics.lead_status_distribution.atc = metrics.total_leads > 0 ? ((metrics.atc_leads || 0) / metrics.total_leads) * 100 : 0;
+  metrics.lead_status_distribution.contacted = metrics.total_leads > 0 ? ((metrics.contacted_leads || 0) / metrics.total_leads) * 100 : 0;
+  metrics.lead_status_distribution.unqualified = metrics.total_leads > 0 ? ((metrics.unqualified_leads || 0) / metrics.total_leads) * 100 : 0;
+  metrics.lead_status_distribution.qualified = metrics.total_leads > 0 ? ((metrics.qualified_leads || 0) / metrics.total_leads) * 100 : 0;
 
   if (metrics.total_leads > 0) {
     metrics.lead_conversion_rate = (metrics.qualified_leads || 0) / metrics.total_leads * 100;
