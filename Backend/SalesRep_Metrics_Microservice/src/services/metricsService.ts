@@ -11,6 +11,7 @@ export const updateSalesRepMetricsFromLeadEvent = async (leadData: any): Promise
 
 
   if (type === "create") {
+    metrics.org_id=org_id;
     metrics.total_leads = (metrics.total_leads || 0) + 1; 
 
     if (status === "qualified") {
