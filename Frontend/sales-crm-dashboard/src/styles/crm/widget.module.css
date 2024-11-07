@@ -1,48 +1,37 @@
-.widget {
-    background-color: #ffffff;
-    padding: 20px;
+  /* widget.module.css */
+  .widget {
+    padding: 1rem;
+    background: #fff;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s; /* Smooth scaling on hover */
-}
-
-.widget:hover {
-    transform: scale(1.02); /* Slightly enlarge on hover */
-}
-
-.widget h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    color: #333;
-}
-
-.widget div {
-    margin-top: 10px;
-}
-
-.widget canvas {
-    margin-top: 10px; /* Space between text and chart */
-}
-.progressBarContainer {
-    width: 100%;
-    background-color: #e0e0e0;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
   .progressBar {
+    background: #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 20px;
+  }
+  
+  .progress {
+    background: #76c7c0;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
+    text-align: center;
+    color: #fff;
     font-weight: bold;
     border-radius: 8px;
   }
-  
-  .progressText {
-    padding-left: 8px;
-    color: #fff;
-  }
+  .widget {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.widget:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
   
