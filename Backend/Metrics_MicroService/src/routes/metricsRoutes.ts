@@ -1,11 +1,13 @@
 import express from 'express';
-import { fetchMetricsByOrg, updateMetricsFromDeal } from '../controllers/metricsController';
+import { fetchMetricsByOrg, updateMetricsFromDeal, updateMetricsFromLead } from '../controllers/metricsController';
 
 
 const router = express.Router();
 
 
-router.post('/metrics', updateMetricsFromDeal);
+router.post('/metrics/deals', updateMetricsFromDeal);
+
+router.post('/metrics/leads', updateMetricsFromLead)
 
 router.get('/metrics/orgs/:org_id', fetchMetricsByOrg);
 

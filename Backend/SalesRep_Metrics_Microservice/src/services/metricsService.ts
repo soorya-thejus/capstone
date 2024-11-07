@@ -6,12 +6,16 @@ export const updateSalesRepMetricsFromLeadEvent = async (leadData: any): Promise
 
   let metrics = await Metrics.findOne({ owner_id });
   if (!metrics) {
-    metrics = new Metrics({ owner_id });
+    metrics = new Metrics({ owner_id , org_id});
+  }
+
+  if(!metrics.org_id){
+    metrics.org_id=org_id;
   }
 
 
   if (type === "create") {
-    metrics.org_id=org_id;
+    //metrics.org_id=org_id;
     metrics.total_leads = (metrics.total_leads || 0) + 1; 
 
     if (status === "qualified") {
@@ -94,14 +98,16 @@ export const updateSalesRepMetricsFromDealEvent = async (dealData: any): Promise
   // Fetch current metrics for the specified owner_id or initialize a new metrics object for the salesRep
   let metrics = await Metrics.findOne({ owner_id });// change it to owner_id
   if (!metrics) {
-    metrics = new Metrics({ owner_id }); // Initialize with owner_id if not found
+    metrics = new Metrics({ owner_id , org_id}); // Initialize with owner_id if not found
   }
 
-  
+  if(!metrics.org_id){
+    metrics.org_id=org_id;
+  }
   
   if (type === 'create') {
     // This is a new deal
-    metrics.org_id=org_id;
+    //metrics.org_id=org_id;
     metrics.total_deals = (metrics.total_deals || 0) + 1; // Increment total deals
 
     if (stage === 'won') {
