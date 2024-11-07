@@ -1,24 +1,43 @@
 .dashboardWidgets {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .smallWidgets, .progressWidgets, .chartWidgets, .forecastWidgets {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .smallWidgets > div, .progressWidgets > div, .chartWidgets > div, .forecastWidgets > div {
+    flex: 1;
+  }
+  
+  .largeWidget {
+    flex: 2; /* Make this widget take twice the space of others */
+  }
+  
+  /* New grid layout for the chart section */
+  .chartRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .chartRow > div {
+    flex: 1;
+    min-width: 250px; /* Ensure the widgets have some minimum width */
+  }
+  
+  .chartRow > div:nth-child(2) {
+    flex: 2; /* Make Revenue by Month take double the space */
+  }
+  
+  .forecastWidgets {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Responsive grid */
-    gap: 20px; /* Space between widgets */
-    padding: 20px; /* Padding for the dashboard */
-}
-
-.smallWidget {
-    grid-column: span 1; /* Small widgets take 1 column */
-}
-.halfWidth{
-    grid-column: span 2;
-}
-.fullWidth {
-    grid-column: span 3; /* Full width widgets take 2 columns */
-}
-
-.smallChart {
-    grid-column: span 1; /* Small charts take 1 column */
-}
-
-.largeChart {
-    grid-column: span 2; /* Large charts take 2 columns */
-}
+    grid-template-columns: repeat(3, 1fr); /* Three equal-width columns */
+    gap: 1rem;
+  }
+  
