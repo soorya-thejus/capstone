@@ -74,6 +74,9 @@ export const deleteDeal = async (req: Request, res: Response) => {
         const deletedDeal = await dealService.deleteDealService(req.params.id);
         if (!deletedDeal)  {res.status(404).json({ message: 'Deal not found' }); // Handle case where deal is not found
                     return;};
+                
+        await sendDealEvent(deletedDeal);
+        
         res.status(204).json({ message: 'Deleted successfully!' }); // Respond with success message
     } catch (error) {
         // Handle error if deleting the deal fails
