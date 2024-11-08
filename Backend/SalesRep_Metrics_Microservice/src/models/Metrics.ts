@@ -25,7 +25,8 @@ interface IMetric extends Document {
   deal_status_distribution: Record<string, number>;
   lead_status_distribution: Record<string, number>;
   actual_revenue_by_month: Record<string, number>;
-  pipeline_conversion: Record<string, number>;
+  deal_pipeline_conversion: Record<string, number>;
+  lead_pipeline_conversion: Record<string, number>;
   forecasted_revenue_by_month: Record<string, number>;
   forecasted_revenue_by_stage: Record<string, number>;
   org_id: Types.ObjectId;
@@ -85,7 +86,7 @@ const MetricsSchema: Schema = new Schema({
     Nov: {type: Number, default: 0 },
     Dec: {type: Number, default: 0 },
   }, // Revenue by month
-  pipeline_conversion: {
+  deal_pipeline_conversion: {
     won: { type: Number, default: 0 },
     lost: { type: Number, default: 0 },
     new: { type: Number, default: 0 },
@@ -93,6 +94,13 @@ const MetricsSchema: Schema = new Schema({
     proposal: { type: Number, default: 0 },
     negotiation: { type: Number, default: 0 },
   }, // Deals in pipeline stages
+  lead_pipeline_conversion: {
+    qualified: { type: Number, default: 0 },
+    unqualified: { type: Number, default: 0 },
+    new: { type: Number, default: 0 },
+    atc: { type: Number, default: 0 },
+    contacted: { type: Number, default: 0 },
+  },
   forecasted_revenue_by_month: { 
     Jan: {type: Number, default: 0 },
     Feb: {type: Number, default: 0 },
