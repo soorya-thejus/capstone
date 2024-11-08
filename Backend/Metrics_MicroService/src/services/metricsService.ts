@@ -68,6 +68,32 @@ export const updateMetricsFromLeadEvent = async (leadData: any): Promise<void> =
     }
 
   }
+  else if (type === "delete") {
+    metrics.total_leads = (metrics.total_leads || 0) - 1; 
+
+    if (status === "qualified") {
+      metrics.qualified_leads = (metrics.qualified_leads || 0) - 1; 
+    }
+    else if(status === "unqualified"){
+      metrics.unqualified_leads = (metrics.unqualified_leads || 0) - 1;
+    }
+    else{
+      if (status === 'new lead') {
+        metrics.new_leads = (metrics.new_leads || 0) - 1;
+      } else if (status === 'attempted to contact') {
+        metrics.atc_leads = (metrics.atc_leads || 0) - 1;
+      } else if (status === 'contacted') {
+        metrics.contacted_leads = (metrics.contacted_leads || 0) - 1;
+      }
+    }
+
+  }
+
+  metrics.lead_pipeline_conversion.new = metrics.new_leads||0;
+  metrics.lead_pipeline_conversion.atc = metrics.atc_leads||0;
+  metrics.lead_pipeline_conversion.contacted = metrics.contacted_leads||0;
+  metrics.lead_pipeline_conversion.unqualified = metrics.unqualified_leads||0;
+  metrics.lead_pipeline_conversion.qualified = metrics.qualified_leads||0;
 
   metrics.lead_status_distribution.new = metrics.total_leads > 0 ? ((metrics.new_leads || 0) / metrics.total_leads) * 100 : 0;
   metrics.lead_status_distribution.atc = metrics.total_leads > 0 ? ((metrics.atc_leads || 0) / metrics.total_leads) * 100 : 0;
@@ -200,14 +226,50 @@ export const updateMetricsFromDealEvent = async (dealData: any): Promise<void> =
       metrics.forecasted_revenue_by_month[month] = (metrics.forecasted_revenue_by_month[month] || 0) + forecast_value;
     }
   }
+  else if (type === 'delete') {
+    metrics.total_deals = (metrics.total_deals || 0) - 1; 
+
+    if (stage === 'won') {
+      metrics.won_deals = (metrics.won_deals || 0) - 1; 
+      metrics.actual_revenue = (metrics.actual_revenue || 0) - deal_value; 
+      metrics.average_won_deal_value = metrics.won_deals > 0 ? metrics.actual_revenue / metrics.won_deals : 0; 
+
+      const closeDate = new Date(expected_close_date);
+      const month = closeDate.toLocaleString('default', { month: 'short'});
+      metrics.actual_revenue_by_month[month] = (metrics.actual_revenue_by_month[month] || 0) - deal_value;
+    } 
+    else if (stage === 'lost') {
+      metrics.lost_deals = (metrics.lost_deals || 0) - 1; 
+    } 
+    else {
+      if (stage === 'new') {
+        metrics.new_deals = (metrics.new_deals || 0) - 1;
+      } else if (stage === 'discovery') {
+        metrics.discovery_deals = (metrics.discovery_deals || 0) - 1;
+      } else if (stage === 'proposal') {
+        metrics.proposal_deals = (metrics.proposal_deals || 0) - 1;
+      } else if (stage === 'negotiation') {
+        metrics.nego_deals = (metrics.nego_deals || 0) - 1;
+      }
+
+      metrics.active_deals_forecast_value = (metrics.active_deals_forecast_value || 0) - forecast_value;
+
+      metrics.forecasted_revenue_by_stage[stage] = (metrics.forecasted_revenue_by_stage[stage] || 0) - forecast_value;
+
+      const month = new Date(expected_close_date).toLocaleString('default', { month: 'short'});
+      metrics.forecasted_revenue_by_month[month] = (metrics.forecasted_revenue_by_month[month] || 0) - forecast_value;
+    }
+
+
+  }
 
   // Update pipeline conversion and deal status distribution for each stage
-  metrics.pipeline_conversion.new = metrics.new_deals||0;
-  metrics.pipeline_conversion.discovery = metrics.discovery_deals||0;
-  metrics.pipeline_conversion.proposal = metrics.proposal_deals||0;
-  metrics.pipeline_conversion.negotiation = metrics.nego_deals||0;
-  metrics.pipeline_conversion.won = metrics.won_deals||0;
-  metrics.pipeline_conversion.lost = metrics.lost_deals||0;
+  metrics.deal_pipeline_conversion.new = metrics.new_deals||0;
+  metrics.deal_pipeline_conversion.discovery = metrics.discovery_deals||0;
+  metrics.deal_pipeline_conversion.proposal = metrics.proposal_deals||0;
+  metrics.deal_pipeline_conversion.negotiation = metrics.nego_deals||0;
+  metrics.deal_pipeline_conversion.won = metrics.won_deals||0;
+  metrics.deal_pipeline_conversion.lost = metrics.lost_deals||0;
   
 
   // Calculate deal status distribution percentage for each stage
