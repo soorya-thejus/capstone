@@ -9,7 +9,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+h2{
+  @apply text-2xl font-bold;
+  margin-top:5px;
+  margin-bottom: 15px;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

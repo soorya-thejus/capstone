@@ -100,7 +100,7 @@ const ContactTable: React.FC = () => {
           placeholder="Search Contacts..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-md"
+          className="px-4 py-2 border rounded-md shadow-sm w-1/3"
         />
         <FontAwesomeIcon
           icon={isTableView ? faTh : faTable}
@@ -211,7 +211,7 @@ const ContactTable: React.FC = () => {
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-200 text-gray-600 rounded-md"
+          className="px-4 py-2 bg-gray-300 rounded-md"
         >
           Previous
         </button>
@@ -221,7 +221,7 @@ const ContactTable: React.FC = () => {
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === Math.ceil(filteredContacts.length / itemsPerPage)}
-          className="px-4 py-2 bg-gray-200 text-gray-600 rounded-md"
+          className="px-4 py-2 bg-gray-300 rounded-md"
         >
           Next
         </button>

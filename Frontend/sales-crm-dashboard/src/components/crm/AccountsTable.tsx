@@ -179,7 +179,9 @@ const AccountsTable: React.FC = () => {
                 <td className="py-2 px-4 border-b">{account.description}</td>
                 <td className="py-2 px-4 border-b">{account.number_of_employees}</td>
                 {role !== 'Project Manager' && (
-                  <td className="py-2 px-4 border-b flex space-x-2">
+                  <td className="py-2 px-4 border-b border-r align-middle">
+                  <div className="space-x-2">
+
                     <FontAwesomeIcon
                       icon={faEdit}
                       className="text-blue-500 cursor-pointer hover:text-blue-700"
@@ -190,6 +192,7 @@ const AccountsTable: React.FC = () => {
                       className="text-red-500 cursor-pointer hover:text-red-700"
                       onClick={() => account._id && handleDeleteClick(account._id)}
                     />
+                    </div>
                   </td>
                 )}
               </tr>
