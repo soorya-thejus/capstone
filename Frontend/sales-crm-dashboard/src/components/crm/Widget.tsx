@@ -56,7 +56,7 @@ const Widget: React.FC<WidgetProps> = ({
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value: number) => `$${value.toLocaleString()}`, // Format y-axis labels as currency
+          callback: (value: number) => `${value.toLocaleString()}`, // Format y-axis labels as currency
         }
       }
     },

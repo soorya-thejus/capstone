@@ -68,7 +68,7 @@ const TeamMemberSignup: React.FC = () => {
     </label>
     <label>
       Email:
-      <input
+      <input id="t-input"
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -77,7 +77,7 @@ const TeamMemberSignup: React.FC = () => {
     </label>
     <label>
       Password:
-      <input
+      <input id="t-input"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
@@ -86,12 +86,12 @@ const TeamMemberSignup: React.FC = () => {
     </label>
     <label>
       Role:
-      <select
+      <select id="t-select"
         value={role}
         onChange={(e) => setRole(e.target.value)}
         required
       >
-        <option value="Admin">Admin</option>
+        {/* <option value="Admin">Admin</option> */}
         <option value="Project Manager">Project Manager</option>
         <option value="Sales Rep">Sales Rep</option>
       </select>

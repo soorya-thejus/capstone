@@ -4,14 +4,14 @@ import { Contact } from '../../types/crm/Contact';
 import ProjectForm from './ProjectForm';
 import * as projectService from '../../services/ProjectService';
 import { ContactService } from '../../services/ContactService';
-import styles from '../../styles/crm/projectstable.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faPen, faTrash, faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
 
 const ProjectsTable: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [contacts, setContacts] = useState<{ [key: string]: string }>({});
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  // Retrieve orgId, userId, and role from session storage
   const orgId = sessionStorage.getItem('orgId') || '';
   const userId = sessionStorage.getItem('userId') || '';
   const role = sessionStorage.getItem('role') || '';
@@ -20,21 +20,13 @@ const ProjectsTable: React.FC = () => {
     const fetchProjectsAndContacts = async () => {
       try {
         let fetchedProjects: Project[] = [];
-  
-        if (role === 'Admin' ) {
+        if (role === 'Admin' || role === 'Project Manager') {
           fetchedProjects = await projectService.fetchProjectsByOrgId(orgId);
-        }else if ( role === 'Project Manager') {
-          fetchedProjects = await projectService.fetchProjectsByProjectManager(orgId,userId);
-        }
-        
-        else if (role === 'Sales Rep') {
+        } else if (role === 'Sales Rep') {
           fetchedProjects = await projectService.fetchProjectsBySalesRep(orgId, userId);
-          console.log("Fetched Projects for Sales Rep:", fetchedProjects); // Debugging line
         }
-  
         setProjects(fetchedProjects);
-  
-        // Fetch contacts for the organization
+
         const fetchedContacts: Contact[] = await ContactService.getAllContactsByOrgId(orgId);
         const contactMap = fetchedContacts.reduce((acc: { [key: string]: string }, contact: Contact) => {
           if (contact._id) {
@@ -47,13 +39,10 @@ const ProjectsTable: React.FC = () => {
         console.error("Error fetching projects or contacts:", error);
       }
     };
-  
     fetchProjectsAndContacts();
   }, [orgId, userId, role]);
-  
 
   const handleEditClick = (project: Project) => {
-    // Sales Rep should not be able to edit projects
     if (role !== 'Sales Rep') {
       setSelectedProject({
         ...project,
@@ -64,7 +53,6 @@ const ProjectsTable: React.FC = () => {
   };
 
   const handleDeleteClick = async (id: string | undefined) => {
-    // Sales Rep should not be able to delete projects
     if (role !== 'Sales Rep' && window.confirm("Are you sure you want to delete this project?") && id) {
       try {
         await projectService.deleteProject(id);
@@ -76,7 +64,6 @@ const ProjectsTable: React.FC = () => {
   };
 
   const handleAddClick = () => {
-    // Sales Rep should not be able to add projects
     if (role !== 'Sales Rep') {
       setSelectedProject({
         _id: undefined,
@@ -123,59 +110,86 @@ const ProjectsTable: React.FC = () => {
   };
 
   return (
-    <div className={styles.tableContainer}>
-      {(role === 'Project Manager') && (
-        <button onClick={handleAddClick} className={styles.addButton}>Add Project</button>
-      )}
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Priority</th>
-            <th>Contact Name</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Status</th>
-            {(role === 'Admin' || role === 'Project Manager') && (
-              <>
-                <th>Edit</th>
-                <th>Delete</th>
-              </>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {projects.length > 0 ? (
-            projects.map(project => (
-              <tr key={project._id}>
-                <td>{project.project_name}</td>
-                <td>{project.priority}</td>
-                <td>{contacts[project.contact_id || ""] || "N/A"}</td>
-                <td>{formatDate(project.start_date)}</td>
-                <td>{formatDate(project.end_date)}</td>
-                <td>{project.status}</td>
+    <div className="p-4 bg-white rounded-lg shadow">
+      {projects.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-64 text-center">
+          <img
+            src="https://via.placeholder.com/150"
+            alt="No projects illustration"
+            className="mb-4 w-32 h-32 object-cover"
+          />
+          <h2 className="text-lg font-semibold text-gray-700">No projects here</h2>
+          <p className="text-sm text-gray-500">Get started by adding a new project.</p>
+          {role === 'Project Manager' && (
+            <button
+              onClick={handleAddClick}
+              className="mt-4 px-4 py-2 bg-black text-white rounded-md shadow flex items-center space-x-2"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+              <span>Add Project</span>
+            </button>
+          )}
+        </div>
+      ) : (
+        <>
+          {(role === 'Project Manager') && (
+            <button
+              onClick={handleAddClick}
+              className="mb-4 px-4 py-2 bg-black text-white rounded-md shadow flex items-center space-x-2"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+              <span>Add Project</span>
+            </button>
+          )}
+          <table className="min-w-full border-collapse bg-white rounded-lg shadow-md">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="py-2 px-4 border-b">Name</th>
+                <th className="py-2 px-4 border-b">Priority</th>
+                <th className="py-2 px-4 border-b">Contact Name</th>
+                <th className="py-2 px-4 border-b">Start Date</th>
+                <th className="py-2 px-4 border-b">End Date</th>
+                <th className="py-2 px-4 border-b">Status</th>
                 {(role === 'Admin' || role === 'Project Manager') && (
                   <>
-                    <td>
-                      <button onClick={() => handleEditClick(project)}>Edit</button>
-                    </td>
-                    <td>
-                      <button className={styles.deleteButton} onClick={() => handleDeleteClick(project._id)}>Delete</button>
-                    </td>
+                    <th className="py-2 px-4 border-b">Edit</th>
+                    <th className="py-2 px-4 border-b">Delete</th>
                   </>
                 )}
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={8}>No projects available.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {projects.map(project => (
+                <tr key={project._id} className="hover:bg-gray-50">
+                  <td className="py-2 px-4 border-b">{project.project_name}</td>
+                  <td className="py-2 px-4 border-b">{project.priority}</td>
+                  <td className="py-2 px-4 border-b">{contacts[project.contact_id || ""] || "N/A"}</td>
+                  <td className="py-2 px-4 border-b">{formatDate(project.start_date)}</td>
+                  <td className="py-2 px-4 border-b">{formatDate(project.end_date)}</td>
+                  <td className="py-2 px-4 border-b">{project.status}</td>
+                  {(role === 'Admin' || role === 'Project Manager') && (
+                    <>
+                      <td className="py-2 px-4 border-b">
+                        <button onClick={() => handleEditClick(project)}>
+                          <FontAwesomeIcon icon={faPen} className="text-blue-500" />
+                        </button>
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        <button onClick={() => handleDeleteClick(project._id)}>
+                          <FontAwesomeIcon icon={faTrash} className="text-red-500" />
+                        </button>
+                      </td>
+                    </>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
 
-      {selectedProject !== null && (
-        <div className={styles.formContainer}>
+      {selectedProject && (
+        <div className="mt-6 p-4 bg-gray-100 rounded-lg">
           <ProjectForm
             project={selectedProject}
             onSave={handleSaveProject}
