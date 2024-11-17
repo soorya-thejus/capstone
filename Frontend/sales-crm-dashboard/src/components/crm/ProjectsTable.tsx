@@ -5,16 +5,21 @@ import ProjectForm from './ProjectForm';
 import * as projectService from '../../services/ProjectService';
 import { ContactService } from '../../services/ContactService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faPen, faTrash, faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const ProjectsTable: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [contacts, setContacts] = useState<{ [key: string]: string }>({});
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   const orgId = sessionStorage.getItem('orgId') || '';
   const userId = sessionStorage.getItem('userId') || '';
   const role = sessionStorage.getItem('role') || '';
+
+  const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
     const fetchProjectsAndContacts = async () => {
@@ -25,6 +30,12 @@ const ProjectsTable: React.FC = () => {
         } else if (role === 'Sales Rep') {
           fetchedProjects = await projectService.fetchProjectsBySalesRep(orgId, userId);
         }
+
+        // Filter projects based on the search query
+        fetchedProjects = fetchedProjects.filter(project =>
+          project.project_name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
         setProjects(fetchedProjects);
 
         const fetchedContacts: Contact[] = await ContactService.getAllContactsByOrgId(orgId);
@@ -35,12 +46,14 @@ const ProjectsTable: React.FC = () => {
           return acc;
         }, {});
         setContacts(contactMap);
+
+        setTotalPages(Math.ceil(fetchedProjects.length / ITEMS_PER_PAGE));
       } catch (error) {
         console.error("Error fetching projects or contacts:", error);
       }
     };
     fetchProjectsAndContacts();
-  }, [orgId, userId, role]);
+  }, [orgId, userId, role, searchQuery, currentPage]);
 
   const handleEditClick = (project: Project) => {
     if (role !== 'Sales Rep') {
@@ -109,94 +122,124 @@ const ProjectsTable: React.FC = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const displayedProjects = projects.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   return (
     <div className="p-4 bg-white rounded-lg shadow">
-      {projects.length === 0 ? (
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-4">
+          {role !== 'Sales Rep' && (
+            <button
+              onClick={handleAddClick}
+              className="px-4 py-2 bg-black text-white rounded-md shadow flex items-center space-x-2"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+              <span>Add Project</span>
+            </button>
+          )}
+          <input
+            type="text"
+            placeholder="Search Projects"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={`px-4 py-2 border rounded-md shadow-sm ${role === 'Sales Rep' ? 'w-full' : 'w-1/3'}`}
+          />
+        </div>
+      </div>
+
+      {displayedProjects.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 text-center">
           <img
             src="https://via.placeholder.com/150"
             alt="No projects illustration"
             className="mb-4 w-32 h-32 object-cover"
           />
-          <h2 className="text-lg font-semibold text-gray-700">No projects here</h2>
-          <p className="text-sm text-gray-500">Get started by adding a new project.</p>
-          {role === 'Project Manager' && (
-            <button
-              onClick={handleAddClick}
-              className="mt-4 px-4 py-2 bg-black text-white rounded-md shadow flex items-center space-x-2"
-            >
-              <FontAwesomeIcon icon={faPlus} />
-              <span>Add Project</span>
-            </button>
-          )}
+          <h2 className="text-lg font-semibold text-gray-700">No projects found</h2>
         </div>
       ) : (
-        <>
-          {(role === 'Project Manager') && (
-            <button
-              onClick={handleAddClick}
-              className="mb-4 px-4 py-2 bg-black text-white rounded-md shadow flex items-center space-x-2"
-            >
-              <FontAwesomeIcon icon={faPlus} />
-              <span>Add Project</span>
-            </button>
-          )}
-          <table className="min-w-full border-collapse bg-white rounded-lg shadow-md">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="py-2 px-4 border-b">Name</th>
-                <th className="py-2 px-4 border-b">Priority</th>
-                <th className="py-2 px-4 border-b">Contact Name</th>
-                <th className="py-2 px-4 border-b">Start Date</th>
-                <th className="py-2 px-4 border-b">End Date</th>
-                <th className="py-2 px-4 border-b">Status</th>
+        <table className="min-w-full border-collapse bg-white rounded-lg shadow-md">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="py-2 px-4 border-b">Name</th>
+              <th className="py-2 px-4 border-b">Priority</th>
+              <th className="py-2 px-4 border-b">Contact Name</th>
+              <th className="py-2 px-4 border-b">Start Date</th>
+              <th className="py-2 px-4 border-b">End Date</th>
+              <th className="py-2 px-4 border-b">Status</th>
+              {(role === 'Admin' || role === 'Project Manager') && (
+                <>
+                  <th className="py-2 px-4 border-b">Edit</th>
+                  <th className="py-2 px-4 border-b">Delete</th>
+                </>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {displayedProjects.map(project => (
+              <tr key={project._id} className="hover:bg-gray-50">
+                <td className="py-2 px-4 border-b">{project.project_name}</td>
+                <td className="py-2 px-4 border-b">{project.priority}</td>
+                <td className="py-2 px-4 border-b">{contacts[project.contact_id || ""] || "N/A"}</td>
+                <td className="py-2 px-4 border-b">{formatDate(project.start_date)}</td>
+                <td className="py-2 px-4 border-b">{formatDate(project.end_date)}</td>
+                <td className="py-2 px-4 border-b">{project.status}</td>
                 {(role === 'Admin' || role === 'Project Manager') && (
                   <>
-                    <th className="py-2 px-4 border-b">Edit</th>
-                    <th className="py-2 px-4 border-b">Delete</th>
+                    <td className="py-2 px-4 border-b">
+                      <FontAwesomeIcon
+                        icon={faPen}
+                        onClick={() => handleEditClick(project)}
+                        className="cursor-pointer text-blue-500 hover:text-blue-700"
+                      />
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      <FontAwesomeIcon
+                        icon={faTrash}
+                        onClick={() => handleDeleteClick(project._id)}
+                        className="cursor-pointer text-red-500 hover:text-red-700"
+                      />
+                    </td>
                   </>
                 )}
               </tr>
-            </thead>
-            <tbody>
-              {projects.map(project => (
-                <tr key={project._id} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 border-b">{project.project_name}</td>
-                  <td className="py-2 px-4 border-b">{project.priority}</td>
-                  <td className="py-2 px-4 border-b">{contacts[project.contact_id || ""] || "N/A"}</td>
-                  <td className="py-2 px-4 border-b">{formatDate(project.start_date)}</td>
-                  <td className="py-2 px-4 border-b">{formatDate(project.end_date)}</td>
-                  <td className="py-2 px-4 border-b">{project.status}</td>
-                  {(role === 'Admin' || role === 'Project Manager') && (
-                    <>
-                      <td className="py-2 px-4 border-b">
-                        <button onClick={() => handleEditClick(project)}>
-                          <FontAwesomeIcon icon={faPen} className="text-blue-500" />
-                        </button>
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <button onClick={() => handleDeleteClick(project._id)}>
-                          <FontAwesomeIcon icon={faTrash} className="text-red-500" />
-                        </button>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
+            ))}
+          </tbody>
+        </table>
       )}
 
+      {/* Pagination */}
+      <div className="mt-4 flex justify-between items-center">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-4 py-2 bg-gray-200 text-gray-600 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 bg-gray-200 text-gray-600 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next
+        </button>
+      </div>
+
       {selectedProject && (
-        <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-          <ProjectForm
-            project={selectedProject}
-            onSave={handleSaveProject}
-            onCancel={handleCancel}
-            orgId={orgId}
-          />
-        </div>
+        <ProjectForm
+          project={selectedProject}
+          onSave={handleSaveProject}
+          onCancel={handleCancel} orgId={orgId}        />
       )}
     </div>
   );

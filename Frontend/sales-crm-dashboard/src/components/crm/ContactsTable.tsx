@@ -19,6 +19,10 @@ const ContactTable: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isTableView, setIsTableView] = useState(true);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Change this value to display more or fewer items per page
+
   // Fetch orgId, ownerId, and role from session storage
   const orgId = sessionStorage.getItem('orgId') || '';
   const ownerId = sessionStorage.getItem('userId') || '';
@@ -76,6 +80,16 @@ const ContactTable: React.FC = () => {
   const filteredContacts = contacts.filter(contact =>
     contact.contact_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Pagination logic
+  const indexOfLastContact = currentPage * itemsPerPage;
+  const indexOfFirstContact = indexOfLastContact - itemsPerPage;
+  const currentContacts = filteredContacts.slice(indexOfFirstContact, indexOfLastContact);
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="p-4 bg-white rounded-lg shadow">
@@ -144,7 +158,7 @@ const ContactTable: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredContacts.map(contact => (
+            {currentContacts.map(contact => (
               <tr key={contact._id} className="hover:bg-gray-50">
                 <td className="py-2 px-4 border-b">{contact.contact_name}</td>
                 <td className="py-2 px-4 border-b flex items-center space-x-2">
@@ -171,21 +185,47 @@ const ContactTable: React.FC = () => {
         </table>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredContacts.map(contact => (
+          {currentContacts.map(contact => (
             <div key={contact._id} className="p-4 border border-gray-200 rounded-md shadow">
               <h3 className="text-lg font-semibold mb-2">{contact.contact_name}</h3>
               <p className="text-gray-600">Account: {getAccountNameById(contact.account_id)}</p>
               <p className="text-gray-600">Title: {contact.title}</p>
-              <p className="text-gray-600">Priority: {contact.priority}</p>
               <p className="text-gray-600">Phone: {contact.phone}</p>
               <p className="text-gray-600">Email: {contact.email}</p>
-              <p className="text-gray-600">
-                Deals Value: {contact.deal_value ? `$${contact.deal_value.toLocaleString()}` : '-'}
-              </p>
+              <p className="text-gray-600">Priority: {contact.priority}</p>
+              <p className="text-gray-600">Deals Value: ${contact.deal_value?.toLocaleString()}</p>
+              {role !== 'Project Manager' && (
+                <FontAwesomeIcon
+                  icon={faEdit}
+                  onClick={() => handleAddOrEditAccount(contact)}
+                  className="text-blue-500 cursor-pointer hover:text-blue-700"
+                />
+              )}
             </div>
           ))}
         </div>
       )}
+
+      {/* Pagination controls */}
+      <div className="flex justify-between items-center mt-4">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-4 py-2 bg-gray-200 text-gray-600 rounded-md"
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {Math.ceil(filteredContacts.length / itemsPerPage)}
+        </span>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === Math.ceil(filteredContacts.length / itemsPerPage)}
+          className="px-4 py-2 bg-gray-200 text-gray-600 rounded-md"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
