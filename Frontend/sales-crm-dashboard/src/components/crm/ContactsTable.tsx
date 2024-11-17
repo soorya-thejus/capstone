@@ -125,20 +125,21 @@ const ContactTable: React.FC = () => {
                 </option>
               ))}
             </select>
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={handleSaveAccount}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => setAccountPopupVisible(false)}
-                className="px-4 py-2 bg-gray-500 text-white rounded-md"
-              >
-                Cancel
-              </button>
-            </div>
+            <div className="flex justify-between space-x-4">
+  <button
+    onClick={handleSaveAccount}
+    className="px-4 py-2 bg-blue-500 text-white rounded-md"
+  >
+    Save
+  </button>
+  <button
+    onClick={() => setAccountPopupVisible(false)}
+    className="px-4 py-2 bg-gray-500 text-white rounded-md"
+  >
+    Cancel
+  </button>
+</div>
+
           </div>
         </div>
       )}
@@ -211,7 +212,7 @@ const ContactTable: React.FC = () => {
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-300 rounded-md"
+          className="px-4 py-2 bg-gray-200 text-gray-600 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Previous
         </button>
@@ -221,7 +222,7 @@ const ContactTable: React.FC = () => {
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === Math.ceil(filteredContacts.length / itemsPerPage)}
-          className="px-4 py-2 bg-gray-300 rounded-md"
+          className="px-4 py-2 bg-gray-200 text-gray-600 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next
         </button>

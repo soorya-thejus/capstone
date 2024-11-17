@@ -222,21 +222,22 @@ const DealsTable: React.FC = () => {
                   <td className="py-2 px-4 border-b">{deal.close_probability}%</td>
                   <td className="py-2 px-4 border-b">{deal.forecast_value}</td>
                   {role !== 'Project Manager' && (
-                  <td className="py-2 px-4 border-b border-r align-middle">
-                    <div className="space-x-2">
-                      <FontAwesomeIcon
-                        icon={faEdit}
-                        onClick={() => handleEditClick(deal)}
-                        className="cursor-pointer text-blue-500"
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        onClick={() => handleDeleteClick(deal._id)}
-                        className="cursor-pointer text-red-500"
-                      />
-                    </div>
-                  </td>
-                )}
+  <td className="py-2 px-4 border-b border-r align-middle">
+    <div className="space-x-2">
+      {/* Disable edit and delete for won deals */}
+      <FontAwesomeIcon
+        icon={faEdit}
+        onClick={() => deal.stage !== 'won' && handleEditClick(deal)} // Prevent action if won
+        className={`cursor-pointer ${deal.stage === 'won' ? 'opacity-50 cursor-not-allowed' : 'text-blue-500'}`}
+      />
+      <FontAwesomeIcon
+        icon={faTrash}
+        onClick={() => deal.stage !== 'won' && handleDeleteClick(deal._id)} // Prevent action if won
+        className={`cursor-pointer ${deal.stage === 'won' ? 'opacity-50 cursor-not-allowed' : 'text-red-500'}`}
+      />
+    </div>
+  </td>
+)}
 
                 </tr>
               );
@@ -250,29 +251,33 @@ const DealsTable: React.FC = () => {
             const accountName = contact?.account_id ? accountNames[contact.account_id] : "Unknown Account";
             return (
               <div key={deal._id} className="bg-gray-100 p-4 rounded-lg shadow">
-                <h3 className="text-xl font-bold">{deal.deal_name}</h3>
-                <p className="text-gray-600">Stage: {deal.stage}</p>
-                <p className="text-gray-600">Value: {deal.deal_value}</p>
-                <p className="text-gray-600">Expected Close Date: {formatDate(deal.expected_close_date)}</p>
-                <p className="text-gray-600">Contact: {contact?.contact_name || "Unknown Contact"}</p>
-                <p className="text-gray-600">Account: {accountName}</p>
-                <p className="text-gray-600">Probability: {deal.close_probability}%</p>
-                <p className="text-gray-600">Forecast Value: {deal.forecast_value}</p>
-                {role !== 'Project Manager' && (
-                  <div className="flex space-x-2 mt-4">
-                    <FontAwesomeIcon
-                      icon={faEdit}
-                      onClick={() => handleEditClick(deal)}
-                      className="cursor-pointer text-blue-500"
-                    />
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      onClick={() => handleDeleteClick(deal._id)}
-                      className="cursor-pointer text-red-500"
-                    />
-                  </div>
-                )}
-              </div>
+  <h3 className="text-xl font-bold">{deal.deal_name}</h3>
+  <p className="text-gray-600">Stage: {deal.stage}</p>
+  <p className="text-gray-600">Value: {deal.deal_value}</p>
+  <p className="text-gray-600">Expected Close Date: {formatDate(deal.expected_close_date)}</p>
+  <p className="text-gray-600">Contact: {contact?.contact_name || "Unknown Contact"}</p>
+  <p className="text-gray-600">Account: {accountName}</p>
+  <p className="text-gray-600">Probability: {deal.close_probability}%</p>
+  <p className="text-gray-600">Forecast Value: {deal.forecast_value}</p>
+  {role !== 'Project Manager' && (
+  <div className="flex space-x-2 mt-4">
+<FontAwesomeIcon
+  icon={faEdit}
+  onClick={() => deal.stage !== 'won' && handleEditClick(deal)} // Prevent action if won
+  className={`cursor-pointer ${deal.stage === 'won' ? 'text-blue-400 opacity-50 cursor-not-allowed' : 'text-blue-500 hover:text-blue-700'}`}
+/>
+<FontAwesomeIcon
+  icon={faTrash}
+  onClick={() => deal.stage !== 'won' && handleDeleteClick(deal._id)} // Prevent action if won
+  className={`cursor-pointer ${deal.stage === 'won' ? 'text-red-400 opacity-50 cursor-not-allowed' : 'text-red-500 hover:text-red-700'}`}
+/>
+
+
+
+  </div>
+)}
+
+</div>
             );
           })}
         </div>
