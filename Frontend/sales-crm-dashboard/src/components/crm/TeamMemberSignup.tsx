@@ -1,8 +1,6 @@
-// src/pages/crm/TeamMemberSignup.tsx
 import React, { useState, useEffect } from 'react';
 import { registerTeamMember } from '../../services/AuthService';
 import { useNavigate } from 'react-router-dom';
-import styles from '../../styles/crm/teammembersignup.module.css';
 
 const TeamMemberSignup: React.FC = () => {
   const [orgId, setOrgId] = useState<string | null>(null);
@@ -41,7 +39,6 @@ const TeamMemberSignup: React.FC = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    
     if (!username || !email || !password) {
       setMessage("Please fill in all fields.");
       return;
@@ -52,7 +49,6 @@ const TeamMemberSignup: React.FC = () => {
       return;
     }
 
-    
     if (!orgId) {
       setMessage("Organization ID is required.");
       return;
@@ -72,65 +68,86 @@ const TeamMemberSignup: React.FC = () => {
   };
 
   return (
-    <div className={styles.signupContainer}>
+    <div className="max-w-xl mx-auto p-6 bg-white shadow-md rounded-md">
       {!isSubmitted ? (
         <>
-<h2>Signup Team Member</h2>
-<div className={styles.form}>
-  <form onSubmit={handleSignup}>
-    {/* Input fields */}
-    <label>
-      Username:
-      <input
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
-    </label>
-    <label>
-      Email:
-      <input id="t-input"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-    </label>
-    <label>
-      Password:
-      <input id="t-input"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-    </label>
-    <label>
-      Role:
-      <select id="t-select"
-        value={role}
-        onChange={(e) => setRole(e.target.value)}
-        required
-      >
-        {/* <option value="Admin">Admin</option> */}
-        <option value="Project Manager">Project Manager</option>
-        <option value="Sales Rep">Sales Rep</option>
-      </select>
-    </label>
-    <div className={styles.formButtons}>
-      <button type="button" onClick={handleBack} className={styles.backButton}>Go Back to Dashboard</button>
-      <button type="submit" className={styles.signupButton}>Sign Up Team Member</button>
-    </div>
-  </form>
-  {message && <p className={styles.message}>{message}</p>}
-</div>
-
+          <h2 className="text-2xl font-bold text-center mb-4">Signup Team Member</h2>
+          <div className="space-y-4">
+            <form onSubmit={handleSignup} className="space-y-4">
+              <div>
+                <label className="block text-lg font-semibold" htmlFor="username">Username:</label>
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-lg font-semibold" htmlFor="email">Email:</label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-lg font-semibold" htmlFor="password">Password:</label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-lg font-semibold" htmlFor="role">Role:</label>
+                <select
+                  id="role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="Project Manager">Project Manager</option>
+                  <option value="Sales Rep">Sales Rep</option>
+                </select>
+              </div>
+              <div className="flex justify-between">
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="px-4 py-2 bg-gray-300 text-white rounded-md hover:bg-gray-400"
+                >
+                  Go Back to Dashboard
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                >
+                  Sign Up Team Member
+                </button>
+              </div>
+            </form>
+            {message && <p className="text-center text-red-500 mt-4">{message}</p>}
+          </div>
         </>
       ) : (
-        <div className={styles.successMessage}>
-          <p className={styles.message}>{message}</p>
-          <button onClick={handleBack} className={styles.backButton}>Go Back to Dashboard</button>
+        <div className="text-center">
+          <p className="text-green-500 text-lg mb-4">{message}</p>
+          <button
+            onClick={handleBack}
+            className="px-6 py-2 bg-gray-300 text-white rounded-md hover:bg-gray-400"
+          >
+            Go Back to Dashboard
+          </button>
         </div>
       )}
     </div>
