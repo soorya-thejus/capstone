@@ -57,6 +57,7 @@ export const deleteLead = async (req: Request, res: Response) => {
         const deletedLead = await leadService.deleteLeadService(req.params.id);
         if (!deletedLead)  {res.status(404).json({ message: 'Lead not found' });
             return;};
+        await sendLeadEvent(deletedLead);
         res.status(204).send();
     } catch (error) {
         res.status(400).json({ message: error instanceof Error ? error.message : 'Error deleting lead' });

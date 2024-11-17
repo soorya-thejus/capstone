@@ -4,7 +4,7 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 export interface ILead extends Document {
   getQuery: any;
   getUpdate: any;
-  type: 'create' | 'update';
+  type: 'create' | 'update' | 'delete';
   lead_name: string;
   status: 'new lead' | 'attempted to contact' | 'contacted' | 'qualified' | 'unqualified';
   temp_status: string;
@@ -20,7 +20,7 @@ export interface ILead extends Document {
 
 // Define the Lead schema
 const LeadSchema: Schema = new Schema({
-  type: { type: String, enum: ['create', 'update'], default: 'create', required: false },
+  type: { type: String, enum: ['create', 'update', 'delete'], default: 'create', required: false },
   lead_name: { type: String, required: true },
   status: {
     type: String,
@@ -79,6 +79,21 @@ LeadSchema.pre<ILead>('findOneAndUpdate', async function (next) {
   update.type = "update"; 
 
   next();
+});
+
+LeadSchema.pre<ILead>('findOneAndDelete', async function (next) {
+  try {
+    const LeadModel = mongoose.model<ILead>('Lead');
+    const leadToDelete = await LeadModel.findOne(this.getQuery());
+
+    if (leadToDelete) {
+      await LeadModel.updateOne(this.getQuery(), { type: 'delete' });
+    }
+
+    next();
+  } catch (error) {
+    next(error instanceof Error ? error : new Error('An unexpected error occurred during deletion'));
+  }
 });
 
 export const Lead = mongoose.model<ILead>('Lead', LeadSchema);

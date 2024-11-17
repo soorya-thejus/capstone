@@ -4,7 +4,7 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 export interface IDeal extends Document {
   getQuery: any;
   getUpdate: any; 
-  type: 'create' | 'update';
+  type: 'create' | 'update' | 'delete';
   deal_name: string;
   stage: 'new' | 'discovery' | 'proposal' | 'negotiation' | 'won' | 'lost';
   temp_stage: string;
@@ -24,7 +24,7 @@ export interface IDeal extends Document {
 const DealSchema: Schema = new Schema(
   {
     deal_name: { type: String, required: true },
-    type: { type: String, enum: ['create', 'update'], default: 'create', required: false },
+    type: { type: String, enum: ['create', 'update', 'delete'], default: 'create', required: false },
     stage: {
       type: String,
       enum: ['new', 'discovery', 'proposal', 'negotiation', 'won', 'lost'],
@@ -130,6 +130,21 @@ DealSchema.pre<IDeal>('findOneAndUpdate', async function (next) {
   }
 
   next();
+});
+
+DealSchema.pre<IDeal>('findOneAndDelete', async function (next) {
+  try {
+    const DealModel = mongoose.model<IDeal>('Deal');
+    const dealToDelete = await DealModel.findOne(this.getQuery());
+
+    if (dealToDelete) {
+      await DealModel.updateOne(this.getQuery(), { type: 'delete' });
+    }
+
+    next();
+  } catch (error) {
+    next(error instanceof Error ? error : new Error('An unexpected error occurred during deletion'));
+  }
 });
 
 export const Deal = mongoose.model<IDeal>('Deal', DealSchema);

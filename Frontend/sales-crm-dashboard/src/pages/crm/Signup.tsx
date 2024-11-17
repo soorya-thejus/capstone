@@ -14,18 +14,40 @@ const SignUp: React.FC = () => {
     email: '',
     password: '',
   });
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    if (name === 'password') {
+      validatePassword(value);
+    }
     setFormData(prevFormData => ({ ...prevFormData, [name]: value }));
+  };
+
+  const validatePassword = (password: string) => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+
+    if (password.length < minLength) {
+      setPasswordError('Password must be at least 8 characters long.');
+    } else if (!hasUpperCase) {
+      setPasswordError('Password must contain at least one uppercase letter.');
+    } else if (!hasNumber) {
+      setPasswordError('Password must contain at least one number.');
+    } else {
+      setPasswordError(null); 
+    }
   };
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (passwordError) return;
 
     setIsLoading(true);
     setError(null);
@@ -84,7 +106,8 @@ const SignUp: React.FC = () => {
               onChange={handleChange}
               required
             />
-            <button type="submit" disabled={isLoading}>
+            {passwordError && <p className={styles.error}>{passwordError}</p>}
+            <button type="submit" disabled={isLoading || !!passwordError}>
               {isLoading ? 'Signing Up...' : 'Sign Up'}
             </button>
           </form>
