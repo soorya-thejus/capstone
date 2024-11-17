@@ -98,7 +98,6 @@ const TeamMemberSignup: React.FC = () => {
       />
     </label>
     <label>
-<<<<<<< HEAD
       Password:
       <input id="t-input"
         type="password"
@@ -107,20 +106,6 @@ const TeamMemberSignup: React.FC = () => {
         required
       />
     </label>
-=======
-        Password:
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => {
-          setPassword(e.target.value);
-          validatePassword(e.target.value); // Validate password on input change
-          }}
-          required
-       />
-      </label>
-      {passwordError && <p className={styles.error}>{passwordError}</p>}
->>>>>>> dddd981848e63b54667a0d68ffc920a56b109f20
     <label>
       Role:
       <select id="t-select"
