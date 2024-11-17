@@ -96,11 +96,8 @@ const AccountsTable: React.FC = () => {
 
   return (
     <div className="p-4 bg-white rounded-lg shadow">
-      <div
-        className={`flex items-center mb-4 space-x-4 ${
-          role === 'Sales Rep' ? 'justify-between' : 'justify-start'
-        }`}
-      >
+      <div className="flex items-center mb-4 justify-between">
+        {/* Add Account button for Sales Rep */}
         {role === 'Sales Rep' && (
           <button
             onClick={handleAddClick}
@@ -110,14 +107,18 @@ const AccountsTable: React.FC = () => {
             <span>Add Account</span>
           </button>
         )}
+
+        {/* Search Bar */}
         <input
           type="text"
           placeholder="Search accounts"
           value={searchTerm}
           onChange={handleSearchChange}
-          className="px-4 py-2 border rounded-md shadow-sm w-1/2"
+          className="px-4 py-2 border rounded-md shadow-sm w-1/3"
         />
-        {role === 'Sales Rep' && (
+
+        {/* Toggle View Icon for Admin and Project Manager */}
+        {(role === 'Admin' || role === 'Project Manager' || role === 'Sales Rep') && (
           <FontAwesomeIcon
             icon={isTableView ? faTh : faTable}
             onClick={handleToggleView}
