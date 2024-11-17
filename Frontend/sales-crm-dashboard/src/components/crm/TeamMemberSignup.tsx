@@ -9,9 +9,10 @@ const TeamMemberSignup: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [role, setRole] = useState('Sales Rep');
   const [message, setMessage] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false); // Track submission state
+  const [isSubmitted, setIsSubmitted] = useState(false); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,16 +22,37 @@ const TeamMemberSignup: React.FC = () => {
     }
   }, []);
 
+  const validatePassword = (password: string) => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+
+    if (password.length < minLength) {
+      setPasswordError('Password must be at least 8 characters long.');
+    } else if (!hasUpperCase) {
+      setPasswordError('Password must contain at least one uppercase letter.');
+    } else if (!hasNumber) {
+      setPasswordError('Password must contain at least one number.');
+    } else {
+      setPasswordError(null); 
+    }
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate form fields
+    
     if (!username || !email || !password) {
       setMessage("Please fill in all fields.");
       return;
     }
 
-    // Ensure orgId is a string and not null
+    if (passwordError) {
+      setMessage('Please correct the password errors before submitting.');
+      return;
+    }
+
+    
     if (!orgId) {
       setMessage("Organization ID is required.");
       return;
@@ -76,14 +98,18 @@ const TeamMemberSignup: React.FC = () => {
       />
     </label>
     <label>
-      Password:
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-    </label>
+        Password:
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => {
+          setPassword(e.target.value);
+          validatePassword(e.target.value); // Validate password on input change
+          }}
+          required
+       />
+      </label>
+      {passwordError && <p className={styles.error}>{passwordError}</p>}
     <label>
       Role:
       <select
